@@ -1,0 +1,70 @@
+﻿@{
+    ViewData["Title"] = "Detalle de parámetros";
+}
+
+<div class="internal-header">
+    <div>
+        <span class="eyebrow">Configuración de costos</span>
+        <h1 class="cavex-title">Parámetros #1</h1>
+        <p class="cavex-subtitle">Detalle de la configuración usada por el cotizador.</p>
+    </div>
+    <span class="badge-active">Activo</span>
+</div>
+
+<div class="operation-actions mb-4">
+    <a class="btn btn-outline-cavex" asp-controller="ParametrosCosto" asp-action="Index">Volver</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="dashboard-card h-100">
+            <span class="dashboard-kicker">Combustible</span>
+            <h3>$24.50</h3>
+            <p><strong>Rendimiento:</strong> 10.00 km/L</p>
+            <p><strong>Costo estimado por km:</strong> $2.45</p>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="dashboard-card h-100">
+            <span class="dashboard-kicker">Costo por km</span>
+            <p><strong>Mantenimiento:</strong> $0.50</p>
+            <p><strong>Depreciación:</strong> $0.80</p>
+            <p><strong>Seguro:</strong> $1.20</p>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="price-card h-100">
+            <span class="dashboard-kicker">Comercial</span>
+            <h3>30.00% margen</h3>
+            <p><strong>IVA:</strong> 16.00%</p>
+            <p><strong>Asistencia:</strong> $200.00</p>
+        </div>
+    </div>
+</div>
+
+<div class="cavex-card mt-4">
+    <h3 class="form-section-title">Vigencia e historial</h3>
+    <div class="row g-3">
+        <div class="col-md-3">
+            <strong>Inicio</strong>
+            <div>01/01/2024</div>
+        </div>
+        <div class="col-md-3">
+            <strong>Fin</strong>
+            <div>Sin cierre</div>
+        </div>
+        <div class="col-md-3">
+            <strong>Creación</strong>
+            <div>01/01/2024 10:00</div>
+        </div>
+        <div class="col-md-3">
+            <strong>Cotizaciones vinculadas</strong>
+            <div>15</div>
+        </div>
+    </div>
+</div>
+
+<partial name="_ProtectedAlert" model="@("Estos valores son internos. La hoja para cliente no muestra parámetros ni costos protegidos.")" />
+
+
+

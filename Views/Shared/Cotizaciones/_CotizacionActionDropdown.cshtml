@@ -1,0 +1,47 @@
+﻿@{
+    var cancelada = Model.Estado == "Cancelada";
+    var puedeEditar = User.IsInRole("Administrador") || User.IsInRole("Operador");
+    var puedeRecalcular = User.IsInRole("Administrador") || User.IsInRole("Operador");
+    var puedeDuplicar = User.IsInRole("Administrador") || User.IsInRole("Operador");
+    var puedeCancelar = User.IsInRole("Administrador") || User.IsInRole("Supervisor");
+}
+
+<div class="dropdown actions-dropdown">
+    <button class="btn btn-outline-cavex btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Acciones
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item" asp-controller="Cotizaciones" asp-action="Details" asp-route-id="1">Detalle</a></li>
+        <li><a class="dropdown-item" asp-controller="Cotizaciones" asp-action="VistaCliente" asp-route-id="1">Hoja cliente</a></li>
+        @if (!cancelada)
+        {
+            @if (puedeEditar)
+            {
+                <li><a class="dropdown-item" asp-controller="Cotizaciones" asp-action="Edit" asp-route-id="1">Editar</a></li>
+            }
+            @if (puedeRecalcular)
+            {
+                <li>
+                    <form method="post" asp-controller="Cotizaciones" asp-action="Recalcular" asp-route-id="1" onsubmit="return confirm('¿Recalcular esta cotización con parámetros actuales?');">
+                        <button type="submit" class="dropdown-item">Recalcular</button>
+                    </form>
+                </li>
+            }
+            @if (puedeDuplicar)
+            {
+                <li>
+                    <form method="post" asp-controller="Cotizaciones" asp-action="Duplicar" asp-route-id="1" onsubmit="return confirm('¿Duplicar esta cotización?');">
+                        <button type="submit" class="dropdown-item">Duplicar</button>
+                    </form>
+                </li>
+            }
+            @if (puedeCancelar)
+            {
+                <li><hr class="dropdown-divider" /></li>
+                <li><a class="dropdown-item text-danger" asp-controller="Cotizaciones" asp-action="Cancelar" asp-route-id="1">Cancelar</a></li>
+            }
+        }
+    </ul>
+</div>
+
+

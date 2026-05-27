@@ -1,8 +1,86 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Panel interno";
+    ViewData["HeaderEyebrow"] = "Centro de operación";
+    ViewData["HeaderTitle"] = "Panel interno Grupo CAVEX";
+    ViewData["HeaderSubtitle"] = "Gestión de cotizaciones, servicios, sucursales y costos operativos.";
+    ViewData["HeaderBadgeText"] = "Uso exclusivo del equipo CAVEX";
+    ViewData["HeaderContainerClass"] = "dashboard-hero";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<partial name="_PageHeader" />
+
+<div class="row g-4">
+    <div class="col-md-6 col-xl">
+        <div class="dashboard-card h-100">
+            <div class="dashboard-icon">01</div>
+            <span class="dashboard-kicker">Captura</span>
+            <h3>Nueva cotización</h3>
+            <p>Captura los datos proporcionados durante la llamada y calcula la ruta.</p>
+            <a class="btn btn-cavex w-100" asp-controller="Cotizaciones" asp-action="Create">Crear cotización</a>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl">
+        <div class="dashboard-card h-100">
+            <div class="dashboard-icon">02</div>
+            <span class="dashboard-kicker">Historial</span>
+            <h3>Cotizaciones guardadas</h3>
+            <p>Consulta resultados internos y abre la hoja formal para cliente.</p>
+            <a class="btn btn-outline-cavex w-100" asp-controller="Cotizaciones" asp-action="Index">Ver cotizaciones</a>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl">
+        <div class="dashboard-card h-100">
+            <div class="dashboard-icon">03</div>
+            <span class="dashboard-kicker">Catálogo</span>
+            <h3>Servicios</h3>
+            <p>Administra servicios, asistencia por defecto y tarifas adicionales.</p>
+            <a class="btn btn-outline-cavex w-100" asp-controller="Servicios" asp-action="Index">Administrar servicios</a>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl">
+        <div class="dashboard-card h-100">
+            <div class="dashboard-icon">04</div>
+            <span class="dashboard-kicker">Operación</span>
+            <h3>Sucursales</h3>
+            <p>Define oficinas de salida y coordenadas para el cálculo de rutas.</p>
+            <a class="btn btn-outline-cavex w-100" asp-controller="Sucursales" asp-action="Index">Administrar sucursales</a>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl">
+        <div class="dashboard-card h-100">
+            <div class="dashboard-icon">05</div>
+            <span class="dashboard-kicker">Costos</span>
+            <h3>Parámetros de costo</h3>
+            <p>Controla la configuración activa para próximas cotizaciones.</p>
+            <a class="btn btn-outline-cavex w-100" asp-controller="ParametrosCosto" asp-action="Index">Ver parámetros</a>
+        </div>
+    </div>
 </div>
+
+<div class="row g-4 mt-1">
+    <div class="col-lg-8">
+        <div class="cavex-card h-100">
+            <h3 class="form-section-title">Flujo operativo</h3>
+            <div class="flow-grid">
+                <div class="flow-step"><span>1</span>Capturar solicitante</div>
+                <div class="flow-step"><span>2</span>Seleccionar servicio</div>
+                <div class="flow-step"><span>3</span>Seleccionar sucursal</div>
+                <div class="flow-step"><span>4</span>Marcar destino</div>
+                <div class="flow-step"><span>5</span>Calcular cotización</div>
+                <div class="flow-step"><span>6</span>Generar hoja cliente</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="dashboard-card h-100 dashboard-emphasis">
+            <span class="dashboard-kicker">Entrega al cliente</span>
+            <h3>PDF y enlace público seguro</h3>
+            <p>Desde el detalle interno puedes entregar la hoja cliente sin exponer costos protegidos ni rutas internas.</p>
+            <a class="btn btn-cavex" asp-controller="Cotizaciones" asp-action="Index">Buscar cotización</a>
+        </div>
+    </div>
+</div>
+
+
+
+

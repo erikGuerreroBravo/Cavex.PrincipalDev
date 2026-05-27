@@ -1,0 +1,58 @@
+﻿<div class="delivery-panel mb-4">
+    @if (Model.ShowPanelText)
+    {
+        <div>
+            <span class="dashboard-kicker">Acciones para cliente</span>
+            <p class="mb-0 text-muted">Entrega la cotización sin exponer costos internos.</p>
+        </div>
+    }
+    <div class="client-actions">
+        @if (!Model.IsPublicView)
+        {
+            <a class="btn btn-cavex" asp-controller="Cotizaciones" asp-action="VistaCliente" asp-route-id="@Model.CotizacionId">Ver hoja cliente</a>
+            <a class="btn btn-pdf" asp-controller="Cotizaciones" asp-action="DescargarPdf" asp-route-id="@Model.CotizacionId">Descargar PDF</a>
+        }
+        else if (!string.IsNullOrWhiteSpace(Model.PublicToken))
+        {
+            <a class="btn btn-pdf" asp-controller="Cotizaciones" asp-action="DescargarPdfPublico" asp-route-token="@Model.PublicToken">Descargar PDF</a>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.WhatsAppUrl))
+        {
+            <a class="btn btn-whatsapp" href="@Model.WhatsAppUrl" target="_blank" rel="noopener">Enviar por WhatsApp</a>
+        }
+        else
+        {
+            <button type="button" class="btn btn-whatsapp" disabled>No hay teléfono celular registrado</button>
+        }
+
+        <button type="button" class="btn btn-outline-cavex copy-whatsapp-message" data-message="@Model.WhatsAppMessage">Copiar mensaje</button>
+        @if (Model.IsPublicView)
+        {
+            <button type="button" class="btn btn-cavex" onclick="window.print()">Imprimir / Guardar PDF</button>
+        }
+    </div>
+    <textarea class="form-control mt-3 d-none whatsapp-message-fallback" rows="6" readonly>@Model.WhatsAppMessage</textarea>
+
+    @if (Model.IncludePublicLinkBox)
+    {
+        <div class="public-link-box mt-3">
+            <label class="form-label">Enlace público seguro</label>
+            <div class="input-group">
+                <input id="publicQuoteLink" class="form-control" value="@Model.PublicUrl" readonly />
+                @if (!string.IsNullOrWhiteSpace(Model.PublicUrl))
+                {
+                    <a class="btn btn-outline-cavex" href="@Model.PublicUrl" target="_blank" rel="noopener">Abrir vista pública</a>
+                    <button type="button" class="btn btn-outline-cavex copy-public-link" data-link="@Model.PublicUrl">Copiar enlace público</button>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-outline-cavex" disabled>Sin token público</button>
+                }
+            </div>
+            <small class="text-muted">Comparte este enlace en lugar de la ruta interna con Id.</small>
+        </div>
+    }
+</div>
+
+

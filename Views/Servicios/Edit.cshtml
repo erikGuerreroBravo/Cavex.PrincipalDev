@@ -1,0 +1,46 @@
+﻿@{
+    ViewData["Title"] = "Editar servicio";
+}
+
+<div class="internal-header">
+    <div>
+        <span class="eyebrow">ConfiguraciÃ³n</span>
+        <h1 class="cavex-title">Editar servicio</h1>
+        <p class="cavex-subtitle">Modifica los detalles del servicio seleccionado.</p>
+    </div>
+</div>
+
+<form action="#" class="quote-form mt-4">
+    <div class="cavex-card form-section-card">
+        <h3 class="form-section-title">Datos del servicio</h3>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label" for="strNombre">Nombre del servicio</label>
+                <input name="Nombre" id="strNombre" class="form-control" value="Traslado Sencillo" required />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="intTarifaAdicional">Tarifa adicional (MXN)</label>
+                <input name="TarifaAdicional" id="intTarifaAdicional" type="number" step="0.01" class="form-control" value="0.00" />
+            </div>
+            <div class="col-md-12">
+                <label class="form-check catalog-check" for="strRequiereAsistenciaPorDefecto">
+                    <input name="RequiereAsistenciaPorDefecto" id="strRequiereAsistenciaPorDefecto" type="checkbox" class="form-check-input" value="true" />
+                    <span class="form-check-label">Requiere asistencia por defecto</span>
+                </label>
+            </div>
+            <div class="col-md-12">
+                <label class="form-check catalog-check" for="strActivo">
+                    <input name="Activo" id="strActivo" type="checkbox" class="form-check-input" value="true" checked />
+                    <span class="form-check-label">Servicio Activo</span>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-action-bar mt-4">
+        <a class="btn btn-outline-cavex" asp-controller="Servicios" asp-action="Index">Cancelar</a>
+        <button type="submit" class="btn btn-cavex">Guardar cambios</button>
+    </div>
+</form>
+
+
+

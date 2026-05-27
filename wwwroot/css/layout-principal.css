@@ -1,0 +1,168 @@
+﻿:root {
+    --azul-cavex: #061B3A;
+    --azul-ejecutivo: #0B1F3A;
+    --teal-cavex: #008C95;
+    --cyan-cavex: #00B8C4;
+    --fondo-cavex: #F6F8FB;
+    --texto-cavex: #10233F;
+    --borde-cavex: #D8E1EA;
+    --blanco: #FFFFFF;
+    --gris: #6B7280;
+    --exito: #10B981;
+    --advertencia: #F59E0B;
+    --error: #EF4444;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(180deg, rgba(6, 27, 58, 0.035), rgba(246, 248, 251, 0) 260px), var(--fondo-cavex);
+    color: var(--texto-cavex);
+    font-family: "Segoe UI", Arial, sans-serif;
+    min-height: 100vh;
+}
+
+::selection {
+    background: rgba(0, 184, 196, .22);
+    color: var(--azul-cavex);
+}
+
+.cavex-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    background: linear-gradient(135deg, rgba(0, 184, 196, 0.13), rgba(0, 184, 196, 0) 34%), var(--azul-cavex);
+    color: white;
+    padding: 14px 32px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 14px 34px rgba(6, 27, 58, 0.24);
+    backdrop-filter: blur(10px);
+}
+
+.cavex-brand {
+    align-items: center;
+    color: white;
+    display: inline-flex;
+    gap: 12px;
+    font-size: 26px;
+    font-weight: 900;
+    text-decoration: none;
+    letter-spacing: .01em;
+}
+
+.cavex-brand-logo {
+    background: white;
+    border-radius: 10px;
+    max-height: 44px;
+    max-width: 138px;
+    object-fit: contain;
+    padding: 5px 8px;
+}
+
+.cavex-brand span {
+    color: var(--cyan-cavex);
+}
+
+.cavex-nav {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+    .cavex-nav a {
+        color: rgba(255,255,255,0.9);
+        text-decoration: none;
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 12px;
+        padding: 9px 14px;
+        font-weight: 700;
+        font-size: 14px;
+        transition: .16s ease;
+    }
+
+        .cavex-nav a:hover {
+            color: white;
+            background: rgba(0, 184, 196, 0.18);
+            border-color: rgba(0, 184, 196, 0.45);
+        }
+
+.nav-user {
+    align-items: center;
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 999px;
+    color: rgba(255,255,255,.86);
+    display: inline-flex;
+    font-size: 13px;
+    font-weight: 800;
+    padding: 9px 14px;
+}
+
+    .nav-user small {
+        color: var(--cyan-cavex);
+        font-size: 11px;
+        font-weight: 900;
+        margin-left: 8px;
+        text-transform: uppercase;
+    }
+
+.nav-logout {
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: 12px;
+    color: white;
+    font-size: 14px;
+    font-weight: 800;
+    padding: 9px 14px;
+    transition: .16s ease;
+}
+
+    .nav-logout:hover {
+        background: rgba(239, 68, 68, .18);
+        border-color: rgba(239, 68, 68, .45);
+    }
+
+.cavex-container {
+    width: min(1480px, 100%);
+    margin: 0 auto;
+    padding: 34px 28px;
+}
+
+.cavex-footer {
+    color: var(--gris);
+    text-align: center;
+    padding: 24px;
+}
+
+.cavex-title {
+    color: var(--azul-cavex);
+    font-size: clamp(28px, 3vw, 38px);
+    font-weight: 900;
+    margin-bottom: 6px;
+}
+
+.cavex-subtitle {
+    color: var(--gris);
+    margin-bottom: 0;
+}
+
+.text-clamp-1,
+.text-clamp-2 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.text-clamp-1 {
+    max-width: 260px;
+    white-space: nowrap;
+}
+
+.text-clamp-2 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-height: 1.35;
+    max-width: 300px;
+}

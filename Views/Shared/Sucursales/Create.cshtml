@@ -1,0 +1,88 @@
+﻿
+@{
+    ViewData["Title"] = "Nueva sucursal";
+}
+
+<div class="page-hero">
+    <div>
+        <span class="eyebrow">Red operativa</span>
+        <h1 class="cavex-title">Nueva sucursal</h1>
+        <p class="cavex-subtitle">Registra una oficina de salida para las cotizaciones.</p>
+    </div>
+    <a class="btn btn-outline-cavex" asp-controller="Sucursales" asp-action="Index">Volver</a>
+</div>
+
+<form method="post" asp-controller="Sucursales" asp-action="Create">
+    <div class="cavex-card address-card">
+        <h3 class="form-section-title"><span class="form-section-number">1</span>Datos y coordenadas</h3>
+        <div  class="alert alert-danger"></div>
+        <div class="row g-4">
+    <div class="col-md-6">
+        <div class="cavex-card">
+            <h5 class="cavex-card-title">Datos principales</h5>
+            <div class="mb-3">
+                <label for="Nombre" class="form-label">Nombre</label>
+                <input name="Nombre" id="Nombre" class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label for="Telefono" class="form-label">TelÃ©fono</label>
+                <input name="Telefono" id="Telefono" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label for="Direccion" class="form-label">DirecciÃ³n</label>
+                <input name="Direccion" id="Direccion" class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label for="Municipio" class="form-label">Municipio</label>
+                <input name="Municipio" id="Municipio" class="form-control" required />
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="Estado" class="form-label">Estado</label>
+                    <input name="Estado" id="Estado" class="form-control" required />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="CodigoPostal" class="form-label">CÃ³digo postal</label>
+                    <input name="CodigoPostal" id="CodigoPostal" class="form-control" />
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="cavex-card">
+            <h5 class="cavex-card-title">ConfiguraciÃ³n operativa</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="Latitud" class="form-label">Latitud</label>
+                    <input name="Latitud" id="Latitud" type="number" step="0.000001" class="form-control" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="Longitud" class="form-label">Longitud</label>
+                    <input name="Longitud" id="Longitud" type="number" step="0.000001" class="form-control" />
+                </div>
+            </div>
+            <div class="alert alert-info mb-3">
+                <i class="bi bi-geo-alt"></i> Las coordenadas son indispensables para que el Cotizador calcule rutas hacia o desde esta oficina.
+            </div>
+            <div class="form-check form-switch mt-4">
+                <input name="Activa" id="Activa" type="checkbox" class="form-check-input" />
+                <label class="form-check-label" for="Activa">Sucursal activa para operaciones</label>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    <div class="form-action-bar">
+        <button type="submit" class="btn btn-cavex">Guardar</button>
+        <a class="btn btn-outline-cavex" asp-controller="Sucursales" asp-action="Index">Cancelar</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+
+
+

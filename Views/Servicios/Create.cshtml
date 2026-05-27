@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "Nuevo servicio";
+}
+
+<partial name="_PageHeader"  />
+
+<form action="#" class="quote-form">
+    <div class="cavex-card form-section-card">
+        <h3 class="form-section-title">Datos del servicio</h3>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Nombre del servicio</label>
+                <input name="Nombre" id="strNombre" class="form-control" placeholder="Ej. Traslado Sencillo" required />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Tarifa adicional (MXN)</label>
+                <input name="TarifaAdicional" id="intTarifaAdicional" type="number" step="0.01" class="form-control" value="0.00" />
+            </div>
+            <div class="col-md-12">
+                <label class="form-check catalog-check">
+                    <input name="RequiereAsistenciaPorDefecto" id="strRequiereAsistenciaPorDefecto" type="checkbox" class="form-check-input" value="true" />
+                    <span class="form-check-label">Requiere asistencia por defecto</span>
+                </label>
+            </div>
+            <div class="col-md-12">
+                <label class="form-check catalog-check">
+                    <input name="Activo" id="strActivo" type="checkbox" class="form-check-input" value="true" checked />
+                    <span class="form-check-label">Servicio Activo</span>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-action-bar mt-4">
+        <a class="btn btn-outline-cavex" asp-controller="Servicios" asp-action="Index">Cancelar</a>
+        <button type="submit" class="btn btn-cavex">Guardar servicio</button>
+    </div>
+</form>
+
+
+

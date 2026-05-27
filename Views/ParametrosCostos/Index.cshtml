@@ -1,0 +1,37 @@
+﻿@{
+    ViewData["Title"] = "ParÃ¡metros de Costo";
+}
+
+<partial name="_PageHeader" />
+
+<div class="cavex-card table-module">
+    <partial name="_TableCardHeader" />
+    <div class="table-responsive">
+        <table class="table table-hover align-middle table-cavex-compact">
+            <thead>
+                <tr>
+                    <th>Fecha Inicio Vigencia</th>
+                    <th>Gasolina (MXN/L)</th>
+                    <th>Margen (%)</th>
+                    <th>Estado</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="cotizacion-main-text">01/01/2024</div>
+                    </td>
+                    <td>$24.50</td>
+                    <td>30.00%</td>
+                    <td><span class="badge-active">Activo</span></td>
+                    <td class="text-end">
+                        <a href="/ParametrosCosto/Details/1" class="btn btn-sm btn-outline-cavex">Ver Detalle</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+

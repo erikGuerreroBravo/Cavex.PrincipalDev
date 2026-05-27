@@ -1,0 +1,180 @@
+﻿.quote-sheet {
+    background: white;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 46px;
+    border-radius: 18px;
+    border: 1px solid var(--borde-cavex);
+    box-shadow: 0 20px 55px rgba(6, 27, 58, 0.18);
+}
+
+    .quote-sheet::before {
+        background: linear-gradient(90deg, var(--azul-cavex), var(--teal-cavex), var(--cyan-cavex));
+        border-radius: 18px 18px 0 0;
+        content: "";
+        display: block;
+        height: 6px;
+        margin: -46px -46px 34px;
+    }
+
+.quote-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    border-bottom: 3px solid var(--teal-cavex);
+    padding-bottom: 20px;
+    margin-bottom: 28px;
+}
+
+.quote-logo {
+    color: var(--azul-cavex);
+    font-size: 32px;
+    font-weight: 950;
+}
+
+.quote-sheet .table td {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.quote-logo span,
+.quote-meta h3 {
+    color: var(--teal-cavex);
+}
+
+.quote-meta {
+    text-align: right;
+}
+
+.quote-title {
+    color: var(--azul-cavex);
+    font-size: 26px;
+    font-weight: 950;
+    margin-bottom: 24px;
+}
+
+.quote-grid {
+    display: grid;
+    grid-template-columns: 1fr 230px;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.quote-validity,
+.quote-section {
+    background: #F8FAFC;
+    border: 1px solid var(--borde-cavex);
+    border-radius: 14px;
+    padding: 18px;
+}
+
+    .quote-validity span {
+        display: block;
+        color: var(--teal-cavex);
+        font-weight: 850;
+        margin-top: 6px;
+    }
+
+    .quote-section h4 {
+        color: var(--azul-cavex);
+        font-size: 18px;
+        font-weight: 900;
+        margin-bottom: 14px;
+    }
+
+.quote-section,
+.quote-validity,
+.quote-contact-box {
+    break-inside: avoid;
+}
+
+.quote-price {
+    background: linear-gradient(135deg, #E6F7F8, #FFFFFF);
+    border: 1px solid rgba(0, 140, 149, 0.35);
+    border-radius: 18px;
+    padding: 24px;
+    text-align: center;
+}
+
+.action-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.client-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.delivery-panel {
+    align-items: center;
+    background: linear-gradient(135deg, rgba(0, 184, 196, 0.08), rgba(255,255,255,0) 44%), var(--blanco);
+    border: 1px solid var(--borde-cavex);
+    border-radius: 16px;
+    box-shadow: 0 14px 34px rgba(6, 27, 58, 0.075);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    justify-content: space-between;
+    padding: 22px;
+}
+
+    .delivery-panel .client-actions .btn {
+        min-height: 44px;
+    }
+
+.public-link-box {
+    border-top: 1px solid var(--borde-cavex);
+    padding-top: 16px;
+    width: 100%;
+}
+
+.quote-logo-wrap {
+    align-items: center;
+    display: flex;
+    min-height: 58px;
+}
+
+.cavex-logo-img {
+    display: block;
+    height: auto;
+    max-height: 70px;
+    max-width: 220px;
+    object-fit: contain;
+}
+
+.quote-contact-box {
+    background: #F8FAFC;
+    border: 1px solid var(--borde-cavex);
+    border-left: 5px solid var(--teal-cavex);
+    border-radius: 14px;
+    color: var(--azul-cavex);
+    padding: 18px;
+}
+
+.quote-price h1 {
+    color: var(--teal-cavex);
+    font-size: 44px;
+    font-weight: 950;
+}
+
+.quote-footer {
+    text-align: center;
+    margin-top: 28px;
+    padding-top: 18px;
+    border-top: 1px solid var(--borde-cavex);
+}
+
+    .quote-footer h5 {
+        color: var(--azul-cavex);
+        margin-top: 14px;
+    }
+
+    .quote-footer p:last-child {
+        color: var(--teal-cavex);
+        font-weight: 800;
+    }

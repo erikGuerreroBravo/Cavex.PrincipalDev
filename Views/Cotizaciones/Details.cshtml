@@ -1,0 +1,124 @@
+﻿@{
+    ViewData["Title"] = "Detalle de cotización";
+}
+
+<div class="internal-header">
+    <div>
+        <span class="eyebrow">Panel interno</span>
+        <h1 class="cavex-title">CAVEX-2024-000001</h1>
+        <p class="cavex-subtitle">Dashboard administrativo con ruta, operación y desglose protegido.</p>
+    </div>
+    <div class="text-end">
+        <span class="badge-cavex">Cotizada</span>
+        <div class="mt-2 text-muted small">Creada: 15/05/2024 14:30</div>
+    </div>
+</div>
+
+<div class="delivery-panel mb-4">
+    <div>
+        <span class="dashboard-kicker">Acciones para cliente</span>
+        <p class="mb-0 text-muted">Entrega la cotización sin exponer costos internos.</p>
+    </div>
+    <div class="client-actions mt-3">
+        <a class="btn btn-cavex" href="#">Ver hoja cliente</a>
+        <a class="btn btn-pdf" href="#">Descargar PDF</a>
+        <a class="btn btn-whatsapp" href="#">Enviar por WhatsApp</a>
+        <button type="button" class="btn btn-outline-cavex">Copiar mensaje</button>
+    </div>
+</div>
+
+<div class="operation-actions mb-4">
+    <a class="btn btn-outline-cavex" href="#">Editar</a>
+    <button type="button" class="btn btn-outline-cavex">Recalcular</button>
+    <button type="button" class="btn btn-outline-cavex">Marcar enviada</button>
+    <button type="button" class="btn btn-outline-cavex">Marcar aceptada</button>
+    <button type="button" class="btn btn-outline-cavex">Duplicar</button>
+    <a class="btn btn-outline-danger" href="#">Cancelar</a>
+    <a class="btn btn-outline-cavex" asp-controller="Cotizaciones" asp-action="Index">Volver a lista</a>
+</div>
+
+<div class="cavex-card mt-4">
+    <h3 class="form-section-title">Historial de eventos</h3>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle table-cavex-compact">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Evento</th>
+                    <th>Descripción</th>
+                    <th>Usuario</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>15/05/2024 14:30</td>
+                    <td><span class="badge-cavex">Creación</span></td>
+                    <td>Cotización creada correctamente.</td>
+                    <td>ADMIN</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row g-4 mt-2">
+    <div class="col-lg-4">
+        <div class="dashboard-card h-100">
+            <span class="dashboard-kicker">Solicitante</span>
+            <h3>Juan Pérez</h3>
+            <p><strong>Celular:</strong> 55 1234 5678</p>
+            <p><strong>Correo:</strong> juan.perez@empresa.com</p>
+            <hr />
+            <p><strong>Pasajero:</strong> María López</p>
+            <p><strong>Pasajeros:</strong> 1</p>
+            <p><strong>Atención:</strong> No requiere apoyo especial</p>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="dashboard-card h-100">
+            <span class="dashboard-kicker">Ruta operativa</span>
+            <h3>Traslado Sencillo</h3>
+            <p><strong>Sucursal de salida:</strong> Base Centro</p>
+            <p><strong>Dirección:</strong> Av. Insurgentes Sur 123, CDMX</p>
+            <p><strong>Destino:</strong> Av. Reforma 222, CDMX</p>
+            <p><strong>Unidad sugerida:</strong> Sedán ejecutivo</p>
+            <p><strong>Unidad asignada:</strong> Sedán ejecutivo</p>
+            <div class="route-metrics">
+                <span>15.00 km</span>
+                <span>45.0 min</span>
+                <span>$500.00 chofer</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3">
+        <div class="price-card h-100 d-flex flex-column justify-content-center">
+            <span class="dashboard-kicker">Precio final</span>
+            <h2>$1,500.00</h2>
+            <p class="mb-0">IVA incluido</p>
+        </div>
+    </div>
+</div>
+
+<div class="cavex-card mt-4 internal-breakdown">
+    <h3 class="form-section-title">Desglose interno simulado</h3>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <tbody>
+                <tr><th>Gasolina</th><td class="text-end">$120.00</td></tr>
+                <tr><th>Mantenimiento</th><td class="text-end">$50.00</td></tr>
+                <tr><th>Depreciación</th><td class="text-end">$30.00</td></tr>
+                <tr><th>Seguro</th><td class="text-end">$40.00</td></tr>
+                <tr><th>Pago del chofer por día</th><td class="text-end">$500.00</td></tr>
+                <tr class="table-light"><th>Costo total interno</th><td class="text-end">$740.00</td></tr>
+                <tr><th>Precio con margen</th><td class="text-end">$1,293.10</td></tr>
+                <tr><th>Precio con IVA</th><td class="text-end">$1,500.00</td></tr>
+                <tr class="table-success"><th>Precio final redondeado</th><td class="text-end fw-bold">$1,500.00</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+

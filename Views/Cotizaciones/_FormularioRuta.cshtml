@@ -1,0 +1,103 @@
+<div class="cavex-card form-section-card">
+    <h3 class="form-section-title"><span class="form-section-number">4</span>Servicio y unidad</h3>
+    <div class="row g-3">
+        <div class="col-md-4">
+            <label class="form-label">Servicio</label>
+            <select name="ServicioId" id="intServicioId" class="form-select" required>
+                <option value="">Selecciona un servicio</option>
+                <option value="1" data-asistencia="false" data-tarifa="0">Traslado Sencillo</option>
+                <option value="2" data-asistencia="true" data-tarifa="200">Traslado con Asistencia</option>
+                <option value="3" data-asistencia="true" data-tarifa="500">Servicio Especial</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Unidad sugerida</label>
+            <input name="UnidadSugerida" id="strUnidadSugerida" class="form-control" readonly />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Unidad asignada</label>
+            <select name="UnidadAsignada" id="strUnidadAsignada" class="form-select">
+                <option>Sedán ejecutivo</option>
+                <option>SUV familiar</option>
+                <option>Van ejecutiva</option>
+                <option>Unidad accesible</option>
+                <option>Requiere revisión manual</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Tipo de combustible</label>
+            <select name="TipoCombustible" id="strTipoCombustible" class="form-select" required>
+                <option>Magna</option>
+                <option>Premium</option>
+                <option>Diésel</option>
+                <option>Híbrido</option>
+                <option>Eléctrico</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="cavex-card form-section-card route-card">
+    <h3 class="form-section-title"><span class="form-section-number">5</span>Sucursal y destino del traslado</h3>
+    <div class="row g-3">
+        <div class="col-md-5">
+            <label class="form-label">Sucursal de salida</label>
+            <select name="SucursalId" id="intSucursalId" class="form-select" required>
+                <option value="">Selecciona una sucursal</option>
+                <option value="1" data-direccion="Av. Insurgentes Sur 123, CDMX">Base Centro</option>
+                <option value="2" data-direccion="Av. Universidad 456, CDMX">Base Sur</option>
+            </select>
+        </div>
+        <div class="col-md-7">
+            <label class="form-label">Dirección de la sucursal seleccionada</label>
+            <input name="DireccionSucursal" id="strDireccionSucursal" class="form-control" readonly />
+        </div>
+
+        <div class="col-md-12">
+            <label class="form-label">Destino del cliente</label>
+            <input name="Destino" id="strDestino" class="form-control" placeholder="Escribe la dirección de destino solicitada por el cliente" required />
+        </div>
+        
+        <input name="DestinoLat" type="hidden" id="intDestinoLat" />
+        <input name="DestinoLng" type="hidden" id="intDestinoLng" />
+
+        <div class="col-md-12">
+            <label class="form-label">Referencias del destino</label>
+            <textarea name="ReferenciasDestino" id="strReferenciasDestino" class="form-control" rows="3" placeholder="Color de fachada, acceso, entrada, recepción, punto de encuentro o indicaciones especiales"></textarea>
+            <small class="text-muted">Agrega detalles útiles para el conductor: color de fachada, acceso, entrada, área de recepción, punto de encuentro o indicaciones especiales.</small>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Fecha del viaje</label>
+            <input name="FechaViaje" id="strFechaViaje" type="date" class="form-control" required />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Hora del viaje</label>
+            <input name="HoraViaje" id="strHoraViaje" type="time" class="form-control" required />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Distancia del traslado (km)</label>
+            <input name="DistanciaKm" id="intDistanciaKm" type="number" step="0.01" min="0.01" class="form-control" required />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Tiempo estimado (min)</label>
+            <input name="TiempoViajeMin" id="intTiempoViajeMin" type="number" step="0.1" min="0.1" class="form-control" required />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Pago del chofer por día</label>
+            <input name="PagoChoferDia" id="intPagoChoferDia" type="number" step="0.01" min="0" class="form-control" placeholder="0.00" />
+        </div>
+        <div class="col-md-8">
+            <div class="capture-summary">
+                <strong>Resumen preliminar</strong>
+                <div class="capture-summary-grid">
+                    <span>Servicio: <b id="strSummaryServicio">Sin seleccionar</b></span>
+                    <span>Sucursal: <b id="strSummarySucursal">Sin seleccionar</b></span>
+                    <span>Distancia: <b id="intSummaryDistancia">0 km</b></span>
+                    <span>Tiempo: <b id="intSummaryTiempo">0 min</b></span>
+                    <span>Unidad: <b id="strSummaryUnidad">Sin sugerencia</b></span>
+                    <span>Chofer: <b id="intSummaryChofer">$0.00</b></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

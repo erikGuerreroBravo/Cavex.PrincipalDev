@@ -1,0 +1,23 @@
+@{
+    var title = ViewData["TableTitle"] as string ?? "Resultados del módulo";
+    var subtitle = ViewData["TableSubtitle"] as string ?? "Mostrando la lista de registros actuales.";
+    var count = ViewData["TableCount"] as int? ?? 0;
+    var countLabel = ViewData["TableCountLabel"] as string ?? "registros";
+    var extraPill = ViewData["TableExtraPill"] as string ?? "Página 1";
+}
+<div class="table-toolbar">
+    <div>
+        <h4 class="m-0 text-dark">@title</h4>
+        @if (!string.IsNullOrWhiteSpace(subtitle))
+        {
+            <small class="text-muted">@subtitle</small>
+        }
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <span class="records-pill">@count @countLabel</span>
+        @if (!string.IsNullOrWhiteSpace(extraPill))
+        {
+            <span class="records-pill records-pill-soft">@extraPill</span>
+        }
+    </div>
+</div>

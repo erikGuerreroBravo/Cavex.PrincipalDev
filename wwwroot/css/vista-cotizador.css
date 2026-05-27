@@ -1,0 +1,145 @@
+﻿.price-highlight {
+    color: var(--teal-cavex);
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.price-card {
+    background: linear-gradient(135deg, #E6F7F8 0%, #FFFFFF 74%), white;
+    border: 1px solid rgba(0, 140, 149, 0.35);
+    border-radius: 20px;
+    padding: 28px;
+    text-align: center;
+}
+
+    .price-card h2 {
+        color: var(--teal-cavex);
+        font-size: 44px;
+        font-weight: 950;
+    }
+
+.quote-workspace {
+    align-items: flex-start;
+    display: grid;
+    gap: 24px;
+    grid-template-columns: minmax(0, 1fr) 340px;
+}
+
+.quote-main-column {
+    min-width: 0;
+}
+
+.quote-side-panel {
+    position: sticky;
+    top: 96px;
+}
+
+.sticky-summary {
+    margin-bottom: 0;
+}
+
+    .sticky-summary h3 {
+        color: var(--azul-cavex);
+        font-weight: 900;
+    }
+
+.summary-list {
+    display: grid;
+    gap: 10px;
+}
+
+    .summary-list div {
+        background: white;
+        border: 1px solid var(--borde-cavex);
+        border-radius: 12px;
+        padding: 11px 12px;
+    }
+
+    .summary-list span {
+        color: var(--gris);
+        display: block;
+        font-size: .78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .summary-list strong {
+        color: var(--azul-cavex);
+        display: block;
+        font-size: .95rem;
+        line-height: 1.25;
+        margin-top: 2px;
+    }
+
+.capture-summary {
+    background: linear-gradient(135deg, rgba(0, 184, 196, 0.07), rgba(255,255,255,0) 48%), #F8FAFC;
+    border: 1px solid var(--borde-cavex);
+    border-radius: 14px;
+    padding: 16px;
+}
+
+.summary-panel {
+    background: #F8FAFC;
+    border: 1px solid var(--borde-cavex);
+    border-radius: 14px;
+    padding: 18px;
+}
+
+.capture-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(140px, 1fr));
+    gap: 8px 14px;
+    margin-top: 10px;
+    color: var(--gris);
+    font-size: 14px;
+}
+
+    .capture-summary-grid b {
+        color: var(--azul-cavex);
+    }
+
+.cotizacion-folio {
+    color: var(--azul-cavex);
+    display: inline-block;
+    font-weight: 900;
+    letter-spacing: .3px;
+    white-space: nowrap;
+}
+
+.cotizacion-main-text {
+    color: var(--texto-cavex);
+    font-weight: 800;
+}
+
+.cotizacion-sub-text {
+    color: var(--gris);
+    font-size: .85rem;
+    line-height: 1.35;
+}
+
+.flow-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(120px, 1fr));
+    gap: 12px;
+}
+
+.flow-step {
+    background: #F8FAFC;
+    border: 1px solid var(--borde-cavex);
+    border-radius: 13px;
+    padding: 14px;
+    color: var(--azul-cavex);
+    font-weight: 800;
+}
+
+    .flow-step span {
+        display: inline-flex;
+        width: 28px;
+        height: 28px;
+        align-items: center;
+        justify-content: center;
+        background: var(--teal-cavex);
+        color: white;
+        border-radius: 9px;
+        margin-right: 8px;
+    }

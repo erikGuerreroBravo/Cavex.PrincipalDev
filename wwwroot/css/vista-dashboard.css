@@ -1,0 +1,105 @@
+﻿.page-hero,
+.dashboard-hero,
+.internal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    background: linear-gradient(135deg, rgba(0, 184, 196, 0.08), rgba(255,255,255,0) 42%), var(--blanco);
+    border: 1px solid var(--borde-cavex);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 24px;
+    box-shadow: 0 16px 38px rgba(6, 27, 58, 0.085);
+    position: relative;
+    overflow: hidden;
+}
+
+    .page-hero::after,
+    .dashboard-hero::after,
+    .internal-header::after {
+        content: "";
+        position: absolute;
+        right: 24px;
+        bottom: 0;
+        width: 190px;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, var(--cyan-cavex), var(--teal-cavex));
+        opacity: .8;
+    }
+
+.eyebrow,
+.dashboard-kicker {
+    display: inline-flex;
+    color: var(--teal-cavex);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.cavex-card,
+.dashboard-card,
+.cavex-card-soft {
+    background: var(--blanco);
+    border: 1px solid var(--borde-cavex);
+    border-radius: 16px;
+    padding: 26px;
+    box-shadow: 0 12px 30px rgba(6, 27, 58, 0.07);
+    margin-bottom: 24px;
+}
+
+.dashboard-card {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+
+    .dashboard-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(0, 140, 149, 0.28);
+        box-shadow: 0 18px 44px rgba(6, 27, 58, 0.11);
+    }
+
+.dashboard-emphasis {
+    background: linear-gradient(140deg, rgba(6, 27, 58, .96), rgba(11, 31, 58, .92)), var(--azul-cavex);
+    border-color: rgba(0, 184, 196, .38);
+    color: white;
+}
+
+    .dashboard-emphasis h3,
+    .dashboard-emphasis .dashboard-kicker {
+        color: white;
+    }
+
+    .dashboard-emphasis p {
+        color: rgba(255,255,255,.78);
+    }
+
+.dashboard-icon {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    margin-bottom: 18px;
+    background: linear-gradient(135deg, var(--azul-cavex), var(--teal-cavex));
+    color: white;
+    font-size: 13px;
+    font-weight: 950;
+    box-shadow: 0 10px 22px rgba(0, 140, 149, .22);
+}
+
+.dashboard-card h3 {
+    color: var(--azul-cavex);
+    font-size: 22px;
+    font-weight: 850;
+}
+
+.dashboard-card p {
+    color: var(--gris);
+}

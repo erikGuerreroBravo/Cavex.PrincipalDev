@@ -1,0 +1,41 @@
+@{
+    ViewData["Title"] = "Nueva cotización";
+    ViewData["HeaderEyebrow"] = "Operación logística CAVEX";
+    ViewData["HeaderTitle"] = "Nueva cotización";
+    ViewData["HeaderSubtitle"] = "Captura el servicio durante la llamada, calcula ruta desde sucursal y genera precio final.";
+    ViewData["HeaderBadgeText"] = "Cotizador operativo";
+}
+
+<partial name="_PageHeader" />
+
+<div class="progress-strip mb-4">
+    <span>1 Solicitante</span>
+    <span>2 Pasajero</span>
+    <span>3 Servicio</span>
+    <span>4 Ruta</span>
+    <span>5 Costos</span>
+    <span>6 Cotización</span>
+</div>
+
+<form action="#" class="quote-form quote-workspace">
+    <div class="quote-main-column">
+        <partial name="_FormularioSolicitante" />
+        <partial name="_FormularioRuta" />
+        <partial name="_FormularioCostos" />
+
+        <div class="form-action-bar">
+            <a class="btn btn-outline-cavex" asp-controller="Cotizaciones" asp-action="Index">Cancelar</a>
+            <button type="submit" class="btn btn-cavex">Calcular cotización</button>
+        </div>
+    </div>
+
+    <partial name="_SidebarResumen" />
+</form>
+
+@section Scripts {
+    <script src="~/js/validaciones.js"></script>
+    <script src="~/js/cotizaciones-operacion.js"></script>
+}
+
+
+

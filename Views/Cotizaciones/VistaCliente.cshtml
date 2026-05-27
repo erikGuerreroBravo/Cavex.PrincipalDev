@@ -1,0 +1,112 @@
+﻿@{
+    ViewData["Title"] = "Cotización para cliente";
+}
+
+<div class="no-print d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="cavex-title">Hoja para cliente</h1>
+        <p class="cavex-subtitle">Documento ejecutivo listo para imprimir o guardar como PDF.</p>
+    </div>
+    <div class="client-actions">
+        <a class="btn btn-outline-cavex" href="/Cotizaciones/Details/1">Volver al resultado</a>
+        <a class="btn btn-pdf" href="#">Descargar PDF</a>
+        <a class="btn btn-whatsapp" href="#" target="_blank" rel="noopener">Enviar por WhatsApp</a>
+        <button type="button" class="btn btn-outline-cavex copy-whatsapp-message">Copiar mensaje</button>
+        <button type="button" class="btn btn-cavex" onclick="window.print()">Imprimir / Guardar PDF</button>
+    </div>
+</div>
+
+<div class="quote-sheet">
+    <div class="quote-header">
+        <div>
+            <div class="quote-logo-wrap">
+                <img class="cavex-logo-img" src="~/img/cavex-logo.png" alt="Grupo CAVEX" onerror="this.classList.add('d-none'); this.nextElementSibling.classList.remove('d-none');" />
+                <div class="quote-logo d-none">Grupo <span>CAVEX</span></div>
+            </div>
+            <p class="text-muted mb-0">Tu destino, nuestra prioridad</p>
+        </div>
+        <div class="quote-meta">
+            <strong>Cotización No.</strong>
+            <h3>CAVEX-2024-000001</h3>
+            <small>Fecha: 15/05/2024</small>
+            <br />
+            <small>Estado: Cotizada</small>
+        </div>
+    </div>
+
+    <h2 class="quote-title">COTIZACIÓN DE SERVICIO</h2>
+
+    <div class="quote-grid">
+        <div>
+            <p><strong>Solicitante:</strong> Juan Pérez</p>
+            <p><strong>Pasajero:</strong> María López</p>
+            <p><strong>Cantidad de pasajeros:</strong> 1</p>
+        </div>
+        <div class="quote-validity">
+            <strong>Vigencia</strong>
+            <span>5 días hábiles</span>
+        </div>
+    </div>
+
+    <div class="quote-section">
+        <h4>Resumen del servicio</h4>
+        <table class="table table-borderless mb-0">
+            <tr><td><strong>Servicio contratado:</strong></td><td>Traslado Sencillo</td></tr>
+            <tr><td><strong>Sucursal de salida:</strong></td><td>Base Centro</td></tr>
+            <tr><td><strong>Destino:</strong></td><td>Av. Reforma 222, CDMX</td></tr>
+            <tr><td><strong>Fecha y hora del viaje:</strong></td><td>16/05/2024, 14:00</td></tr>
+            <tr><td><strong>Distancia aproximada:</strong></td><td>15.00 km</td></tr>
+            <tr><td><strong>Tiempo estimado:</strong></td><td>45.0 minutos</td></tr>
+            <tr><td><strong>Unidad asignada:</strong></td><td>Sedán ejecutivo</td></tr>
+        </table>
+    </div>
+
+    <div class="row g-4 mt-2">
+        <div class="col-md-7">
+            <div class="quote-section h-100">
+                <h4>Servicios incluidos</h4>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">Traslado privado programado</li>
+                    <li class="mb-2">Tiempo estimado de traslado: 45.0 minutos</li>
+                    <li class="mb-2">Vehículo con seguro y rastreo</li>
+                    <li class="mb-2">Conductor capacitado y trato humano</li>
+                    <li class="mb-2">Precio cerrado para el servicio descrito</li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="quote-price h-100 d-flex flex-column justify-content-center">
+                <p class="mb-1"><strong>PRECIO TOTAL</strong></p>
+                <h1>$1,500.00</h1>
+                <strong>MXN</strong>
+                <p class="mb-0 mt-2">IVA incluido</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="quote-section mt-4">
+        <h4>Condiciones</h4>
+        <ul class="mb-0">
+            <li>Cotización sujeta a disponibilidad.</li>
+            <li>Precio válido según los datos capturados.</li>
+            <li>Cambios de destino pueden modificar el precio.</li>
+            <li>El conductor no recibe efectivo.</li>
+            <li>Pagos únicamente por medios oficiales.</li>
+            <li>Servicio de traslado privado no médico.</li>
+        </ul>
+    </div>
+
+    <div class="quote-contact-box mt-4">
+        <strong>Contacto Grupo CAVEX</strong>
+        <div>WhatsApp: 773 150 6305</div>
+        <div>Correo: grupocavex18@gmail.com</div>
+    </div>
+
+    <div class="quote-footer">
+        <p class="mb-1">WhatsApp: 773 150 6305 | grupocavex18@gmail.com</p>
+        <h5>Gracias por elegir Grupo CAVEX.</h5>
+        <p>Tu destino, nuestra prioridad.</p>
+    </div>
+</div>
+
+

@@ -1,0 +1,18 @@
+@model string
+@{
+    var text = string.IsNullOrWhiteSpace(Model) ? "Sin estado" : Model;
+    var cssClass = text switch
+    {
+        "Enviada" => "badge-info",
+        "Aceptada" => "badge-success",
+        "Cancelada" => "badge-danger",
+        "Vencida" => "badge-muted",
+        "Activo" => "badge-active",
+        "Activa" => "badge-active",
+        "Inactivo" => "badge-inactive",
+        "Inactiva" => "badge-inactive",
+        _ => "badge-cavex"
+    };
+}
+
+<span class="@cssClass">@text</span>

@@ -1,0 +1,97 @@
+﻿@media (max-width: 992px) {
+    .cavex-container {
+        padding: 22px;
+    }
+
+    .page-hero,
+    .dashboard-hero,
+    .internal-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .flow-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .quote-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .capture-summary-grid {
+        grid-template-columns: repeat(2, minmax(130px, 1fr));
+    }
+
+    .quote-workspace {
+        grid-template-columns: 1fr;
+    }
+
+    .quote-side-panel {
+        position: static;
+    }
+}
+
+@media (max-width: 640px) {
+    .cavex-navbar {
+        padding: 16px;
+    }
+
+    .cavex-nav a {
+        font-size: 13px;
+        padding: 8px 10px;
+    }
+
+    .cavex-title {
+        font-size: 28px;
+    }
+
+    .quote-sheet {
+        padding: 24px;
+    }
+
+        .quote-sheet::before {
+            margin: -24px -24px 24px;
+        }
+
+    .quote-header {
+        flex-direction: column;
+    }
+
+    .quote-meta {
+        text-align: left;
+    }
+
+    .flow-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .capture-summary-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media print {
+    .no-print,
+    .cavex-navbar,
+    .cavex-footer,
+    footer {
+        display: none !important;
+    }
+
+    body {
+        background: white !important;
+    }
+
+    .cavex-container {
+        padding: 0 !important;
+        width: 100% !important;
+    }
+
+    .quote-sheet {
+        box-shadow: none !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+        padding: 24px !important;
+    }
+}

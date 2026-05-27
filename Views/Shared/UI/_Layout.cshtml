@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Grupo CAVEX</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/layout-principal.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/componentes.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/formularios.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/vista-dashboard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/vista-cotizador.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/vista-login.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/vista-cliente.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/responsivo.css" asp-append-version="true" />
+</head>
+
+<body>
+    <header class="cavex-navbar">
+        <div class="container-fluid d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <a class="cavex-brand" asp-controller="Home" asp-action="Index">
+                <img class="cavex-brand-logo" src="~/img/cavex-logo.png" alt="Grupo CAVEX" />
+                <span class="cavex-brand-text">Grupo <span>CAVEX</span></span>
+            </a>
+
+            <nav class="cavex-nav">
+                <a asp-controller="Home" asp-action="Index">Panel interno</a>
+                <a asp-controller="Cotizaciones" asp-action="Index">Cotizaciones</a>
+                <a asp-controller="Cotizaciones" asp-action="Create">Nueva cotización</a>
+                <a asp-controller="Servicios" asp-action="Index">Servicios</a>
+                <a asp-controller="Sucursales" asp-action="Index">Sucursales</a>
+                <a asp-controller="ParametrosCosto" asp-action="Index">Parámetros</a>
+                <span class="nav-user">
+                    Usuario Demo
+                    <small>Administrador</small>
+                </span>
+                <form method="post" asp-controller="Account" asp-action="Logout" class="m-0">
+                    <button type="submit" class="nav-logout">Cerrar sesión</button>
+                </form>
+            </nav>
+        </div>
+    </header>
+
+    <main class="cavex-container">
+        @RenderBody()
+    </main>
+
+    <footer class="cavex-footer">
+        <small>&copy; 2026 - Grupo CAVEX | Cotizador interno de traslados seguros</small>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
