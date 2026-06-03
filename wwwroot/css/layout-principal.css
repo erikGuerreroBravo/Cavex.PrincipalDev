@@ -1,4 +1,4 @@
-﻿:root {
+:root {
     --azul-cavex: #061B3A;
     --azul-ejecutivo: #0B1F3A;
     --teal-cavex: #008C95;
@@ -53,12 +53,9 @@ body {
 }
 
 .cavex-brand-logo {
-    background: white;
-    border-radius: 10px;
-    max-height: 44px;
-    max-width: 138px;
+    max-height: 64px;
+    max-width: 180px;
     object-fit: contain;
-    padding: 5px 8px;
 }
 
 .cavex-brand span {

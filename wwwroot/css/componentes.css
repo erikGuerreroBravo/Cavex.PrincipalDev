@@ -1,37 +1,51 @@
-﻿.btn-cavex {
-    background: linear-gradient(135deg, var(--azul-cavex), #0B2D5C);
+.btn-cavex {
+    background: var(--azul-cavex);
     color: white;
     border: 1px solid var(--azul-cavex);
     border-radius: 12px;
     padding: 12px 22px;
     font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
 }
 
     .btn-cavex:hover {
-        background: #0D2B57;
-        border-color: #0D2B57;
-        color: white;
+        background: var(--teal-cavex);
+        border-color: var(--teal-cavex);
+        color: white !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 140, 149, 0.2);
     }
 
 .btn-outline-cavex {
     color: var(--azul-cavex);
-    background: white;
+    background: transparent;
     border: 1px solid var(--azul-cavex);
     border-radius: 12px;
     padding: 12px 22px;
     font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
 }
 
     .btn-outline-cavex:hover {
         background: var(--azul-cavex);
-        color: white;
+        color: white !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(6, 27, 58, 0.15);
     }
 
 .btn-outline-danger {
     border-radius: 12px;
     padding: 12px 22px;
     font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
 }
+
+    .btn-outline-danger:hover {
+        transform: translateY(-1px);
+    }
 
 .badge-cavex,
 .badge-active,
@@ -347,18 +361,23 @@
     color: white;
     font-weight: 800;
     padding: 12px 18px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
 }
 
     .btn-whatsapp:hover {
         background: #0F766E;
         border-color: #0F766E;
-        color: white;
+        color: white !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(18, 140, 126, 0.2);
     }
 
     .btn-whatsapp:disabled {
         background: #D1D5DB;
         border-color: #D1D5DB;
         color: #6B7280;
+        cursor: not-allowed;
     }
 
 .btn-pdf {
@@ -368,10 +387,14 @@
     color: white;
     font-weight: 800;
     padding: 12px 18px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
 }
 
     .btn-pdf:hover {
         background: #007780;
         border-color: #007780;
-        color: white;
+        color: white !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 140, 149, 0.2);
     }

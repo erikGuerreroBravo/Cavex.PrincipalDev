@@ -1,0 +1,48 @@
+@{
+    Layout = "_LayoutAuth";
+    ViewData["Title"] = "¿Olvidaste tu contraseña?";
+}
+
+<div class="login-card">
+    <div class="login-logo-container">
+        <img src="~/img/logocavex.jpeg" class="login-logo-img logo-cavex" alt="CAVEX Logo" />
+    </div>
+
+    <div class="login-header">
+        <h1 class="login-title">Recuperar Acceso</h1>
+        <p class="login-subtitle">Ingresa tu correo para restablecer contraseña</p>
+    </div>
+
+    <form action="#" class="login-form">
+        <div class="mb-4">
+            <label class="form-label" for="strEmail">Correo electrónico</label>
+            <input name="Email" id="strEmail" type="email" class="form-control" autocomplete="username" placeholder="correo@grupocavex.local" required />
+        </div>
+
+        <button type="submit" class="btn btn-auth w-100">Enviar enlace</button>
+        
+        <div id="successAlert" class="alert alert-success mt-3 d-none text-center" role="alert" style="border-radius: 15px; font-weight: 600; background-color: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #10B981; font-size: 14px; text-shadow: none;">
+            Enlace enviado a tu correo. Revisa tus mensajes.
+        </div>
+    </form>
+
+    <div class="auth-footer-links">
+        <a asp-controller="Auth" asp-action="Login">Volver a iniciar sesión</a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.querySelector(".login-form");
+            const successAlert = document.getElementById("successAlert");
+            const submitBtn = form.querySelector("button[type='submit']");
+
+            form.addEventListener("submit", function (event) {
+                event.preventDefault();
+                successAlert.classList.remove("d-none");
+                submitBtn.disabled = true;
+            });
+        });
+    </script>
+}
