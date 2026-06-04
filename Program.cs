@@ -1,4 +1,9 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Cavex.Principal.Data;
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<CavexPrincipalContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("CavexPrincipalContext") ?? throw new InvalidOperationException("Connection string 'CavexPrincipalContext' not found.")));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews()
