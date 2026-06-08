@@ -12,10 +12,56 @@ function togglePasswordVisibility(inputId, btn) {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+    const emailInput = document.getElementById("strEmail");
+    const registerForm = document.querySelector(".login-form");
+    const allowedEmailDomains = ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com'];
+
+    function validateEmailDomain(email) {
+        const val = email.trim().toLowerCase();
+        if (!val) return true;
+        const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!regex.test(val)) return false;
+        
+        const domain = val.split('@')[1];
+        return allowedEmailDomains.includes(domain);
+    }
+
+    if (emailInput) {
+        const checkEmail = () => {
+            const val = emailInput.value.trim();
+            if (val === '') {
+                emailInput.setCustomValidity('');
+                return;
+            }
+            if (validateEmailDomain(val)) {
+                emailInput.setCustomValidity('');
+            } else {
+                emailInput.setCustomValidity('Solo se permiten correos de gmail.com, hotmail.com, outlook.com o yahoo.com.');
+            }
+        };
+        emailInput.addEventListener('input', checkEmail);
+        emailInput.addEventListener('blur', checkEmail);
+        checkEmail();
+    }
+
+    // Interceptar submit en la fase de captura para bloquear envíos si el email es inválido
+    if (registerForm) {
+        registerForm.addEventListener("submit", function (event) {
+            if (emailInput) {
+                const val = emailInput.value.trim();
+                if (val !== '' && !validateEmailDomain(val)) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    alert("Solo se permiten correos de gmail.com, hotmail.com, outlook.com o yahoo.com.");
+                    emailInput.focus();
+                }
+            }
+        }, { capture: true });
+    }
+
     // 1. Lógica de validación de contraseña en Registro
     const passwordInput = document.getElementById("strPassword");
     const confirmInput = document.getElementById("strConfirmPassword");
-    const registerForm = document.querySelector(".login-form");
 
     // Verificar si estamos en la vista de registro (donde existen los requisitos)
     const passwordReqs = document.getElementById("passwordReqs");

@@ -79,6 +79,28 @@ document.addEventListener('DOMContentLoaded', () => {
         setVal('intSideChofer', chofVal);
     }
 
+    const requiereAtencionSelect = document.getElementById('strRequiereAtencionEspecial');
+    const atencionBloque = document.getElementById('divAtencionEspecial');
+
+    function actualizarAtencionEspecial() {
+        if (!atencionBloque || !requiereAtencionSelect) return;
+        const requiere = requiereAtencionSelect.value === 'true';
+        atencionBloque.style.display = requiere ? 'block' : 'none';
+        
+        if (!requiere) {
+            const tipoAtencion = document.getElementById('strTipoAtencionEspecial');
+            if (tipoAtencion) {
+                tipoAtencion.value = '';
+                tipoAtencion.classList.remove('is-valid', 'is-warning', 'is-invalid');
+            }
+            const obsAtencion = document.getElementById('strObservacionesAtencion');
+            if (obsAtencion) {
+                obsAtencion.value = '';
+                obsAtencion.classList.remove('is-valid', 'is-warning', 'is-invalid');
+            }
+        }
+    }
+
     if (registrarDireccionSi) registrarDireccionSi.addEventListener('change', actualizarDireccionSolicitante);
     if (registrarDireccionNo) registrarDireccionNo.addEventListener('change', actualizarDireccionSolicitante);
     if (pasajerosInput) pasajerosInput.addEventListener('input', sugerirUnidad);
@@ -89,8 +111,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tiempoInput) tiempoInput.addEventListener('input', actualizarResumen);
     if (unidadAsignada) unidadAsignada.addEventListener('change', actualizarResumen);
     if (pagoChoferInput) pagoChoferInput.addEventListener('input', actualizarResumen);
+    if (requiereAtencionSelect) requiereAtencionSelect.addEventListener('change', actualizarAtencionEspecial);
 
     actualizarDireccionSolicitante();
+    actualizarAtencionEspecial();
     sugerirUnidad();
     actualizarSucursal();
     actualizarResumen();

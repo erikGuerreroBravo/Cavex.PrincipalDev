@@ -398,3 +398,125 @@
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(0, 140, 149, 0.2);
     }
+
+/* Componente Stepper Global con Estados de Validación */
+.stepper {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    /* Estado normal: flujo estándar */
+    position: relative;
+    z-index: 100;
+    background: rgba(246, 248, 251, 0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 10px 14px;
+    border-radius: 16px;
+    border: 1px solid var(--borde-cavex);
+    box-shadow: 0 4px 18px rgba(6, 27, 58, 0.08);
+    margin-bottom: 4px;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+/* Estado flotante: cuando el stepper sale del viewport superior */
+.stepper.is-floating {
+    position: fixed;
+    top: var(--navbar-h, 92px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(1480px, calc(100% - 56px));  /* mismo ancho que .cavex-container (padding 28px x2) */
+    border-color: rgba(0, 140, 149, 0.3);
+    box-shadow: 0 8px 32px rgba(6, 27, 58, 0.16), 0 0 0 1px rgba(0,184,196,0.1);
+    animation: stepperSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes stepperSlideIn {
+    from { transform: translateX(-50%) translateY(-10px); opacity: 0.7; }
+    to   { transform: translateX(-50%) translateY(0);     opacity: 1;   }
+}
+
+/* Placeholder para evitar el salto de layout cuando el stepper se vuelve fixed */
+.stepper-placeholder {
+    display: none;
+}
+.stepper-placeholder.visible {
+    display: block;
+}
+
+.step {
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: 1px solid var(--borde-cavex);
+    font-size: .85rem;
+    font-weight: 700;
+    color: var(--gris);
+    background: var(--blanco, #ffffff);
+    cursor: default;
+    transition: all 0.2s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Estado Activo Neutro */
+.step.active {
+    background: var(--azul-cavex);
+    color: white;
+    border-color: var(--azul-cavex);
+    box-shadow: 0 4px 12px rgba(6, 27, 58, 0.15);
+}
+
+/* Estado 1: Completado (Éxito / Verde) */
+.step.success {
+    background: rgba(16, 185, 129, 0.08);
+    color: #047857;
+    border-color: rgba(16, 185, 129, 0.35);
+}
+.step.success.active {
+    background: var(--exito);
+    color: white;
+    border-color: var(--exito);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+/* Estado 2: Falta información (Advertencia / Naranja) */
+.step.warning {
+    background: rgba(245, 158, 11, 0.08);
+    color: #B45309;
+    border-color: rgba(245, 158, 11, 0.35);
+}
+.step.warning.active {
+    background: var(--advertencia);
+    color: white;
+    border-color: var(--advertencia);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+}
+
+/* Estado 3: Error de validación mayor (Error / Rojo) */
+.step.error {
+    background: rgba(239, 68, 68, 0.08);
+    color: #B91C1C;
+    border-color: rgba(239, 68, 68, 0.35);
+}
+.step.error.active {
+    background: var(--error);
+    color: white;
+    border-color: var(--error);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+/* Campos de entrada con estados de validación */
+.form-control.is-warning, .form-select.is-warning {
+    border-color: var(--advertencia) !important;
+    box-shadow: 0 0 0 0.2rem rgba(245, 158, 11, 0.25) !important;
+}
+
+.form-control.is-invalid, .form-select.is-invalid {
+    border-color: var(--error) !important;
+    box-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.25) !important;
+}
+
+.form-control.is-valid, .form-select.is-valid {
+    border-color: var(--exito) !important;
+    box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.25) !important;
+}
