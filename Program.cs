@@ -1,3 +1,4 @@
+
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Cavex.Principal.Data;
@@ -17,6 +18,20 @@ builder.Services.Configure<FormOptions>(options =>
 
 builder.Services.AddDbContext<CavexPrincipalContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("CavexPrincipalContext") ?? throw new InvalidOperationException("Connection string 'CavexPrincipalContext' not found.")));
+
+using Cavex.Principal.Data;
+using Cavex.Principal.Infraesctructure.Settings;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<ApiSettings>(
+    builder.Configuration.GetSection("ApiSettings"));
+
+//builder.Services.AddDbContext<CavexPrincipalContext>(options =>
+// options.UseSqlServer(builder.Configuration.GetConnectionString("CavexPrincipalContext") ?? throw new InvalidOperationException("Connection string 'CavexPrincipalContext' not found.")));
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews()
