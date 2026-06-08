@@ -1,0 +1,483 @@
+@model Cavex.Principal.ViewModels.CrearEmpleadoViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Agregar nuevo empleado";
+    ViewData["HeaderEyebrow"] = "Gestión de personal";
+    ViewData["HeaderSubtitle"] = "Captura los datos del trabajador y completa cada sección para registrarlo en el sistema.";
+    ViewData["HeaderBadgeText"] = "Registro operativo";
+    Layout = "~/Views/Shared/UI/_Layout.cshtml";
+}
+
+@section Head {
+    <link rel="stylesheet" href="~/css/vista-empleado.css" asp-append-version="true" />
+}
+
+<div class="empleado-main">
+    
+    <partial name="~/Views/Shared/UI/_PageHeader.cshtml" />
+
+    
+    <div class="stepper">
+        <span class="step active">1 Datos personales</span>
+        <span class="step">2 Datos académicos</span>
+        <span class="step">3 Experiencia</span>
+        <span class="step">4 Dirección</span>
+        <span class="step">5 Condiciones laborales</span>
+        <span class="step">6 Referencias personales</span>
+        <span class="step">7 Documentos laborales</span>
+    </div>
+
+     <form id="form-empleado" action="/Empleado/CrearEmpleado" method="post" enctype="multipart/form-data" autocomplete="off" novalidate>
+        <div class="cards-col">
+            <div class="empleado-card">
+                <div class="card-title">
+                    <span class="card-num">1</span>
+                    <h2>Datos personales</h2>
+                </div>
+
+                <div class="form-row cols-3">
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input asp-for="Nombre" type="text" id="txtNombre" placeholder="Nombre del Empleado" autocomplete="off" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$" />
+                    </div>
+                    <div class="form-group">
+                        <label>Apellido paterno</label>
+                        <input asp-for="ApellidoPaterno" type="text" id="txtApellidoPaterno" placeholder="Apellido Paterno" autocomplete="off" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$" />
+                    </div>
+                    <div class="form-group">
+                        <label>Apellido materno</label>
+                        <input asp-for="ApellidoMaterno" type="text" id="txtApellidoMaterno" placeholder="Apellido Materno" autocomplete="off" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]*$" />
+                    </div>
+                </div>
+
+                <div class="form-row cols-3">
+                    <div class="form-group">
+                        <label>Fecha de nacimiento</label>
+                        <input asp-for="FechaNacimiento" type="date" id="txtFechaNacimiento" autocomplete="off" min="1900-01-01" required />
+                    </div>
+                    <div class="form-group">
+                        <label>RFC</label>
+                        <input asp-for="Rfc" type="text" id="txtRFC" placeholder="ABCD123456ABC" maxlength="13" autocomplete="off" required pattern="^[A-Z&Ññ]{3,4}[0-9]{6}[A-Z0-9]{3}$" />
+                    </div>
+                    <div class="form-group">
+                        <label>CURP</label>
+                        <input asp-for="Curp" type="text" id="txtCURP" placeholder="ABCD123456ABCDF00" maxlength="18" autocomplete="off" required pattern="^[A-Z]{4}[0-9]{6}[HM][A-Z]{5}[A-Z0-9]{2}$" />
+                    </div>
+                </div>
+
+                <div class="form-row cols-3">
+                    <div class="form-group">
+                        <label>Edad</label>
+                        <input asp-for="Edad" type="text" id="txtEdad" placeholder="Se calcula automáticamente" autocomplete="off" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label>Género</label>
+                        <select asp-for="Genero" id="idGenero" required>  
+                            <option value="" disabled selected>Seleccionar Genero</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Estado civil</label>
+                        <select asp-for="EstadoCivil" id="ddlEstadoCivil" required>
+                            <option value="" disabled selected>Seleccionar estado civil</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row cols-3">
+                    <div class="form-group">
+                        <label>Nacionalidad</label>
+                        <select asp-for="Nacionalidad" id="ddlNacionalidad" required>
+                            <option value="" disabled selected>Seleccionar nacionalidad</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Correo electrónico</label>
+                        <input asp-for="Correo" type="email" id="txtCorreo" placeholder="correo@ejemplo.com" autocomplete="off" required pattern="^[a-zA-Z0-9._%+-]+@@(gmail\.com|hotmail\.com|outlook\.com|yahoo\.com)$" />
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono fijo</label>
+                        <input asp-for="TelefonoFijo" type="tel" id="txtTelefonoFijo" placeholder="0000000000" maxlength="10" autocomplete="off" pattern="^[0-9]{10}$" />
+                    </div>
+                </div>
+
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label>Teléfono celular</label>
+                        <input asp-for="TelefonoCelular" type="tel" id="txtTelefonoCelular" placeholder="0000000000" maxlength="10" autocomplete="off" required pattern="^[0-9]{10}$" />
+                    </div>
+                    <div class="form-group">
+                        <label>Número de Seguridad Social</label>
+                        <input asp-for="Nss" type="text" id="txtNSS" placeholder="00000000000" maxlength="11" autocomplete="off" required pattern="^[0-9]{11}$" />
+                    </div>
+                </div>
+            </div>
+
+        
+        <div class="empleado-card">
+            <div class="card-title">
+                <span class="card-num">2</span>
+                <h2>Datos académicos</h2>
+            </div>
+
+            <div class="form-row cols-3">
+                <div class="form-group">
+                    <label>Nivel de estudios</label>
+                    <input asp-for="NivelEstudios" type="text" id="txtNivelEstudios" placeholder="Ej. Licenciatura" autocomplete="off" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$" />
+                </div>
+                <div class="form-group">
+                    <label>Institución</label>
+                    <input asp-for="Institucion" type="text" id="txtInstitucion" placeholder="Nombre de la institución" autocomplete="off" required pattern="^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ\s.,;:'&quot;()\-]+$" />
+                </div>
+                <div class="form-group">
+                    <label>Carrera</label>
+                    <input asp-for="Carrera" type="text" id="txtCarrera" placeholder="Nombre de la carrera" autocomplete="off" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$" />
+                </div>
+            </div>
+
+            <div class="form-row cols-3">
+                <div class="form-group">
+                    <label>Estatus</label>
+                    <input asp-for="Estatus" type="text" id="txtEstatus" placeholder="Ej. Concluido, En curso..." autocomplete="off" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$" />
+                </div>
+                <div class="form-group">
+                    <label>Fecha de inicio</label>
+                    <input asp-for="FechaInicioEstudios" type="date" id="txtFechaInicioEstudios" autocomplete="off" required />
+                </div>
+                <div class="form-group">
+                    <label>Fecha de finalización</label>
+                    <input asp-for="FechaFinEstudios" type="date" id="txtFechaFinEstudios" autocomplete="off" required />
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="empleado-card">
+            <div class="card-title">
+                <span class="card-num">3</span>
+                <h2>Experiencia laboral</h2>
+            </div>
+
+            <div id="experiencias-container">
+                <div class="experiencia-item">
+                    <div class="experiencia-header">
+                        <span class="experiencia-title">Experiencia laboral</span>
+                    </div>
+                    <div class="form-row cols-3">
+                        <div class="form-group">
+                            <label>Empresa</label>
+                            <input type="text" class="txtExpEmpresa" placeholder="Nombre de la empresa" autocomplete="off" required pattern="^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ\s.,;:'&quot;()\-]+$" />
+                        </div>
+                        <div class="form-group">
+                            <label>Puesto</label>
+                            <input type="text" class="txtExpPuesto" placeholder="Puesto desempeñado" autocomplete="off" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$" />
+                        </div>
+                        <div class="form-group">
+                            <label>Área</label>
+                            <input type="text" class="txtExpArea" placeholder="Área de trabajo" autocomplete="off" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$" />
+                        </div>
+                    </div>
+                    <div class="form-row cols-3">
+                        <div class="form-group">
+                            <label>Fecha inicio</label>
+                            <input type="date" class="txtExpFechaInicio" autocomplete="off" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha fin </label>
+                            <input type="date" class="txtExpFechaFin" autocomplete="off" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Sueldo mensual</label>
+                            <input type="number" class="txtExpSueldo" placeholder="$0.00" autocomplete="off" required min="1" />
+                        </div>
+                    </div>
+                    <div class="form-row cols-1">
+                        <div class="form-group">
+                            <label>Motivo de salida </label>
+                            <input type="text" class="txtExpMotivo" placeholder="Descripción del motivo" autocomplete="off" required pattern="^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ\s.,;:'&quot;()\-]+$" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="btn-agregar-exp" onclick="agregarExperiencia()">+ Agregar otra experiencia</button>
+        </div>
+
+        
+        <div class="empleado-card">
+            <div class="card-title">
+                <span class="card-num">4</span>
+                <h2>Dirección</h2>
+            </div>
+
+            <div class="form-row cols-3">
+                <div class="form-group">
+                    <label>País</label>
+                    <select asp-for="Pais" id="ddlPais" required>
+                        <option value="" disabled selected>Seleccionar país</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Estado</label>
+                    <select asp-for="Estado" id="ddlEstado" required>
+                        <option value="" disabled selected>Seleccionar estado</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Colonia</label>
+                    <select asp-for="Colonia" id="ddlColonia" required>
+                        <option value="" disabled selected>Seleccionar colonia</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row cols-3">
+                <div class="form-group">
+                    <label>Código postal</label>
+                    <input asp-for="CodigoPostal" type="text" id="txtCodigoPostal" placeholder="00000" maxlength="5" autocomplete="off" required pattern="^[0-9]{5}$" />
+                </div>
+                <div class="form-group">
+                    <label>Número exterior</label>
+                    <input asp-for="NumeroExterior" type="number" id="txtNumeroExterior" placeholder="Núm. ext." autocomplete="off" required min="1" />
+                </div>
+                <div class="form-group">
+                    <label>Número interior </label>
+                    <input asp-for="NumeroInterior" type="text" id="txtNumeroInterior" placeholder="Núm. int." autocomplete="off" pattern="^[a-zA-Z0-9\s\-]*$" />
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="empleado-card">
+            <div class="card-title">
+                <span class="card-num">5</span>
+                <h2>Condiciones laborales</h2>
+            </div>
+
+            <div class="form-row cols-2">
+                <div class="form-group">
+                    <label>Sueldo mensual</label>
+                    <input asp-for="SueldoMensual" type="number" id="txtSueldoMensual" placeholder="$0.00" autocomplete="off" required min="1" />
+                </div>
+                <div class="form-group">
+                    <label>Área laboral</label>
+                        <select asp-for="AreaLaboral" id="ddlAreaLaboral" required>
+                            <option value="" disabled selected>Seleccionar área</option>
+                        </select>
+                </div>
+            </div>
+
+            <div class="form-row cols-2">
+                <div class="question-group">
+                    <span class="question-text">¿El empleado tiene cercanía a su vivienda?</span>
+                    <input asp-for="ViveEnLugarDeTrabajo" type="checkbox" id="chkVivienda" />
+                </div>
+                <div class="question-group">
+                    <span class="question-text">¿Tiene disponibilidad para viajar?</span>
+                    <input asp-for="DisponibilidadDeViaje" type="checkbox" id="chkViaje" />
+                </div>
+            </div>
+
+            <div class="form-row cols-2">
+                <div class="question-group">
+                    <span class="question-text">¿Tiene experiencia en el área?</span>
+                    <input asp-for="ExperienciaEnElCampo" type="checkbox" id="chkExp" />
+                </div>
+                <div class="question-group">
+                    <span class="question-text">¿Tiene experiencia en el puesto?</span>
+                    <input asp-for="ExperienciaEnElPuesto" type="checkbox" id="chkExpPuesto" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta 6: Referencias personales -->
+        <div class="empleado-card">
+            <div class="card-title">
+                <span class="card-num">6</span>
+                <h2>Referencias personales</h2>
+            </div>
+
+            <div id="referencias-container">
+                <div class="referencia-item">
+                    <div class="experiencia-header">
+                        <span class="experiencia-title">Referencia personal</span>
+                    </div>
+                    <div class="form-row cols-3">
+                        <div class="form-group">
+                            <label>Nombre completo</label>
+                            <input type="text" class="txtRefNombre" placeholder="Nombre completo" autocomplete="off" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$" />
+                        </div>
+                        <div class="form-group">
+                            <label>Parentesco</label>
+                            <input type="text" class="txtRefParentesco" placeholder="Parentesco / Relación" autocomplete="off" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$" />
+                        </div>
+                        <div class="form-group">
+                            <label>Teléfono celular</label>
+                            <input type="tel" class="txtRefTelefono" placeholder="0000000000" maxlength="10" autocomplete="off" required pattern="^[0-9]{10}$" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="btn-agregar-ref" onclick="agregarReferencia()">+ Agregar otra referencia</button>
+        </div>
+
+        <!-- Tarjeta 7: Documentos laborales -->
+        <div class="empleado-card">
+            <div class="card-title">
+                <span class="card-num">7</span>
+                <h2>Documentos laborales</h2>
+            </div>
+
+            <div class="document-grid">
+                <!-- Identificación Oficial -->
+                <div class="document-upload-card">
+                    <div class="document-header">
+                        <span class="document-icon-img">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-cavex);"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        </span>
+                        <span class="document-name">Identificación Oficial</span>
+                    </div>
+                    <div class="drop-zone" id="drop-zone-identificacion" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'identificacion')">
+                        <input asp-for="Identificacion" type="file" id="file-identificacion" accept=".pdf" class="file-input-hidden" onchange="handleFileSelect(event, 'identificacion')" required />
+                        <div class="drop-zone-prompt" onclick="document.getElementById('file-identificacion').click()">
+                            <span class="upload-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-cavex);"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            </span>
+                            <p>Arrastra tu archivo aquí o <span>haz clic para buscar</span></p>
+                            <small>Solo formato PDF</small>
+                        </div>
+                        <div class="file-preview-container" style="display:none;">
+                            <div class="file-info">
+                                <span class="file-name-text" id="name-identificacion"></span>
+                                <span class="file-size-text" id="size-identificacion"></span>
+                            </div>
+                            <button type="button" class="btn-editar-doc" onclick="removeFile('identificacion')">Editar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comprobante de Domicilio -->
+                <div class="document-upload-card">
+                    <div class="document-header">
+                        <span class="document-icon-img">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-cavex);"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        </span>
+                        <span class="document-name">Comprobante de Domicilio</span>
+                    </div>
+                    <div class="drop-zone" id="drop-zone-comprobante" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'comprobante')">
+                        <input asp-for="Comprobante" type="file" id="file-comprobante" accept=".pdf" class="file-input-hidden" onchange="handleFileSelect(event, 'comprobante')" required />
+                        <div class="drop-zone-prompt" onclick="document.getElementById('file-comprobante').click()">
+                            <span class="upload-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-cavex);"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            </span>
+                            <p>Arrastra tu archivo aquí o <span>haz clic para buscar</span></p>
+                            <small>Solo formato PDF</small>
+                        </div>
+                        <div class="file-preview-container" style="display:none;">
+                            <div class="file-info">
+                                <span class="file-name-text" id="name-comprobante"></span>
+                                <span class="file-size-text" id="size-comprobante"></span>
+                            </div>
+                            <button type="button" class="btn-editar-doc" onclick="removeFile('comprobante')">Editar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CV -->
+                <div class="document-upload-card">
+                    <div class="document-header">
+                        <span class="document-icon-img">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-cavex);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        </span>
+                        <span class="document-name">Currículum Vitae (CV)</span>
+                    </div>
+                    <div class="drop-zone" id="drop-zone-cv" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'cv')">
+                        <input asp-for="Cv" type="file" id="file-cv" accept=".pdf" class="file-input-hidden" onchange="handleFileSelect(event, 'cv')" required />
+                        <div class="drop-zone-prompt" onclick="document.getElementById('file-cv').click()">
+                            <span class="upload-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-cavex);"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            </span>
+                            <p>Arrastra tu archivo aquí o <span>haz clic para buscar</span></p>
+                            <small>Solo formato PDF</small>
+                        </div>
+                        <div class="file-preview-container" style="display:none;">
+                            <div class="file-info">
+                                <span class="file-name-text" id="name-cv"></span>
+                                <span class="file-size-text" id="size-cv"></span>
+                            </div>
+                            <button type="button" class="btn-editar-doc" onclick="removeFile('cv')">Editar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contrato -->
+                <div class="document-upload-card">
+                    <div class="document-header">
+                        <span class="document-icon-img">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-cavex);"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                        </span>
+                        <span class="document-name">Contrato Laboral</span>
+                    </div>
+                    <div class="drop-zone" id="drop-zone-contrato" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'contrato')">
+                        <input asp-for="Contrato" type="file" id="file-contrato" accept=".pdf" class="file-input-hidden" onchange="handleFileSelect(event, 'contrato')" required />
+                        <div class="drop-zone-prompt" onclick="document.getElementById('file-contrato').click()">
+                            <span class="upload-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-cavex);"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            </span>
+                            <p>Arrastra tu archivo aquí o <span>haz clic para buscar</span></p>
+                            <small>Solo formato PDF</small>
+                        </div>
+                        <div class="file-preview-container" style="display:none;">
+                            <div class="file-info">
+                                <span class="file-name-text" id="name-contrato"></span>
+                                <span class="file-size-text" id="size-contrato"></span>
+                            </div>
+                            <button type="button" class="btn-editar-doc" onclick="removeFile('contrato')">Editar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Licencia de Conducir -->
+                <div class="document-upload-card">
+                    <div class="document-header">
+                        <span class="document-icon-img">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-cavex);"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                        </span>
+                        <span class="document-name">Licencia de Conducir</span>
+                    </div>
+                    <div class="drop-zone" id="drop-zone-licencia" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'licencia')">
+                        <input asp-for="Licencia" type="file" id="file-licencia" accept=".pdf" class="file-input-hidden" onchange="handleFileSelect(event, 'licencia')" required />
+                        <div class="drop-zone-prompt" onclick="document.getElementById('file-licencia').click()">
+                            <span class="upload-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-cavex);"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            </span>
+                            <p>Arrastra tu archivo aquí o <span>haz clic para buscar</span></p>
+                            <small>Solo formato PDF</small>
+                        </div>
+                        <div class="file-preview-container" style="display:none;">
+                            <div class="file-info">
+                                <span class="file-name-text" id="name-licencia"></span>
+                                <span class="file-size-text" id="size-licencia"></span>
+                            </div>
+                            <button type="button" class="btn-editar-doc" onclick="removeFile('licencia')">Editar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        </div> <!-- Fin de cards-col -->
+
+        <div class="form-action-bar">
+            <button type="button" class="btn-outline-cavex" onclick="window.history.back()">Cancelar</button>
+            <button type="submit" class="btn-cavex">Guardar empleado</button>
+        </div>
+    </form>
+
+</div>
+
+@section Scripts {
+    <script src="~/js/empleado.js" asp-append-version="true"></script>
+}
+

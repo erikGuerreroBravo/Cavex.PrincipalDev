@@ -1,0 +1,148 @@
+@{
+    Layout = "_LayoutAuth";
+    ViewData["Title"] = "Registrarse";
+}
+
+<div class="login-card">
+    <div class="login-logo-container">
+        <img src="~/img/logocavex.jpeg" class="login-logo-img logo-cavex" alt="CAVEX Logo" />
+    </div>
+
+    <div class="login-header">
+        <h1 class="login-title">Crear Cuenta</h1>
+        <p class="login-subtitle">Regístrate en el sistema CAVEX</p>
+    </div>
+
+    <form action="#" class="login-form">
+        <div class="mb-3">
+            <label class="form-label" for="strEmail">Correo electrónico</label>
+            <input name="Email" id="strEmail" type="email" class="form-control" autocomplete="username" placeholder="correo@grupocavex.local" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="strPassword">Contraseña</label>
+            <div class="password-wrapper">
+                <input name="Password" id="strPassword" type="password" class="form-control" autocomplete="new-password" placeholder="••••••••" required />
+                <button type="button" class="btn-toggle-password" onclick="togglePasswordVisibility('strPassword', this)">
+                    <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                    <svg class="eye-off-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" /></svg>
+                </button>
+            </div>
+            <div class="password-requirements" id="passwordReqs">
+                <div class="requirement-item invalid" id="req-length">
+                    <span class="req-icon"></span> Mínimo 8 caracteres
+                </div>
+                <div class="requirement-item invalid" id="req-upper">
+                    <span class="req-icon"></span> Al menos una mayúscula (A-Z)
+                </div>
+                <div class="requirement-item invalid" id="req-lower">
+                    <span class="req-icon"></span> Al menos una minúscula (a-z)
+                </div>
+                <div class="requirement-item invalid" id="req-number">
+                    <span class="req-icon"></span> Al menos un número (0-9)
+                </div>
+                <div class="requirement-item invalid" id="req-special">
+                    <span class="req-icon"></span> Al menos un signo/caracter especial
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label" for="strConfirmPassword">Confirmar contraseña</label>
+            <div class="password-wrapper">
+                <input name="ConfirmPassword" id="strConfirmPassword" type="password" class="form-control" autocomplete="new-password" placeholder="••••••••" required />
+                <button type="button" class="btn-toggle-password" onclick="togglePasswordVisibility('strConfirmPassword', this)">
+                    <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                    <svg class="eye-off-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" /></svg>
+                </button>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-auth w-100">Registrarse</button>
+    </form>
+
+    <div class="auth-footer-links">
+        <a asp-controller="Auth" asp-action="Login">¿Ya tienes cuenta? Inicia sesión</a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                btn.classList.add("visible");
+            } else {
+                input.type = "password";
+                btn.classList.remove("visible");
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const passwordInput = document.getElementById("strPassword");
+            const confirmInput = document.getElementById("strConfirmPassword");
+            const form = document.querySelector(".login-form");
+
+            const reqLength = document.getElementById("req-length");
+            const reqUpper = document.getElementById("req-upper");
+            const reqLower = document.getElementById("req-lower");
+            const reqNumber = document.getElementById("req-number");
+            const reqSpecial = document.getElementById("req-special");
+
+            function validatePassword() {
+                const value = passwordInput.value;
+
+                // Largo
+                const isLengthValid = value.length >= 8;
+                toggleReq(reqLength, isLengthValid);
+
+                // Mayúscula
+                const isUpperValid = /[A-Z]/.test(value);
+                toggleReq(reqUpper, isUpperValid);
+
+                // Minúscula
+                const isLowerValid = /[a-z]/.test(value);
+                toggleReq(reqLower, isLowerValid);
+
+                // Número
+                const isNumberValid = /[0-9]/.test(value);
+                toggleReq(reqNumber, isNumberValid);
+
+                // Signo especial
+                const isSpecialValid = /[^A-Za-z0-9]/.test(value);
+                toggleReq(reqSpecial, isSpecialValid);
+
+                return isLengthValid && isUpperValid && isLowerValid && isNumberValid && isSpecialValid;
+            }
+
+            function toggleReq(element, isValid) {
+                if (isValid) {
+                    element.classList.remove("invalid");
+                    element.classList.add("valid");
+                } else {
+                    element.classList.remove("valid");
+                    element.classList.add("invalid");
+                }
+            }
+
+            passwordInput.addEventListener("input", validatePassword);
+
+            form.addEventListener("submit", function (event) {
+                const isValid = validatePassword();
+                const doPasswordsMatch = passwordInput.value === confirmInput.value;
+
+                if (!isValid) {
+                    event.preventDefault();
+                    alert("La contraseña no cumple con todos los requisitos de seguridad.");
+                    return;
+                }
+
+                if (!doPasswordsMatch) {
+                    event.preventDefault();
+                    alert("Las contraseñas no coinciden.");
+                }
+            });
+        });
+    </script>
+}

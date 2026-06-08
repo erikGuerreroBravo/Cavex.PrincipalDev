@@ -1,4 +1,4 @@
-<div class="cavex-card form-section-card">
+ï»¿<div class="cavex-card form-section-card">
     <h3 class="form-section-title"><span class="form-section-number">1</span>Datos del solicitante</h3>
     <div class="row g-3">
         <div class="col-md-4">
@@ -14,27 +14,27 @@
             <input name="ApellidoMaternoSolicitante" id="strApellidoMaternoSolicitante" class="form-control" placeholder="Opcional" />
         </div>
         <div class="col-md-4">
-            <label class="form-label">Teléfono celular</label>
+            <label class="form-label">TelÃ©fono celular</label>
             <input name="TelefonoCelular" id="strTelefonoCelular" class="form-control" placeholder="55 1234 5678" required />
         </div>
         <div class="col-md-4">
-            <label class="form-label">Teléfono fijo</label>
+            <label class="form-label">TelÃ©fono fijo</label>
             <input name="TelefonoFijo" id="strTelefonoFijo" class="form-control" placeholder="Opcional" />
         </div>
         <div class="col-md-4">
-            <label class="form-label">Correo electrónico</label>
+            <label class="form-label">Correo electrÃ³nico</label>
             <input name="Correo" id="strCorreo" type="email" class="form-control" placeholder="correo@empresa.com" />
         </div>
     </div>
 </div>
 
 <div class="cavex-card form-section-card">
-    <h3 class="form-section-title"><span class="form-section-number">2</span>Dirección del solicitante</h3>
+    <h3 class="form-section-title"><span class="form-section-number">2</span>DirecciÃ³n del solicitante</h3>
     <div class="row g-3">
         <div class="col-md-12">
-            <label class="form-label d-block">¿Desea registrar dirección del solicitante?</label>
+            <label class="form-label d-block">Â¿Desea registrar direcciÃ³n del solicitante?</label>
             <div class="segmented-options">
-                <label><input name="RegistrarDireccionSolicitante" id="strRegistrarDireccionSolicitanteSi" type="radio" value="true" /> Sí</label>
+                <label><input name="RegistrarDireccionSolicitante" id="strRegistrarDireccionSolicitanteSi" type="radio" value="true" /> SÃ­</label>
                 <label><input name="RegistrarDireccionSolicitante" id="strRegistrarDireccionSolicitanteNo" type="radio" value="false" /> No</label>
             </div>
         </div>
@@ -46,11 +46,11 @@
                 <input name="CalleSolicitante" id="strCalleSolicitante" class="form-control" />
             </div>
             <div class="col-md-2">
-                <label class="form-label">Número exterior</label>
+                <label class="form-label">NÃºmero exterior</label>
                 <input name="NumeroExteriorSolicitante" id="strNumeroExteriorSolicitante" class="form-control" />
             </div>
             <div class="col-md-2">
-                <label class="form-label">Número interior</label>
+                <label class="form-label">NÃºmero interior</label>
                 <input name="NumeroInteriorSolicitante" id="strNumeroInteriorSolicitante" class="form-control" />
             </div>
             <div class="col-md-4">
@@ -58,7 +58,7 @@
                 <input name="ColoniaSolicitante" id="strColoniaSolicitante" class="form-control" />
             </div>
             <div class="col-md-4">
-                <label class="form-label">Municipio / Alcaldía</label>
+                <label class="form-label">Municipio / AlcaldÃ­a</label>
                 <input name="MunicipioSolicitante" id="strMunicipioSolicitante" class="form-control" />
             </div>
             <div class="col-md-4">
@@ -66,7 +66,7 @@
                 <input name="EstadoSolicitante" id="strEstadoSolicitante" class="form-control" />
             </div>
             <div class="col-md-4">
-                <label class="form-label">Código postal</label>
+                <label class="form-label">CÃ³digo postal</label>
                 <input name="CodigoPostalSolicitante" id="strCodigoPostalSolicitante" class="form-control" />
             </div>
             <div class="col-md-12">
@@ -78,8 +78,8 @@
 </div>
 
 <div class="cavex-card form-section-card">
-    <h3 class="form-section-title"><span class="form-section-number">3</span>Información para brindar mejor atención</h3>
-    <p class="text-muted mb-3">Esta información nos ayuda a asignar la unidad y el apoyo adecuado durante el traslado.</p>
+    <h3 class="form-section-title"><span class="form-section-number">3</span>InformaciÃ³n para brindar mejor atenciÃ³n</h3>
+    <p class="text-muted mb-3">Esta informaciÃ³n nos ayuda a asignar la unidad y el apoyo adecuado durante el traslado.</p>
     <div class="row g-3">
         <div class="col-md-5">
             <label class="form-label">Nombre del pasajero</label>
@@ -90,27 +90,32 @@
             <input name="CantidadPasajeros" id="intCantidadPasajeros" type="number" min="1" class="form-control" required />
         </div>
         <div class="col-md-4">
-            <label class="form-label">¿Requiere atención especial?</label>
+            <label class="form-label">Â¿Requiere atenciÃ³n especial?</label>
             <select name="RequiereAtencionEspecial" id="strRequiereAtencionEspecial" class="form-select">
                 <option value="false">No</option>
-                <option value="true">Sí</option>
+                <option value="true">SÃ­</option>
             </select>
         </div>
-        <div class="col-md-6">
-            <label class="form-label">Tipo de atención</label>
-            <select name="TipoAtencionEspecial" id="strTipoAtencionEspecial" class="form-select">
-                <option>No requiere apoyo especial</option>
-                <option>Requiere apoyo para subir o bajar de la unidad</option>
-                <option>Viaja a consulta, hospital o tratamiento médico</option>
-                <option>Persona adulta mayor con trato preferente</option>
-                <option>Movilidad reducida: bastón, andadera o silla de ruedas</option>
-                <option>Viaja acompañado por familiar o cuidador</option>
-                <option>Otro</option>
-            </select>
-        </div>
-        <div class="col-md-6">
-            <label class="form-label">Observaciones de atención</label>
-            <textarea name="ObservacionesAtencion" id="strObservacionesAtencion" class="form-control" rows="2" placeholder="Indicaciones útiles para el equipo operativo"></textarea>
+        
+        <div id="divAtencionEspecial" class="conditional-block mt-3 col-md-12" style="display: none;">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Tipo de atenciÃ³n</label>
+                    <select name="TipoAtencionEspecial" id="strTipoAtencionEspecial" class="form-select">
+                        <option value="">Selecciona tipo de atenciÃ³n</option>
+                        <option>Requiere apoyo para subir o bajar de la unidad</option>
+                        <option>Viaja a consulta, hospital o tratamiento mÃ©dico</option>
+                        <option>Persona adulta mayor con trato preferente</option>
+                        <option>Movilidad reducida: bastÃ³n, andadera o silla de ruedas</option>
+                        <option>Viaja acompaÃ±ado por familiar o cuidador</option>
+                        <option>Otro</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Observaciones de atenciÃ³n</label>
+                    <textarea name="ObservacionesAtencion" id="strObservacionesAtencion" class="form-control" rows="2" placeholder="Indicaciones Ãºtiles para el equipo operativo"></textarea>
+                </div>
+            </div>
         </div>
     </div>
 </div>

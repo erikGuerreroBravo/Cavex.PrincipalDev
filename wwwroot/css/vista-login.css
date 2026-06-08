@@ -1,27 +1,297 @@
-﻿.login-shell {
+/* Estilos para las vistas de Auth (Login, Registro, Recuperación de contraseña) */
+
+.login-body {
+    background: url('../img/fondologn.jpeg') no-repeat center center fixed !important;
+    background-size: cover !important;
+    min-height: 100vh;
+    display: flex;
     align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+}
+
+.login-container {
+    width: 100%;
     display: flex;
     justify-content: center;
-    min-height: calc(100vh - 220px);
-    padding: 24px 0;
+    align-items: center;
+    padding: 20px;
 }
 
 .login-card {
-    background: linear-gradient(135deg, rgba(0, 184, 196, 0.08), rgba(255,255,255,0) 42%), white;
-    border: 1px solid var(--borde-cavex);
-    border-radius: 22px;
-    box-shadow: 0 22px 60px rgba(6, 27, 58, 0.16);
-    max-width: 460px;
-    padding: 34px;
+    position: relative;
+    background: rgba(6, 27, 58, 0.45) !important;
+    backdrop-filter: blur(16px) saturate(120%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(120%) !important;
+    border-radius: 28px !important;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35) !important;
+    max-width: 420px;
+    width: 100%;
+    padding: 65px 35px 35px 35px !important;
+    margin-top: 50px; /* Reducido un 15% de 60px */
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Avatar / Logo cambiado a Cuadrado con bordes redondeados (Squircle) con margen reducido 15% */
+.login-logo-container {
+    position: absolute;
+    top: -47px; /* Reducido un 15% de -55px */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 110px;
+    height: 110px;
+    border-radius: 24px !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.login-logo-container:hover {
+    background: rgba(255, 255, 255, 0.95) !important;
+    transform: translateX(-50%) scale(1.05);
+}
+
+.login-logo-img {
+    width: 94px;
+    height: 94px;
+    border-radius: 16px !important;
+    object-fit: cover;
+}
+
+.logo-cavex {
+    mix-blend-mode: multiply;
+    opacity: 0.95;
+    transition: all 0.3s ease;
+}
+
+.logo-cavex:hover {
+    opacity: 1;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.login-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #FFFFFF !important;
+    margin-bottom: 5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.login-subtitle {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.75) !important;
+    margin-bottom: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Campos de entrada estilizados */
+.login-form .form-label {
+    font-weight: 600;
+    color: #FFFFFF !important;
+    margin-bottom: 6px;
+    font-size: 14px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.login-form .form-control {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 30px !important;
+    padding: 12px 20px !important;
+    font-size: 15px;
+    color: #10233F !important;
+    transition: all 0.25s ease;
+}
+
+.login-form .form-control::placeholder {
+    color: #718096 !important;
+}
+
+.login-form .form-control:focus {
+    background-color: #FFFFFF !important;
+    border-color: #00B8C4 !important;
+    box-shadow: 0 0 0 3px rgba(0, 184, 196, 0.25) !important;
+    outline: none;
+}
+
+/* Checkbox personalizado */
+.login-form .form-check {
+    padding-left: 1.75rem;
+    margin-bottom: 20px;
+}
+
+.login-form .form-check-label {
+    color: rgba(255, 255, 255, 0.9) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    font-weight: 500;
+}
+
+.login-form .form-check-input {
+    border-radius: 6px;
+    border-color: rgba(255, 255, 255, 0.4);
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.login-form .form-check-input:checked {
+    background-color: #00B8C4 !important;
+    border-color: #00B8C4 !important;
+}
+
+/* Botones de acción */
+.btn-auth {
+    background: linear-gradient(135deg, #00B8C4 0%, #2CD9F8 100%) !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    border-radius: 30px !important;
+    padding: 14px 24px !important;
+    font-weight: 700 !important;
+    font-size: 16px !important;
+    width: 100%;
+    box-shadow: 0 4px 15px rgba(0, 184, 196, 0.3) !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+.btn-auth:hover {
+    background: linear-gradient(135deg, #008C95 0%, #00B8C4 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(0, 140, 149, 0.4) !important;
+}
+
+.btn-auth:active {
+    transform: translateY(1px) !important;
+}
+
+/* Enlaces de pie de tarjeta */
+.auth-footer-links {
+    text-align: center;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.auth-footer-links a {
+    color: #00B8C4 !important;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.auth-footer-links a:hover {
+    color: #FFFFFF !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Validación de contraseña en tiempo real */
+.password-requirements {
+    margin-top: 12px;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 13px;
+    text-align: left;
+}
+
+.requirement-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.55) !important;
+    margin-bottom: 6px;
+    font-weight: 500;
+    transition: all 0.25s ease;
+}
+
+.requirement-item:last-child {
+    margin-bottom: 0;
+}
+
+.requirement-item.valid {
+    color: #10B981 !important;
+}
+
+.requirement-item .req-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+}
+
+.requirement-item.valid .req-icon::before {
+    content: "✓";
+    font-weight: 800;
+}
+
+.requirement-item.invalid .req-icon::before {
+    content: "•";
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* Botón flotante para mostrar/ocultar contraseña */
+.password-wrapper {
+    position: relative;
     width: 100%;
 }
 
-.login-logo {
-    background: white;
-    border: 1px solid var(--borde-cavex);
-    border-radius: 16px;
-    max-height: 88px;
-    max-width: 240px;
-    object-fit: contain;
-    padding: 10px 14px;
+.password-wrapper .form-control {
+    padding-right: 50px !important;
+}
+
+.btn-toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #718096;
+    transition: all 0.2s ease;
+    z-index: 5;
+}
+
+.btn-toggle-password:hover {
+    color: #00B8C4;
+}
+
+.btn-toggle-password svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+}
+
+/* Ocultar por defecto el ojo tachado */
+.btn-toggle-password .eye-off-icon {
+    display: none;
+}
+
+/* Cuando se muestra la contraseña, alternar los ojos */
+.btn-toggle-password.visible .eye-icon {
+    display: none;
+}
+
+.btn-toggle-password.visible .eye-off-icon {
+    display: block;
 }
