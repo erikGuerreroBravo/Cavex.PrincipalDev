@@ -1,34 +1,3 @@
-.page-hero,
-.dashboard-hero,
-.internal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 24px;
-    background: linear-gradient(135deg, rgba(0, 184, 196, 0.08), rgba(255,255,255,0) 42%), var(--blanco);
-    border: 1px solid var(--borde-cavex);
-    border-radius: 16px;
-    padding: 28px;
-    margin-bottom: 24px;
-    box-shadow: 0 16px 38px rgba(6, 27, 58, 0.085);
-    position: relative;
-    overflow: hidden;
-}
-
-    .page-hero::after,
-    .dashboard-hero::after,
-    .internal-header::after {
-        content: "";
-        position: absolute;
-        right: 24px;
-        bottom: 0;
-        width: 190px;
-        height: 3px;
-        background: linear-gradient(90deg, transparent, var(--cyan-cavex), var(--teal-cavex));
-        opacity: .8;
-    }
-
-.eyebrow,
 .dashboard-kicker {
     display: inline-flex;
     color: var(--teal-cavex);
@@ -39,30 +8,25 @@
     margin-bottom: 8px;
 }
 
-.cavex-card,
-.dashboard-card,
-.cavex-card-soft {
+.dashboard-card {
     background: var(--blanco);
     border: 1px solid var(--borde-cavex);
     border-radius: 16px;
     padding: 26px;
     box-shadow: 0 12px 30px rgba(6, 27, 58, 0.07);
     margin-bottom: 24px;
-}
-
-.dashboard-card {
     display: flex;
     flex-direction: column;
     position: relative;
     overflow: hidden;
-    transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-    .dashboard-card:hover {
-        transform: translateY(-2px);
-        border-color: rgba(0, 140, 149, 0.28);
-        box-shadow: 0 18px 44px rgba(6, 27, 58, 0.11);
-    }
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(0, 140, 149, 0.4);
+    box-shadow: 0 18px 44px rgba(6, 27, 58, 0.11);
+}
 
 .dashboard-card.dashboard-emphasis {
     background: linear-gradient(135deg, rgba(6, 27, 58, 0.98), rgba(11, 31, 58, 0.94)), var(--azul-cavex);
@@ -175,11 +139,6 @@
 
 .dashboard-card p {
     color: var(--gris);
-}
-
-/* Card Themes (Dashboard) */
-.dashboard-card {
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 /* Theme Cyan */

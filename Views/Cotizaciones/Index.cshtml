@@ -14,6 +14,10 @@
     ViewData["TableExtraPill"] = "Página 1 de 1";
 }
 
+@section Head {
+    <link rel="stylesheet" href="~/css/vista-cotizador.css" asp-append-version="true" />
+}
+
 <partial name="_PageHeader" />
 
 <div class="filter-card">
@@ -34,29 +38,16 @@
             </div>
             <div class="col-md-4 col-lg-2">
                 <label class="form-label" for="strEstado">Estado</label>
-                <select id="strEstado" name="estado" class="form-select">
-                    <option value="">Todos</option>
-                    <option value="Borrador">Borrador</option>
-                    <option value="Cotizada">Cotizada</option>
-                    <option value="Enviada">Enviada</option>
-                    <option value="Aceptada">Aceptada</option>
-                    <option value="Cancelada">Cancelada</option>
-                </select>
             </div>
             <div class="col-md-4 col-lg-3">
                 <label class="form-label" for="intServicioId">Servicio</label>
                 <select id="intServicioId" name="servicioId" class="form-select">
-                    <option value="">Todos</option>
-                    <option value="1">Traslado Sencillo</option>
-                    <option value="2">Traslado con Asistencia</option>
                 </select>
             </div>
             <div class="col-md-4 col-lg-3">
                 <label class="form-label" for="intSucursalId">Sucursal</label>
                 <select id="intSucursalId" name="sucursalId" class="form-select">
-                    <option value="">Todas</option>
-                    <option value="1">Base Centro</option>
-                    <option value="2">Base Sur</option>
+
                 </select>
             </div>
             <div class="col-md-3">
@@ -78,9 +69,7 @@
             <div class="col-md-3">
                 <label class="form-label" for="intPageSize">Registros por página</label>
                 <select id="intPageSize" name="pageSize" class="form-select">
-                    <option value="10">10</option>
-                    <option value="25">25</option>
-                    <option value="50">50</option>
+
                 </select>
             </div>
         </div>
@@ -110,54 +99,6 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td><span class="cotizacion-folio">CAVEX-2024-000001</span></td>
-                    <td>
-                        <div class="cotizacion-main-text text-clamp-1">Juan Pérez</div>
-                        <div class="cotizacion-sub-text text-clamp-1">Pasajero: María López</div>
-                        <div class="cotizacion-sub-text">55 1234 5678</div>
-                    </td>
-                    <td>
-                        <div class="cotizacion-main-text text-clamp-1">Traslado Sencillo</div>
-                        <div class="cotizacion-sub-text text-clamp-1">Sucursal: Base Centro</div>
-                    </td>
-                    <td>
-                        <div class="text-clamp-2">Av. Reforma 222, CDMX</div>
-                    </td>
-                    <td>
-                        <div class="cotizacion-main-text">15/05/2024</div>
-                        <div class="cotizacion-sub-text">14:00</div>
-                    </td>
-                    <td><strong class="price-highlight">$1,500.00</strong></td>
-                    <td><partial name="_StatusBadge" model="@("Cotizada")" /></td>
-                    <td class="text-end">
-                        <a href="/Cotizaciones/Details/1" class="btn btn-sm btn-outline-cavex">Ver Detalle</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td><span class="cotizacion-folio">CAVEX-2024-000002</span></td>
-                    <td>
-                        <div class="cotizacion-main-text text-clamp-1">Empresa SA de CV</div>
-                        <div class="cotizacion-sub-text text-clamp-1">Pasajero: Roberto Gómez</div>
-                        <div class="cotizacion-sub-text">55 9876 5432</div>
-                    </td>
-                    <td>
-                        <div class="cotizacion-main-text text-clamp-1">Traslado con Asistencia</div>
-                        <div class="cotizacion-sub-text text-clamp-1">Sucursal: Base Sur</div>
-                    </td>
-                    <td>
-                        <div class="text-clamp-2">Hospital ABC, CDMX</div>
-                    </td>
-                    <td>
-                        <div class="cotizacion-main-text">16/05/2024</div>
-                        <div class="cotizacion-sub-text">09:30</div>
-                    </td>
-                    <td><strong class="price-highlight">$2,300.00</strong></td>
-                    <td><partial name="_StatusBadge" model="@("Aceptada")" /></td>
-                    <td class="text-end">
-                        <a href="/Cotizaciones/Details/2" class="btn btn-sm btn-outline-cavex">Ver Detalle</a>
-                    </td>
-                </tr>
             </tbody>
         </table>
     </div>

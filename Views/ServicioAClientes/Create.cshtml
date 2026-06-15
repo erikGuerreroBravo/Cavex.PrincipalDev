@@ -1,4 +1,4 @@
-﻿@model Cavex.Principal.Models.ServicioACliente
+﻿@model Cavex.Principal.Models.ServicioAClientes.ServicioAClienteDto;
 
 @{
     ViewData["Title"] = "Create";
@@ -34,5 +34,6 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

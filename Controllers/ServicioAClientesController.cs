@@ -1,157 +1,132 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Cavex.Principal.Models.ServicioAClientes;
+using Cavex.Principal.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Cavex.Principal.Data;
-using Cavex.Principal.Models;
 
 namespace Cavex.Principal.Controllers
 {
     public class ServicioAClientesController : Controller
     {
-        private readonly CavexPrincipalContext _context;
+        private readonly IServicioAClientesService _service;
 
-        public ServicioAClientesController(CavexPrincipalContext context)
+        public ServicioAClientesController(IServicioAClientesService service)
         {
-            _context = context;
+            _service = service;
         }
 
-        // GET: ServicioAClientes
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            return View(await _context.ServicioACliente.ToListAsync());
-        }
+            var response = await _service.ObtenerTodosAsync(cancellationToken);
 
-        // GET: ServicioAClientes/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
+            if (!response.Success)
             {
-                return NotFound();
+                TempData["ErrorMessage"] = response.Message;
             }
 
-            var servicioACliente = await _context.ServicioACliente
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (servicioACliente == null)
-            {
-                return NotFound();
-            }
-
-            return View(servicioACliente);
+            return View(response.Data ?? []);
         }
 
-        // GET: ServicioAClientes/Create
+        public async Task<IActionResult> Details(int id, CancellationToken cancellationToken)
+        {
+            var response = await _service.ObtenerPorIdAsync(id, cancellationToken);
+
+            if (!response.Success || response.Data is null)
+            {
+                TempData["ErrorMessage"] = response.Message;
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(response.Data);
+        }
+
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: ServicioAClientes/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,strValor,Descripcion")] ServicioACliente servicioACliente)
+        public async Task<IActionResult> Create(ServicioAClienteDto model, CancellationToken cancellationToken)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(servicioACliente);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(servicioACliente);
-        }
-
-        // GET: ServicioAClientes/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
+                return View(model);
             }
 
-            var servicioACliente = await _context.ServicioACliente.FindAsync(id);
-            if (servicioACliente == null)
-            {
-                return NotFound();
-            }
-            return View(servicioACliente);
-        }
+            var response = await _service.CrearAsync(model, cancellationToken);
 
-        // POST: ServicioAClientes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,strValor,Descripcion")] ServicioACliente servicioACliente)
-        {
-            if (id != servicioACliente.Id)
+            if (!response.Success)
             {
-                return NotFound();
+                ModelState.AddModelError(string.Empty, response.Message ?? "No fue posible crear el servicio a cliente.");
+                return View(model);
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(servicioACliente);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ServicioAClienteExists(servicioACliente.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(servicioACliente);
-        }
+            TempData["SuccessMessage"] = response.Message;
 
-        // GET: ServicioAClientes/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var servicioACliente = await _context.ServicioACliente
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (servicioACliente == null)
-            {
-                return NotFound();
-            }
-
-            return View(servicioACliente);
-        }
-
-        // POST: ServicioAClientes/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var servicioACliente = await _context.ServicioACliente.FindAsync(id);
-            if (servicioACliente != null)
-            {
-                _context.ServicioACliente.Remove(servicioACliente);
-            }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ServicioAClienteExists(int id)
+        public async Task<IActionResult> Edit(int id, CancellationToken cancellationToken)
         {
-            return _context.ServicioACliente.Any(e => e.Id == id);
+            var response = await _service.ObtenerPorIdAsync(id, cancellationToken);
+
+            if (!response.Success || response.Data is null)
+            {
+                TempData["ErrorMessage"] = response.Message;
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(response.Data);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, ServicioAClienteDto model, CancellationToken cancellationToken)
+        {
+            if (id != model.Id)
+            {
+                return NotFound();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var response = await _service.ActualizarAsync(id, model, cancellationToken);
+
+            if (!response.Success)
+            {
+                ModelState.AddModelError(string.Empty, response.Message ?? "No fue posible actualizar el servicio a cliente.");
+                return View(model);
+            }
+
+            TempData["SuccessMessage"] = response.Message;
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+        {
+            var response = await _service.ObtenerPorIdAsync(id, cancellationToken);
+
+            if (!response.Success || response.Data is null)
+            {
+                TempData["ErrorMessage"] = response.Message;
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(response.Data);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id, CancellationToken cancellationToken)
+        {
+            var response = await _service.EliminarAsync(id, cancellationToken);
+
+            TempData[response.Success ? "SuccessMessage" : "ErrorMessage"] = response.Message;
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

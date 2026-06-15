@@ -1,13 +1,13 @@
-using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc;
 
 namespace Cavex.Principal.Controllers
 {
-    public class AuthController : Controller
+    public class AccountController : Controller
     {
-        public IActionResult Login()
-        {
-            return View();
-        }
+        public IActionResult Login() => View();
+
+        [HttpPost]
+        public IActionResult Logout() => RedirectToAction("Index", "Home");
 
         public IActionResult Registro()
         {
