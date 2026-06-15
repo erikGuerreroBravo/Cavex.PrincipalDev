@@ -9,10 +9,6 @@
     <link rel="stylesheet" href="~/css/layout-principal.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/componentes.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/formularios.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/vista-dashboard.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/vista-cotizador.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/vista-login.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/vista-cliente.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/responsivo.css" asp-append-version="true" />
     @await RenderSectionAsync("Head", required: false)
 </head>
@@ -22,7 +18,6 @@
         <div class="container-fluid d-flex flex-wrap justify-content-between align-items-center gap-3">
             <a class="cavex-brand" asp-controller="Home" asp-action="Index">
                 <img class="cavex-brand-logo" src="~/img/logocavex.jpeg" />
-                <span class="cavex-brand-text">Grupo <span>CAVEX</span></span>
             </a>
 
             <nav class="cavex-nav">
@@ -61,7 +56,7 @@
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
                             </div>
                             <div class="item-details">
-                                <span class="item-title">Servicios</span>
+                                <span class="item-title">Nuevo Servicio</span>
                                 <span class="item-desc">Configuración de tipos de vehículos y tarifas base.</span>
                             </div>
                         </a>

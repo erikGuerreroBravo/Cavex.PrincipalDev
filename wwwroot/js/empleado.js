@@ -6,7 +6,7 @@ function agregarExperiencia() {
     const primero = container.querySelector('.experiencia-item');
     const nuevo = primero.cloneNode(true);
     
-    // Limpiar los valores de los inputs y sus estados de error/touched
+    // Limpiar los valores de los inputs y sus estados de error
     nuevo.querySelectorAll('input').forEach(i => {
         i.value = '';
         delete i.dataset.touched;
@@ -339,20 +339,7 @@ function validarCorreo(input) {
         limpiarError(input);
         return true;
     }
-    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!regex.test(valor)) {
-        mostrarError(input, 'Formato de correo electrónico inválido.');
-        return false;
-    }
-    
-    const allowedEmailDomains = [
-        'gmail.com',
-        'hotmail.com',
-        'outlook.com',
-        'yahoo.com'
-    ];
-    const domain = valor.split('@')[1];
-    if (!allowedEmailDomains.includes(domain)) {
+    if (!validateEmailDomain(valor)) {
         mostrarError(input, 'Solo se permiten correos de gmail.com, hotmail.com, outlook.com o yahoo.com.');
         return false;
     }
@@ -415,34 +402,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const txtTelefonoCelular = document.getElementById('txtTelefonoCelular');
     const txtNSS = document.getElementById('txtNSS');
 
-    // Sanitizers dinámicos
-    function stripEmojis(val) {
-        if (!val) return '';
-        return val.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
-    }
 
-    function sanitizeLettersOnly(val) {
-        let clean = stripEmojis(val);
-        clean = clean.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g, '');
-        return clean.replace(/\s+/g, ' ');
-    }
-
-    function sanitizeDigitsOnly(val) {
-        if (!val) return '';
-        return val.replace(/\D/g, '');
-    }
-
-    function sanitizeAlphanumericDash(val) {
-        let clean = stripEmojis(val);
-        clean = clean.replace(/[^a-zA-Z0-9\s\-/]/g, '');
-        return clean.replace(/\s+/g, ' ');
-    }
-
-    function sanitizeGeneralText(val) {
-        let clean = stripEmojis(val);
-        clean = clean.replace(/[<>[\]{}$%^*+=|\\~`]/g, '');
-        return clean;
-    }
 
     function sanitizeRFCOnly(val) {
         let clean = stripEmojis(val);
@@ -456,7 +416,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return clean.toUpperCase();
     }
 
-    // Delegación de eventos para sanitización en tiempo real
+    // Step by Step en tiempo real
     document.addEventListener('input', (e) => {
         const el = e.target;
         if (!el.matches('input, textarea')) return;
@@ -504,7 +464,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Delegación para control de campos interactuados ("touched")
+    // Step by Step (al tocar)
     document.addEventListener('blur', (e) => {
         if (e.target.matches('input, select, textarea')) {
             e.target.dataset.touched = "true";
@@ -905,52 +865,7 @@ document.addEventListener('DOMContentLoaded', function() {
     actualizarStepperEmpleado();
 
     // ── Stepper flotante: sigue el scroll ──
-    (function initStepperFloat() {
-        const stepper = document.querySelector('.stepper');
-        if (!stepper) return;
-
-        const navbar = document.querySelector('.cavex-navbar');
-        const NAVBAR_H = navbar ? navbar.offsetHeight : 92;
-        document.documentElement.style.setProperty('--navbar-h', NAVBAR_H + 'px');
-        let stepperNaturalTop = 0;
-        let stepperH = 0;
-        let floating = false;
-
-        const placeholder = document.createElement('div');
-        placeholder.className = 'stepper-placeholder';
-        stepper.parentNode.insertBefore(placeholder, stepper.nextSibling);
-
-        function recalculate() {
-            if (!floating) {
-                stepperNaturalTop = stepper.getBoundingClientRect().top + window.scrollY;
-                stepperH = stepper.offsetHeight;
-            }
-        }
-
-        function onScroll() {
-            const scrollY = window.scrollY || document.documentElement.scrollTop;
-            const shouldFloat = scrollY + NAVBAR_H > stepperNaturalTop;
-
-            if (shouldFloat && !floating) {
-                floating = true;
-                placeholder.style.height = stepperH + 'px';
-                placeholder.classList.add('visible');
-                stepper.classList.add('is-floating');
-            } else if (!shouldFloat && floating) {
-                floating = false;
-                placeholder.classList.remove('visible');
-                stepper.classList.remove('is-floating');
-            }
-        }
-
-        requestAnimationFrame(() => {
-            recalculate();
-            onScroll();
-        });
-
-        window.addEventListener('scroll', onScroll, { passive: true });
-        window.addEventListener('resize', () => { floating = false; stepper.classList.remove('is-floating'); recalculate(); }, { passive: true });
-    })();
+    initStepperFloat();
 });
 
 // Funciones de Drag & Drop y Subida de Archivos
@@ -1046,7 +961,7 @@ function removeFile(key) {
     
     zone.classList.remove('has-file');
     
-    // Disparar evento change en el formulario para actualizar el stepper
+    // Disparar evento en el formulario para actualizar el stepper
     const form = document.getElementById('form-empleado');
     if (form) {
         const event = new Event('change', { bubbles: true });

@@ -14,17 +14,7 @@ function togglePasswordVisibility(inputId, btn) {
 document.addEventListener("DOMContentLoaded", function () {
     const emailInput = document.getElementById("strEmail");
     const registerForm = document.querySelector(".login-form");
-    const allowedEmailDomains = ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com'];
 
-    function validateEmailDomain(email) {
-        const val = email.trim().toLowerCase();
-        if (!val) return true;
-        const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        if (!regex.test(val)) return false;
-        
-        const domain = val.split('@')[1];
-        return allowedEmailDomains.includes(domain);
-    }
 
     if (emailInput) {
         const checkEmail = () => {

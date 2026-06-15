@@ -126,27 +126,6 @@
     box-shadow: 0 0 0 3px rgba(0, 140, 149, .15);
 }
 
-.checkbox-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 0;
-}
-
-.checkbox-group input[type="checkbox"] {
-    width: 20px; 
-    height: 20px;
-    accent-color: var(--teal-cavex);
-    cursor: pointer;
-}
-
-.checkbox-group label {
-    font-size: .9rem;
-    font-weight: 600;
-    color: var(--texto-cavex);
-    cursor: pointer;
-    margin: 0;
-}
 
 /* Contenedor de botones (removido actions-row ya que se usa la clase global .form-action-bar) */
 
@@ -249,12 +228,6 @@
     cursor: pointer;
 }
 
-.checkbox-group-container {
-    padding: 8px 0;
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-}
 
 .document-grid {
     display: grid;
@@ -415,5 +388,4 @@
 @media (max-width: 580px) {
     .form-row.cols-3,
     .form-row.cols-2 { grid-template-columns: 1fr; }
-    .page-header-empleado { flex-direction: column; gap: 14px; }
 }

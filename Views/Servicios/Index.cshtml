@@ -1,48 +1,107 @@
-﻿@{
-    ViewData["Title"] = "Servicios";
+@{
+    ViewData["Title"] = "Nuevo Servicio";
+    ViewData["HeaderEyebrow"] = "Configuración";
+    ViewData["HeaderTitle"] = "Nuevo Servicio";
+    ViewData["HeaderSubtitle"] = "Administra el catálogo de servicios de la plataforma.";
+
+    ViewData["TableTitle"] = "Listado de servicios";
+    ViewData["TableSubtitle"] = "Catálogo de tipos de servicios de traslado y sus descripciones.";
+    ViewData["TableCount"] = 2;
+    ViewData["TableCountLabel"] = "servicios";
+    ViewData["TableExtraPill"] = "Catálogo Activo";
 }
 
-<partial name="_PageHeader"  />
+@section Head {
+    <link rel="stylesheet" href="~/css/vista-servicios.css" asp-append-version="true" />
+}
+
+<partial name="_PageHeader" />
+
+<div class="filter-card">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+        <div>
+            <span class="eyebrow">Formulario</span>
+            <h2 class="filter-title" id="formTitle">Registrar servicio</h2>
+            <p class="cavex-subtitle" id="formSubtitle">Ingresa el nombre y la descripción para registrar el servicio.</p>
+        </div>
+    </div>
+
+    <form id="formServicio" class="filter-form-compact" novalidate onsubmit="handleFormSubmit(event)">
+        <div class="row g-3">
+            <div class="col-md-12">
+                <label class="form-label" for="strNombre">Nombre del servicio</label>
+                <input id="strNombre" name="Nombre" class="form-control" placeholder="Ej. Traslado Sencillo" required />
+                <div class="invalid-feedback" id="nombreFeedback">El nombre del servicio ya existe.</div>
+            </div>
+            <div class="col-md-12">
+                <label class="form-label" for="strDescripcion">Descripción (Opcional)</label>
+                <textarea id="strDescripcion" name="Descripcion" class="form-control" rows="3" placeholder="Ej. Traslado estándar sin escalas ni asistencia especial" style="resize: none;"></textarea>
+                <div class="invalid-feedback" id="descripcionFeedback">La descripción contiene caracteres no válidos (solo letras, números y símbolos permitidos).</div>
+            </div>
+        </div>
+
+        <div class="search-actions mt-3">
+            <button type="submit" class="btn btn-cavex" id="btnSubmit">Guardar servicio</button>
+            <button type="button" class="btn btn-outline-cavex" id="btnCancel" onclick="resetForm()" style="display: none;">Cancelar</button>
+        </div>
+    </form>
+</div>
 
 <div class="cavex-card table-module">
-    <partial name="_TableCardHeader"  />
+    <partial name="_TableCardHeader" />
+    
+    <!-- Barra de Búsqueda y Pestañas de Estado -->
+    <div class="table-filter-bar d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div class="custom-tabs-container">
+            <button type="button" class="tab-item active" onclick="setStatusFilter('todos')" id="tabTodos">
+                Todos <span class="tab-count count-all" id="countTodos">0</span>
+            </button>
+            <button type="button" class="tab-item" onclick="setStatusFilter('activos')" id="tabActivos">
+                Activos <span class="tab-count count-active" id="countActivos">0</span>
+            </button>
+            <button type="button" class="tab-item" onclick="setStatusFilter('baja')" id="tabBaja">
+                Baja <span class="tab-count count-inactive" id="countBaja">0</span>
+            </button>
+        </div>
+        <div class="table-search-box position-relative">
+            <input type="text" id="tableSearch" class="form-control" placeholder="Buscar servicio..." oninput="handleSearch(this.value)" />
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+        </div>
+    </div>
+
     <div class="table-responsive">
-        <table class="table table-hover align-middle table-cavex-compact">
+        <table class="table table-hover align-middle executive-table table-cavex-compact">
             <thead>
                 <tr>
-                    <th>Nombre</th>
-                    <th>Asistencia requerida por defecto</th>
-                    <th>Tarifa adicional (MXN)</th>
-                    <th>Estado</th>
-                    <th class="text-end">Acciones</th>
+                    <th>Nombre del servicio</th>
+                    <th>Descripción</th>
+                    <th style="width: 120px;">Estado</th>
+                    <th class="text-end" style="width: 160px;">Acciones</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        <div class="cotizacion-main-text">Traslado Sencillo</div>
-                    </td>
-                    <td>No</td>
-                    <td>$0.00</td>
-                    <td><span class="badge-active">Activo</span></td>
-                    <td class="text-end">
-                        <a href="/Servicios/Edit/1" class="btn btn-sm btn-outline-cavex">Editar</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="cotizacion-main-text">Traslado con Asistencia</div>
-                    </td>
-                    <td>Sí</td>
-                    <td>$200.00</td>
-                    <td><span class="badge-active">Activo</span></td>
-                    <td class="text-end">
-                        <a href="/Servicios/Edit/2" class="btn btn-sm btn-outline-cavex">Editar</a>
-                    </td>
-                </tr>
+            <tbody id="servicesTableBody">
+                <!-- Generado dinámicamente por JavaScript -->
             </tbody>
         </table>
     </div>
+
+    <!-- Barra de Paginación -->
+    <div class="table-footer-bar">
+        <div class="pagination-info small" id="paginationInfo">
+            Mostrando 0-0 de 0 registros
+        </div>
+        <nav aria-label="Navegación de servicios">
+            <ul class="pagination pagination-cavex m-0" id="paginationList">
+                <!-- Generado dinámicamente -->
+            </ul>
+        </nav>
+    </div>
 </div>
 
+@section Scripts {
+    <script src="~/js/vista-servicios.js" asp-append-version="true"></script>
+}
 

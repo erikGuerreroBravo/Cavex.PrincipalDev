@@ -21,58 +21,16 @@ document.addEventListener('DOMContentLoaded', () => {
         5: 5  // Card 6 (Costos)
     };
 
-    // Regexes for validation
+    // Relas de validacion
     const regexSoloLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/;
     const regexTelefono = /^\d{10}$/;
     const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const regexCP = /^\d{5}$/;
     const regexTextoGenerico = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ\s.,;:'"()\-#]+$/;
 
-    // Sanitization functions for real-time restriction
-    function stripEmojis(val) {
-        if (!val) return '';
-        return val.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
-    }
 
-    function sanitizeLettersOnly(val) {
-        let clean = stripEmojis(val);
-        // keep only letters, standard Spanish chars, and spaces
-        clean = clean.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g, '');
-        // Collapse multiple spaces
-        return clean.replace(/\s+/g, ' ');
-    }
 
-    function sanitizeDigitsOnly(val) {
-        if (!val) return '';
-        return val.replace(/\D/g, '');
-    }
-
-    function sanitizeDecimalOnly(val) {
-        let clean = stripEmojis(val);
-        // keep only digits and period
-        clean = clean.replace(/[^0-9.]/g, '');
-        // only allow one period
-        const parts = clean.split('.');
-        if (parts.length > 2) {
-            clean = parts[0] + '.' + parts.slice(1).join('');
-        }
-        return clean;
-    }
-
-    function sanitizeAlphanumericDash(val) {
-        let clean = stripEmojis(val);
-        clean = clean.replace(/[^a-zA-Z0-9\s\-/]/g, '');
-        return clean.replace(/\s+/g, ' ');
-    }
-
-    function sanitizeGeneralText(val) {
-        let clean = stripEmojis(val);
-        // exclude dangerous HTML / SQL / brackets symbols
-        clean = clean.replace(/[<>[\]{}$%^*+=|\\~`]/g, '');
-        return clean;
-    }
-
-    // Map selectors/elements to their respective sanitizers
+    // Selector de elementos en sus respectivos limpiadores
     const sanitizersMap = [
         { ids: ['strNombreSolicitante', 'strApellidoPaternoSolicitante', 'strApellidoMaternoSolicitante', 'strNombrePasajero', 'strColoniaSolicitante', 'strMunicipioSolicitante', 'strEstadoSolicitante'], fn: sanitizeLettersOnly },
         { ids: ['strTelefonoCelular', 'strTelefonoFijo', 'strCodigoPostalSolicitante', 'intCantidadPasajeros'], fn: sanitizeDigitsOnly },
@@ -119,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!el) return;
         el.classList.remove('is-valid', 'is-warning', 'is-invalid');
         
-        // Determinar a qué tarjeta/paso pertenece el campo
+        // Determinar a qué paso pertenece el campo
         const card = el.closest('.form-section-card');
         if (card) {
             const numEl = card.querySelector('.form-section-number');
@@ -170,14 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return 'missing';
         }
         if (val !== '') {
-            const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            if (!regex.test(val)) {
-                marcarElemento(el, 'invalid');
-                return 'invalid';
-            }
-            const domain = val.split('@')[1];
-            const allowedEmailDomains = ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com'];
-            if (!allowedEmailDomains.includes(domain)) {
+            if (!validateEmailDomain(val)) {
                 marcarElemento(el, 'invalid');
                 return 'invalid';
             }
@@ -216,8 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 marcarElemento(el, 'invalid');
                 return 'invalid';
             }
-            // Check for invalid format (e.g. letters that shouldn't be here)
-            // Since sanitizers strip letters, this is a safety net
+            // Verificar la validacion
             if (/[^0-9.]/.test(val)) {
                 marcarElemento(el, 'invalid');
                 return 'invalid';
@@ -449,7 +399,7 @@ document.addEventListener('DOMContentLoaded', () => {
         actualizarStepper();
     }
 
-    // Navegación con clics en los pasos del stepper
+    // Navegación con clics
     const steps = document.querySelectorAll('.stepper .step');
     steps.forEach((step, idx) => {
         step.style.cursor = 'pointer';
@@ -477,7 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Detectar el paso activo a través del foco o clics en tarjetas
+    // Detectar el paso activo en tarjetas
     document.addEventListener('focusin', (e) => {
         const card = e.target.closest('.form-section-card');
         if (card) {
@@ -546,50 +496,5 @@ document.addEventListener('DOMContentLoaded', () => {
     actualizarStepper();
 
     // ── Stepper flotante: sigue el scroll ──
-    (function initStepperFloat() {
-        const stepper = document.querySelector('.stepper');
-        if (!stepper) return;
-
-        const navbar = document.querySelector('.cavex-navbar');
-        const NAVBAR_H = navbar ? navbar.offsetHeight : 92;
-        document.documentElement.style.setProperty('--navbar-h', NAVBAR_H + 'px');
-        let stepperNaturalTop = 0;
-        let stepperH = 0;
-        let floating = false;
-
-        const placeholder = document.createElement('div');
-        placeholder.className = 'stepper-placeholder';
-        stepper.parentNode.insertBefore(placeholder, stepper.nextSibling);
-
-        function recalculate() {
-            if (!floating) {
-                stepperNaturalTop = stepper.getBoundingClientRect().top + window.scrollY;
-                stepperH = stepper.offsetHeight;
-            }
-        }
-
-        function onScroll() {
-            const scrollY = window.scrollY || document.documentElement.scrollTop;
-            const shouldFloat = scrollY + NAVBAR_H > stepperNaturalTop;
-
-            if (shouldFloat && !floating) {
-                floating = true;
-                placeholder.style.height = stepperH + 'px';
-                placeholder.classList.add('visible');
-                stepper.classList.add('is-floating');
-            } else if (!shouldFloat && floating) {
-                floating = false;
-                placeholder.classList.remove('visible');
-                stepper.classList.remove('is-floating');
-            }
-        }
-
-        requestAnimationFrame(() => {
-            recalculate();
-            onScroll();
-        });
-
-        window.addEventListener('scroll', onScroll, { passive: true });
-        window.addEventListener('resize', () => { floating = false; stepper.classList.remove('is-floating'); recalculate(); }, { passive: true });
-    })();
+    initStepperFloat();
 });

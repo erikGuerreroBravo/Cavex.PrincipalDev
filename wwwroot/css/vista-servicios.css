@@ -1,0 +1,242 @@
+/* Estilos específicos para la vista de Administración de Servicios (Nuevo Servicio) */
+
+/* Efectos de sombreado y transiciones para las Cards */
+.filter-card,
+.table-module {
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Efectos de sombreado y bordes en Hover para las Cards */
+.filter-card:hover,
+.table-module:hover {
+    box-shadow: 0 16px 40px rgba(6, 27, 58, 0.1);
+    border-color: rgba(0, 140, 149, 0.2);
+}
+
+/* Fila de la Tabla Interactiva (Borde lateral de transición) */
+.executive-table tbody tr {
+    transition: all 0.2s ease-in-out;
+    border-left: 4px solid transparent;
+}
+
+.executive-table tbody tr:hover {
+    border-left-color: var(--teal-cavex) !important;
+    background: #F4FBFC !important;
+}
+
+/* Ajustes de Tipografía Premium para la Tarjeta de Listado */
+.table-module .table-toolbar h4 {
+    color: var(--azul-cavex) !important;
+    font-weight: 850;
+    font-size: 1.2rem;
+}
+
+.table-module .table-toolbar small {
+    color: var(--gris) !important;
+    font-weight: 500;
+}
+
+/* Contenedor de Pestañas Segmentadas (Status Filters) */
+.custom-tabs-container {
+    display: inline-flex;
+    background: rgba(6, 27, 58, 0.02);
+    padding: 3px;
+    border-radius: 10px;
+    gap: 2px;
+    border: 1px solid rgba(6, 27, 58, 0.06);
+}
+
+.tab-item {
+    background: transparent;
+    border: none;
+    padding: 6px 12px;
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: var(--gris);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tab-item:hover {
+    color: var(--azul-cavex);
+    background: rgba(6, 27, 58, 0.04);
+}
+
+.tab-item:focus,
+.tab-item:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.tab-item:active {
+    transform: scale(0.97) !important;
+}
+
+.tab-item.active {
+    background: var(--blanco);
+    color: var(--azul-cavex);
+    box-shadow: 0 2px 6px rgba(6, 27, 58, 0.06);
+}
+
+/* Conteos en Pestañas */
+.tab-count {
+    font-size: 0.72rem;
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.tab-item.active .tab-count {
+    background: var(--azul-cavex);
+    color: var(--blanco);
+}
+
+.tab-item:not(.active) .tab-count {
+    background: rgba(6, 27, 58, 0.08);
+    color: var(--gris);
+}
+
+/* Personalizaciones de color en los contadores activos */
+.tab-item.active .tab-count.count-active {
+    background: var(--exito);
+    color: white;
+}
+
+.tab-item.active .tab-count.count-inactive {
+    background: var(--error);
+    color: white;
+}
+
+/* Caja de Búsqueda de Tabla */
+.table-search-box {
+    max-width: 320px;
+    width: 100%;
+}
+
+.table-search-box .form-control {
+    border-radius: 12px;
+    padding-left: 40px;
+    font-size: 0.88rem;
+    height: 38px;
+    border-color: var(--borde-cavex);
+    transition: all 0.2s ease;
+    background: rgba(6, 27, 58, 0.01);
+}
+
+.table-search-box .form-control:focus {
+    background: var(--blanco);
+    border-color: var(--teal-cavex);
+    box-shadow: 0 0 0 3px rgba(0, 140, 149, 0.1);
+}
+
+.table-search-box .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gris);
+    opacity: 0.7;
+    pointer-events: none;
+    transition: color 0.2s ease;
+}
+
+.table-search-box .form-control:focus + .search-icon {
+    color: var(--teal-cavex);
+    opacity: 1;
+}
+
+/* Botón Desplegable de Acciones Premium */
+.btn-action-trigger {
+    background: rgba(0, 140, 149, 0.05);
+    border: 1px solid rgba(0, 140, 149, 0.15);
+    color: var(--teal-cavex);
+    font-weight: 750;
+    font-size: 0.82rem;
+    border-radius: 10px;
+    padding: 6px 14px;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.btn-action-trigger:hover,
+.btn-action-trigger[aria-expanded="true"] {
+    background: var(--teal-cavex);
+    color: white !important;
+    border-color: var(--teal-cavex);
+    box-shadow: 0 4px 10px rgba(0, 140, 149, 0.15);
+    transform: translateY(-1px);
+}
+
+.btn-action-trigger:focus,
+.btn-action-trigger:focus-visible {
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(0, 140, 149, 0.15) !important;
+}
+
+.btn-action-trigger:active {
+    transform: translateY(0) scale(0.98) !important;
+    background: #007780 !important;
+    border-color: #007780 !important;
+    color: white !important;
+}
+
+/* Barra de Paginación en la base de la Tarjeta */
+.table-footer-bar {
+    background: var(--blanco);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-top: 1px solid var(--borde-cavex);
+}
+
+.pagination-info {
+    color: var(--gris);
+    font-weight: 600;
+}
+
+/* Badges estilizados (scoped to table module to prevent global leak) */
+.table-module .badge-active {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--exito);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.table-module .badge-danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--error);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+/* Texto de la Descripción */
+.description-text {
+    color: var(--texto-cavex);
+    font-weight: 550;
+    line-height: 1.45;
+    font-size: 0.88rem;
+    white-space: normal;
+}
+
+/* Degradado azul para la tarjeta de listado (table-module) */
+.table-module {
+    background: linear-gradient(135deg, rgba(0, 184, 196, 0.08), rgba(255, 255, 255, 0) 44%), var(--blanco) !important;
+}
+
+/* Barra de filtros ligera y limpia */
+.table-filter-bar {
+    padding: 16px 24px;
+    background: transparent;
+    border-bottom: 1px solid rgba(6, 27, 58, 0.05);
+}
