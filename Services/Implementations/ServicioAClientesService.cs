@@ -20,7 +20,7 @@ namespace Cavex.Principal.Services.Implementations
             _logger = logger;
         }
 
-        public async Task<ResponseWrapper<List<ServicioAClienteDto>>> ObtenerTodosAsync(CancellationToken cancellationToken = default)
+        public async Task<ResponseWrapper<PagedResponse<ServicioAClienteDto>>> ObtenerTodosAsync(CancellationToken cancellationToken = default)
         {
             return await ExecuteAsync(
                 () => _servicioAClientesApi.GetAllAsync(cancellationToken),

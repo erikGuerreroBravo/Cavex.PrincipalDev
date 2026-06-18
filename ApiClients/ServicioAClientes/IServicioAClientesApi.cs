@@ -8,7 +8,7 @@ namespace Cavex.Principal.ApiClients.ServicioAClientes
     {
 
         [Get("/api/v1/CatServicios")]  
-        Task<ResponseWrapper<List<ServicioAClienteDto>>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<ResponseWrapper<PagedResponse<ServicioAClienteDto>>> GetAllAsync(CancellationToken cancellationToken = default);
 
         // Recordar
         [Get("/api/v1/CatServicios/{id}")]
