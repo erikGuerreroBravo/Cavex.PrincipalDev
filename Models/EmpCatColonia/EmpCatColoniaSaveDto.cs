@@ -12,5 +12,9 @@ namespace Cavex.Principal.Models.EmpCatColonia
         [StringLength(450, ErrorMessage = "La descripcion no puede superar los 450 caracteres.")]
         [Display(Name = "Descripcion")]
         public string? StrDescripcion { get; set; }
+
+        [Required(ErrorMessage = "El municipio es obligatorio.")]
+        [Display(Name = "Municipio")]
+        public int IntEmpCatMunicipio { get; set; }
     }
 }

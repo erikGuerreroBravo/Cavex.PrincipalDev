@@ -30,6 +30,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Models\EmpCatTipoContratacion\" />
+    <Folder Include="Models\EmpCondicionesLaborales\" />
+    <Folder Include="Models\EmpDireccion\" />
+    <Folder Include="Models\EmpEmpleado\" />
+    <Folder Include="Models\EmpHistorialArea\" />
+    <Folder Include="Models\EmpReferenciasPersonales\" />
+    <Folder Include="Models\EmpTelefono\" />
+    <Folder Include="Models\EmpDocumentosLaborales\" />
+    <Folder Include="Models\EmpExperiencia\" />
+    <Folder Include="Models\EmpCatPais\" />
     <Folder Include="ViewModels\" />
   </ItemGroup>
 

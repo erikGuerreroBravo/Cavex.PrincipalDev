@@ -12,5 +12,9 @@ namespace Cavex.Principal.Models.CatSucursal
         
         [StringLength(450, ErrorMessage = "La descripcion no puede superar los 450 caracteres.")]
         public string Descripcion { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "El estatus es obligatorio.")]
+        [Display(Name = "Estatus")]
+        public int IdCatStatus { get; set; }
     }
 }
