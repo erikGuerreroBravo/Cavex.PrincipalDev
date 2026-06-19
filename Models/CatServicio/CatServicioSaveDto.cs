@@ -14,6 +14,7 @@ namespace Cavex.Principal.Models.ServicioAClientes
         [StringLength(450, ErrorMessage = "La descripcion no puede superar los 450 caracteres.")]
         public string Descripcion { get; set; } = string.Empty;
 
+
         // Alias for backwards compatibility with JS / code expecting strDescripcion
         public string strDescripcion
         {
@@ -22,5 +23,10 @@ namespace Cavex.Principal.Models.ServicioAClientes
         }
 
         public int IdCatStatus { get; set; } = 1;
+
+        [Required(ErrorMessage = "El estatus es obligatorio.")]
+        [Display(Name = "Estatus")]
+        public int IdCatStatus { get; set; }
+
     }
 }

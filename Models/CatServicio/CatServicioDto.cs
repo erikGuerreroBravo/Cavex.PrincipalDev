@@ -11,5 +11,10 @@ namespace Cavex.Principal.Models.CatServicio
 
         [Display(Name = "Descripcion")]
         public string? StrDescripcion { get; set; }
+
+        public int IdCatStatus { get; set; }
+
+        [Display(Name = "Estatus")]
+        public string StrCatStatus { get; set; } = string.Empty;
     }
 }

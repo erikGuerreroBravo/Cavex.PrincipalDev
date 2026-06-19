@@ -11,6 +11,11 @@ namespace Cavex.Principal.Models.EmpCatEntidadFederativa
 
         [Display(Name = "Descripcion")]
         public string? StrDescripcion { get; set; }
-        
+
+        public int IdEmpCatPais { get; set; }
+
+        [Display(Name = "Pais")]
+        public string StrEmpCatPais { get; set; } = string.Empty;
+
     }
 }

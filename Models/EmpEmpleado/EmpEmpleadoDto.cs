@@ -1,0 +1,81 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Cavex.Principal.Models.EmpEmpleado
+{
+    public class EmpEmpleadoDto
+    {
+        public int Id { get; set; }
+
+        [Display(Name = "Nombre")]
+        public string StrNombre { get; set; } = string.Empty;
+
+        [Display(Name = "Apellido paterno")]
+        public string StrApellidoPaterno { get; set; } = string.Empty;
+
+        [Display(Name = "Apellido materno")]
+        public string? StrApellidoMaterno { get; set; }
+
+        [Display(Name = "Fecha de nacimiento")]
+        public DateTime DteFechaNacimiento { get; set; }
+
+        [Display(Name = "RFC")]
+        public string StrRfc { get; set; } = string.Empty;
+
+        [Display(Name = "CURP")]
+        public string StrCurp { get; set; } = string.Empty;
+
+        [Display(Name = "Edad")]
+        public int IntEdad { get; set; }
+
+        [Display(Name = "Correo electronico")]
+        public string StrCorreoElectronico { get; set; } = string.Empty;
+
+        [Display(Name = "NSS")]
+        public int IntNss { get; set; }
+
+        public int IdEmpCatGenero { get; set; }
+
+        [Display(Name = "Genero")]
+        public string StrEmpCatGenero { get; set; } = string.Empty;
+
+        public int IdEmpCatEstadoCivil { get; set; }
+
+        [Display(Name = "Estado civil")]
+        public string StrEmpCatEstadoCivil { get; set; } = string.Empty;
+
+        public int IdEmpCatNacionalidad { get; set; }
+
+        [Display(Name = "Nacionalidad")]
+        public string StrEmpCatNacionalidad { get; set; } = string.Empty;
+
+        public int IdEmpCatTipoContratacion { get; set; }
+
+        [Display(Name = "Tipo de contratacion")]
+        public string StrEmpCatTipoContratacion { get; set; } = string.Empty;
+
+        public int IdEmpDireccion { get; set; }
+
+        [Display(Name = "Direccion")]
+        public string StrEmpDireccion { get; set; } = string.Empty;
+
+        public int IdEmpDatosAcademicos { get; set; }
+
+        [Display(Name = "Datos academicos")]
+        public string StrEmpDatosAcademicos { get; set; } = string.Empty;
+
+        public int IdEmpDocumentosLaborales { get; set; }
+
+        [Display(Name = "Documentos laborales")]
+        public string StrEmpDocumentosLaborales { get; set; } = string.Empty;
+
+        public int IdEmpCondicionesLaborales { get; set; }
+
+        [Display(Name = "Condiciones laborales")]
+        public string StrEmpCondicionesLaborales { get; set; } = string.Empty;
+
+        public int IdCatStatus { get; set; }
+
+        [Display(Name = "Estatus")]
+        public string StrCatStatus { get; set; } = string.Empty;
+    }
+}

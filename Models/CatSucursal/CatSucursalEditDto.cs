@@ -2,7 +2,7 @@
 
 namespace Cavex.Principal.Models.CatSucursal
 {
-    public class CatSucursalEditDto
+    public class CatSucursalEditDto : CatSucursalSaveDto
     {
         [Required]
         public int Id { get; set; }

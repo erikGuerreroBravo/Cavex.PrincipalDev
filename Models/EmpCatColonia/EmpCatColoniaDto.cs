@@ -18,6 +18,11 @@ namespace Cavex.Principal.Models.EmpCatColonia
         [Display(Name = "Tipo de Asentamiento")]
         public string StrTipoAsentamiento { get; set; }
 
-       
+        public int IntEmpCatMunicipio { get; set; }
+
+        [Display(Name = "Municipio")]
+        public string StrEmpCatMunicipio { get; set; } = string.Empty;
+
+
     }
 }

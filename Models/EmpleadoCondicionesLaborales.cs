@@ -1,13 +1,24 @@
-﻿namespace Cavex.Principal.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Cavex.Principal.Models
 {
+    [Table("EmpCondicionesLaborales")]
     public class EmpleadoCondicionesLaborales
     {
+        [Key]
         public int Id { get; set; }
-        public bool ViveEnLugarDeTrabajo { get; set; }
-        public bool DisponibilidadDeViaje {  get; set; }
-        public bool DisponibilidadDeCambio { get; set; }
-        public double SueldoMensual {  get; set; }
-        public bool ExperienciaEnElCampo { get; set; }
-        public DateOnly FechaIngreso { get; set; }
+
+        public bool BitCercaniaVivienda { get; set; }
+
+        public bool BitDisponibilidadDeViaje { get; set; }
+
+        public decimal MnySueldoMensual { get; set; }
+
+        public bool BitExperienciaEnArea { get; set; }
+
+        public bool BitDisponibilidadCambioResidencia { get; set; }
+
+        public DateTime DteFechaIngreso { get; set; }
     }
 }
