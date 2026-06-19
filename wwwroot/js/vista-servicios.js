@@ -81,14 +81,24 @@ function loadServicesFromServer() {
                 renderServices();
             } else {
                 console.error("Error al cargar servicios desde base de datos:", result.message);
-                alert("No se pudieron cargar los servicios: " + (result.message || "Error desconocido de API"));
+                Swal.fire({
+                    icon: 'error',
+                    title: '¡Ups!',
+                    text: 'No se pudieron obtener los datos de los servicios. ¡Intenta de nuevo!',
+                    confirmButtonColor: 'var(--teal-cavex)'
+                });
                 services = [];
                 renderServices();
             }
         })
         .catch(err => {
             console.error("Error en petición:", err);
-            alert("Error al cargar servicios: " + err.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de conexión',
+                text: 'No se pudieron obtener los datos. ¡Intenta de nuevo!',
+                confirmButtonColor: 'var(--teal-cavex)'
+            });
             services = [];
             renderServices();
         });
@@ -186,7 +196,7 @@ function renderServices() {
                 </td>
                 <td class="text-end">
                     <div class="dropdown actions-dropdown d-inline-block">
-                        <button class="btn-action-trigger btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn-action-trigger btn-sm" type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport" aria-expanded="false">
                             <span>Acciones</span>
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                         </button>
@@ -387,7 +397,12 @@ function handleFormSubmit(e) {
     .then(response => response.json())
     .then(result => {
         if (result.success) {
-            alert(editingId === null ? "Servicio agregado exitosamente." : "Servicio actualizado exitosamente.");
+            Swal.fire({
+                icon: 'success',
+                title: editingId === null ? '¡Servicio registrado!' : '¡Servicio actualizado!',
+                text: editingId === null ? 'El servicio ha sido agregado exitosamente.' : 'El servicio ha sido modificado exitosamente.',
+                confirmButtonColor: 'var(--teal-cavex)'
+            });
             resetForm();
             loadServicesFromServer();
         } else {
@@ -397,12 +412,22 @@ function handleFormSubmit(e) {
             if (feedback) {
                 feedback.textContent = result.message || 'Error al guardar el servicio.';
             }
-            alert("No se pudo guardar el servicio: " + (result.message || "Intente de nuevo."));
+            Swal.fire({
+                icon: 'warning',
+                title: 'No se pudo guardar',
+                text: result.message || 'No se pudo registrar el servicio. Por favor, intenta de nuevo.',
+                confirmButtonColor: 'var(--teal-cavex)'
+            });
         }
     })
     .catch(err => {
         console.error("Error al guardar el servicio:", err);
-        alert("Ocurrió un error al intentar guardar el servicio.");
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de guardado',
+            text: 'No se pudo procesar la solicitud. ¡Intenta de nuevo!',
+            confirmButtonColor: 'var(--teal-cavex)'
+        });
     });
 }
 
@@ -435,27 +460,53 @@ function editService(id) {
 
 // Eliminar servicio
 function deleteService(id) {
-    if (confirm("¿Estás seguro de que deseas eliminar este servicio?")) {
-        fetch('/Servicios/DeleteService?id=' + id, {
-            method: 'POST'
-        })
-        .then(response => response.json())
-        .then(result => {
-            if (result.success) {
-                alert("Servicio eliminado exitosamente.");
-                if (editingId === id) {
-                    resetForm();
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: "¡No podrás revertir esta acción!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('/Servicios/DeleteService?id=' + id, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Eliminado!',
+                        text: 'El servicio ha sido eliminado exitosamente.',
+                        confirmButtonColor: 'var(--teal-cavex)'
+                    });
+                    if (editingId === id) {
+                        resetForm();
+                    }
+                    loadServicesFromServer();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'No se pudo eliminar',
+                        text: result.message || 'Inténtalo de nuevo más tarde.',
+                        confirmButtonColor: 'var(--teal-cavex)'
+                    });
                 }
-                loadServicesFromServer();
-            } else {
-                alert("No se pudo eliminar el servicio: " + result.message);
-            }
-        })
-        .catch(err => {
-            console.error("Error al eliminar el servicio:", err);
-            alert("Ocurrió un error al intentar eliminar el servicio.");
-        });
-    }
+            })
+            .catch(err => {
+                console.error("Error al eliminar el servicio:", err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de conexión',
+                    text: 'No se pudo procesar la solicitud. ¡Intenta de nuevo!',
+                    confirmButtonColor: 'var(--teal-cavex)'
+                });
+            });
+        }
+    });
 }
 
 // Restablecer el formulario

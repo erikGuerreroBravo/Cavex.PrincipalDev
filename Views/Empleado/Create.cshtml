@@ -1,4 +1,4 @@
-@model Cavex.Principal.ViewModels.CrearEmpleadoViewModel
+@model Cavex.Principal.ViewModels.CreateViewModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "Agregar nuevo empleado";
@@ -27,7 +27,7 @@
         <span class="step">7 Documentos laborales</span>
     </div>
 
-     <form id="form-empleado" action="/Empleado/CrearEmpleado" method="post" enctype="multipart/form-data" autocomplete="off" novalidate>
+     <form id="form-empleado" action="/Empleado/Create" method="post" enctype="multipart/form-data" autocomplete="off" novalidate>
         <div class="cards-col">
             <div class="empleado-card">
                 <div class="card-title">

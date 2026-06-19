@@ -105,7 +105,7 @@ namespace Cavex.Principal.ViewModels
     }
 
     // ── 4. VIEWMODEL PRINCIPAL DE CREACIÓN DE EMPLEADO ──
-    public class CrearEmpleadoViewModel : IValidatableObject
+    public class CreateViewModel : IValidatableObject
     {
         // SECTION 1: DATOS PERSONALES
         [Required(ErrorMessage = "El nombre es obligatorio.")]
