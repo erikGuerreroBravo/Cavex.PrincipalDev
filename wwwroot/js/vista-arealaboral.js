@@ -135,7 +135,7 @@ function renderAreas() {
     const endIndex = Math.min(startIndex + pageSize, totalRecords);
     const pagedList = filtered.slice(startIndex, endIndex);
 
-    // Renderizar vacío si no hay registros
+    // Mostrar vacío si no hay registros en tabla de area laboral
     if (pagedList.length === 0) {
         tbody.innerHTML = `
             <tr>
@@ -157,7 +157,7 @@ function renderAreas() {
                 ? a.descripcion.substring(0, 50) + '...' 
                 : descText;
             const descTitle = a.descripcion ? `title="${escapeHtml(a.descripcion)}"` : '';
-
+            // Inyeccion de la tabla con campos de nombre, descripcion y acciones de editar y eliminar
             tr.innerHTML = `
                 <td>
                     <div class="cotizacion-main-text">${escapeHtml(a.nombre)}</div>

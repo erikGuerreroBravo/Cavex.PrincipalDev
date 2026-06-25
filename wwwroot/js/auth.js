@@ -11,6 +11,7 @@ function togglePasswordVisibility(inputId, btn) {
     }
 }
 
+// Funcion para validar el dominio del correo
 document.addEventListener("DOMContentLoaded", function () {
     const emailInput = document.getElementById("strEmail");
     const registerForm = document.querySelector(".login-form");

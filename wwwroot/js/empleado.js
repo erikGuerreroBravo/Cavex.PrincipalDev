@@ -697,7 +697,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function validarPasoEmpleado7() {
         const results = [];
-        ['identificacion', 'comprobante', 'cv', 'contrato', 'licencia'].forEach(key => {
+        ['identificacion', 'comprobante', 'cv', 'contrato', 'licencia', 'fotoEmpleado'].forEach(key => {
             const ok = validarDropZone(key);
             results.push(ok ? 'valid' : 'missing');
         });

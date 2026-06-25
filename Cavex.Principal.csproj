@@ -4,6 +4,8 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,7 +28,8 @@
     <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="10.0.8" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.12" />
     <PackageReference Include="Polly" Version="8.6.6" />
-    <PackageReference Include="Refit.HttpClientFactory" Version="11.0.1" />
+    <PackageReference Include="Refit" Version="8.0.0" />
+    <PackageReference Include="Refit.HttpClientFactory" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,5 +45,13 @@
     <Folder Include="Models\EmpCatPais\" />
     <Folder Include="ViewModels\" />
   </ItemGroup>
+
+  <Target Name="ValidateRefitGeneratedClients" AfterTargets="CoreCompile">
+    <ItemGroup>
+      <RefitServicioAClientesGeneratedClient Include="$(CompilerGeneratedFilesOutputPath)\**\IServicioAClientesApi.g.cs" />
+      <RefitEmpCatAreaLaboralGeneratedClient Include="$(CompilerGeneratedFilesOutputPath)\**\IEmpCatAreaLaboralApi.g.cs" />
+    </ItemGroup>
+
+  </Target>
 
 </Project>

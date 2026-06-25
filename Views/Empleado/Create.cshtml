@@ -464,6 +464,31 @@
                         </div>
                     </div>
                 </div>
+                <div class="document-upload-card">
+                    <div class="document-header">
+                        <span class="document-icon-img">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-cavex);"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        </span>
+                        <span class="document-name">Fotografia del Empleado</span>
+                    </div>
+                    <div class="drop-zone" id="drop-zone-fotoEmpleado" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'fotoEmpleado')">
+                        <input asp-for="fotoEmpleado" type="file" id="file-fotoEmpleado" accept=".pdf" class="file-input-hidden" onchange="handleFileSelect(event, 'fotoEmpleado')" required />
+                        <div class="drop-zone-prompt" onclick="document.getElementById('file-fotoEmpleado').click()">
+                            <span class="upload-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-cavex);"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            </span>
+                            <p>Arrastra tu archivo aquí o <span>haz clic para buscar</span></p>
+                            <small>Solo formato PDF</small>
+                        </div>
+                        <div class="file-preview-container" style="display:none;">
+                            <div class="file-info">
+                                <span class="file-name-text" id="name-fotoEmpleado"></span>
+                                <span class="file-size-text" id="size-fotoEmpelado"></span>
+                            </div>
+                            <button type="button" class="btn-editar-doc" onclick="removeFile('fotoEmpleado')">Editar</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

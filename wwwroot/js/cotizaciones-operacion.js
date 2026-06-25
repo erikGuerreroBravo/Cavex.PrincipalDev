@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Id de todos los elementos de la vista de cotizaciones
     const registrarDireccionSi = document.getElementById('strRegistrarDireccionSolicitanteSi');
     const registrarDireccionNo = document.getElementById('strRegistrarDireccionSolicitanteNo');
     const direccionBloque = document.getElementById('divDireccionSolicitante');
@@ -13,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const servicioSelect = document.getElementById('intServicioId');
     const pagoChoferInput = document.getElementById('intPagoChoferDia');
 
+    // Funcion es la encarga de cargar la sucursal que este seleccionada
     function obtenerSucursalSeleccionada() {
         if (!sucursalSelect) return null;
         const option = sucursalSelect.selectedOptions[0];
@@ -23,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    // 
     function actualizarDireccionSolicitante() {
         if (!direccionBloque) return;
         const esSi = registrarDireccionSi && registrarDireccionSi.checked;
