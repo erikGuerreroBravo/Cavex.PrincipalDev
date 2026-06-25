@@ -7,10 +7,12 @@ namespace Cavex.Principal.Controllers
     public class ServiciosController : Controller
     {
         private readonly IServicioAClientesService _service;
+        private readonly ICatStatusService _catStatusService;
 
-        public ServiciosController(IServicioAClientesService service)
+        public ServiciosController(IServicioAClientesService service, ICatStatusService catStatusService)
         {
             _service = service;
+            _catStatusService = catStatusService;
         }
 
         public IActionResult Index(int pagina = 1)
@@ -23,11 +25,20 @@ namespace Cavex.Principal.Controllers
         public async Task<IActionResult> GetServices(CancellationToken cancellationToken)
         {
             var response = await _service.ObtenerTodosAsync(cancellationToken);
-            if (!response.Success)
-            {
-                return Json(new { success = false, message = response.Message });
-            }
-            return Json(new { success = true, data = response.Data?.Items });
+
+            return Json(response.Success
+                ? new { success = true, data = response.Data?.Items }
+                : new { success = false, message = response.Message });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetStatus(CancellationToken cancellationToken)
+        {
+            var response = await _catStatusService.ObtenerTodosAsync(cancellationToken);
+
+            return Json(response.Success
+                ? new { success = true, data = response.Data?.Items }
+                : new { success = false, message = response.Message });
         }
 
         [HttpPost]
@@ -35,16 +46,14 @@ namespace Cavex.Principal.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-                return Json(new { success = false, message = string.Join(" ", errors) });
+                return Json(new { success = false, message = GetModelStateErrors() });
             }
 
             var response = await _service.CrearAsync(model, cancellationToken);
-            if (!response.Success)
-            {
-                return Json(new { success = false, message = response.Message });
-            }
-            return Json(new { success = true, data = response.Data });
+
+            return Json(response.Success
+                ? new { success = true, data = response.Data }
+                : new { success = false, message = response.Message });
         }
 
         [HttpPost]
@@ -52,27 +61,29 @@ namespace Cavex.Principal.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-                return Json(new { success = false, message = string.Join(" ", errors) });
+                return Json(new { success = false, message = GetModelStateErrors() });
             }
 
             var response = await _service.ActualizarAsync(model.Id, model, cancellationToken);
-            if (!response.Success)
-            {
-                return Json(new { success = false, message = response.Message });
-            }
-            return Json(new { success = true, data = response.Data });
+
+            return Json(response.Success
+                ? new { success = true, data = response.Data }
+                : new { success = false, message = response.Message });
         }
 
         [HttpPost]
         public async Task<IActionResult> DeleteService(int id, CancellationToken cancellationToken)
         {
             var response = await _service.EliminarAsync(id, cancellationToken);
-            if (!response.Success)
-            {
-                return Json(new { success = false, message = response.Message });
-            }
-            return Json(new { success = true, data = response.Data });
+
+            return Json(response.Success
+                ? new { success = true, data = response.Data }
+                : new { success = false, message = response.Message });
+        }
+
+        private string GetModelStateErrors()
+        {
+            return string.Join(" ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
         }
     }
 }

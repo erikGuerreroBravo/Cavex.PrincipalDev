@@ -1,198 +1,237 @@
 let services = [];
+let statusCatalog = [];
 let editingId = null;
-
-// Variables de paginación y filtros
 let currentPage = 1;
 let pageSize = 10;
-let statusFilter = 'todos';
-let searchQuery = '';
+let statusFilter = "";
+let searchQuery = "";
 
-// Renderizado inicial de la tabla cargando datos del servidor
-document.addEventListener('DOMContentLoaded', () => {
-    loadServicesFromServer();
-    
-    // Aplicacion en tiempo real utilizando las funciones globales de site.js
-    const nombreInput = document.getElementById('strNombre');
-    const descInput = document.getElementById('strDescripcion');
-    
+document.addEventListener("DOMContentLoaded", async () => {
+    wireFormInputs();
+    await loadStatusOptions();
+    await loadServicesFromServer();
+});
+
+async function loadStatusOptions() {
+    const statusField = document.getElementById("intIdStatus");
+    if (statusField) {
+        statusField.innerHTML = '<option value="">-- Seleccionar Estado --</option>';
+    }
+
+    try {
+        const response = await fetch("/Servicios/GetStatus", {
+            method: "GET",
+            headers: { "Accept": "application/json" }
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+            showError(result.message || "No fue posible cargar los estatus.");
+            renderStatusTabs();
+            return;
+        }
+
+        statusCatalog = (result.data || []).map(status => ({
+            id: status.id ?? status.Id,
+            nombre: status.strValor || status.StrValor || `Estatus ${status.id ?? status.Id}`,
+            descripcion: status.strDescripcion || status.StrDescripcion || ""
+        }));
+
+        if (statusField) {
+            statusCatalog.forEach(status => {
+                const option = document.createElement("option");
+                option.value = status.id;
+                option.textContent = status.nombre;
+                statusField.appendChild(option);
+            });
+        }
+
+        renderStatusTabs();
+    } catch (error) {
+        console.error(error);
+        showError("Ocurrio un error al cargar los estatus.");
+        renderStatusTabs();
+    }
+}
+
+async function loadServicesFromServer() {
+    try {
+        const response = await fetch("/Servicios/GetServices", {
+            method: "GET",
+            headers: { "Accept": "application/json" }
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+            showError(result.message || "No fue posible cargar los servicios.");
+            services = [];
+            renderStatusTabs();
+            renderServices();
+            return;
+        }
+
+        services = (result.data || []).map(item => {
+            const idCatStatus = item.idCatStatus ?? item.IdCatStatus;
+
+            return {
+                id: item.id ?? item.Id,
+                nombre: item.strValor || item.StrValor || "",
+                descripcion: item.strDescripcion || item.StrDescripcion || "",
+                idCatStatus: idCatStatus === null || idCatStatus === undefined ? "" : String(idCatStatus),
+                strCatStatus: item.strCatStatus || item.StrCatStatus || ""
+            };
+        });
+
+        renderStatusTabs();
+        renderServices();
+    } catch (error) {
+        console.error(error);
+        showError("Ocurrio un error al cargar los servicios.");
+        services = [];
+        renderStatusTabs();
+        renderServices();
+    }
+}
+
+function wireFormInputs() {
+    const nombreInput = document.getElementById("strNombre");
+    const descInput = document.getElementById("strDescripcion");
+    const statusField = document.getElementById("intIdStatus");
+
     if (nombreInput) {
-        nombreInput.addEventListener('input', () => {
+        nombreInput.addEventListener("input", () => {
             const originalVal = nombreInput.value;
-            const cleanedVal = sanitizeLettersOnly(originalVal);
+            const cleanedVal = typeof sanitizeLettersOnly === "function"
+                ? sanitizeLettersOnly(originalVal)
+                : originalVal.replace(/[^a-zA-Z0-9#.\-\s]/g, "");
+
             if (originalVal !== cleanedVal) {
                 const start = nombreInput.selectionStart;
                 const end = nombreInput.selectionEnd;
                 nombreInput.value = cleanedVal;
                 try {
                     nombreInput.setSelectionRange(start, end);
-                } catch (err) {}
+                } catch (err) { }
             }
-            nombreInput.classList.remove('is-invalid', 'is-valid');
+
+            nombreInput.classList.remove("is-invalid", "is-valid");
         });
-        
-        nombreInput.addEventListener('blur', () => {
+
+        nombreInput.addEventListener("blur", () => {
             nombreInput.value = nombreInput.value.trim();
         });
     }
-    
+
     if (descInput) {
-        descInput.addEventListener('input', () => {
+        descInput.addEventListener("input", () => {
             const originalVal = descInput.value;
-            const cleanedVal = sanitizeGeneralText(originalVal);
+            const cleanedVal = typeof sanitizeGeneralText === "function"
+                ? sanitizeGeneralText(originalVal)
+                : originalVal.replace(/[^a-zA-Z0-9#.,_()\/\-\s]/g, "");
+
             if (originalVal !== cleanedVal) {
                 const start = descInput.selectionStart;
                 const end = descInput.selectionEnd;
                 descInput.value = cleanedVal;
                 try {
                     descInput.setSelectionRange(start, end);
-                } catch (err) {}
+                } catch (err) { }
             }
-            descInput.classList.remove('is-invalid', 'is-valid');
+
+            descInput.classList.remove("is-invalid", "is-valid");
         });
-        
-        descInput.addEventListener('blur', () => {
+
+        descInput.addEventListener("blur", () => {
             descInput.value = descInput.value.trim();
         });
     }
-});
 
-function loadServicesFromServer() {
-    fetch('/Servicios/GetServices')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("HTTP error " + response.status);
-            }
-            return response.json();
-        })
-        .then(result => {
-            console.log("Respuesta de GetServices:", result);
-            if (result.success) {
-                if (result.data && Array.isArray(result.data)) {
-                    services = result.data.map(item => ({
-                        id: item.id,
-                        nombre: item.strValor,
-                        descripcion: item.strDescripcion,
-                        idCatStatus: item.idCatStatus,
-                        activo: item.idCatStatus === 1
-                    }));
-                } else {
-                    services = [];
-                }
-                renderServices();
-            } else {
-                console.error("Error al cargar servicios desde base de datos:", result.message);
-                Swal.fire({
-                    icon: 'error',
-                    title: '¡Ups!',
-                    text: 'No se pudieron obtener los datos de los servicios. ¡Intenta de nuevo!',
-                    confirmButtonColor: 'var(--teal-cavex)'
-                });
-                services = [];
-                renderServices();
-            }
-        })
-        .catch(err => {
-            console.error("Error en petición:", err);
-            Swal.fire({
-                icon: 'error',
-                title: 'Error de conexión',
-                text: 'No se pudieron obtener los datos. ¡Intenta de nuevo!',
-                confirmButtonColor: 'var(--teal-cavex)'
-            });
-            services = [];
-            renderServices();
+    if (statusField) {
+        statusField.addEventListener("change", () => {
+            statusField.classList.remove("is-invalid", "is-valid");
         });
+    }
 }
 
-// Función para renderizar los servicios
+function renderStatusTabs() {
+    const tabsContainer = document.getElementById("statusTabs");
+    if (!tabsContainer) return;
+
+    tabsContainer.innerHTML = "";
+    tabsContainer.appendChild(createStatusTab("", "Todos", services.length));
+
+    statusCatalog.forEach(status => {
+        const count = services.filter(s => s.idCatStatus === String(status.id)).length;
+        tabsContainer.appendChild(createStatusTab(String(status.id), status.nombre, count));
+    });
+}
+
+function createStatusTab(value, text, count) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `tab-item ${statusFilter === value ? "active" : ""}`;
+    button.onclick = () => setStatusFilter(value);
+    button.innerHTML = `${escapeHtml(text)} <span class="tab-count count-all">${count}</span>`;
+    return button;
+}
+
 function renderServices() {
-    const tbody = document.getElementById('servicesTableBody');
-    tbody.innerHTML = '';
+    const tbody = document.getElementById("servicesTableBody");
+    if (!tbody) return;
 
-    // Filtrar servicios
-    let filtered = services.filter(s => {
-        // Filtro por Estado
-        if (statusFilter === 'activos' && !s.activo) return false;
-        if (statusFilter === 'baja' && s.activo) return false;
+    tbody.innerHTML = "";
 
-        // Filtro por Búsqueda (Nombre o Descripción)
+    const filtered = services.filter(service => {
+        if (statusFilter && service.idCatStatus !== statusFilter) return false;
+
         if (searchQuery) {
             const query = searchQuery.toLowerCase();
-            const nombreMatch = s.nombre.toLowerCase().includes(query);
-            const descMatch = (s.descripcion || '').toLowerCase().includes(query);
-            return nombreMatch || descMatch;
+            return service.nombre.toLowerCase().includes(query)
+                || (service.descripcion || "").toLowerCase().includes(query)
+                || getStatusName(service).toLowerCase().includes(query);
         }
 
         return true;
     });
 
-    // Actualizar Conteos en Pestañas
-    const countTodos = services.length;
-    const countActivos = services.filter(s => s.activo).length;
-    const countBaja = services.filter(s => !s.activo).length;
-
-    document.getElementById('countTodos').textContent = countTodos;
-    document.getElementById('countActivos').textContent = countActivos;
-    document.getElementById('countBaja').textContent = countBaja;
-
-    // Paginación
     const totalRecords = filtered.length;
     const totalPages = Math.ceil(totalRecords / pageSize) || 1;
-    
-    // Ajustar página actual si queda fuera del rango
-    if (currentPage > totalPages) {
-        currentPage = totalPages;
-    }
-    if (currentPage < 1) {
-        currentPage = 1;
-    }
+
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
 
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = Math.min(startIndex + pageSize, totalRecords);
     const pagedList = filtered.slice(startIndex, endIndex);
 
-    // Renderizar vacío si no hay registros
     if (pagedList.length === 0) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="4" class="text-center py-5">
                     <div class="text-muted">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-2 opacity-50"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
                         <p class="m-0 font-weight-700">No se encontraron servicios</p>
-                        <small>Prueba ajustando los filtros o la búsqueda</small>
+                        <small>Prueba ajustando los filtros o la busqueda</small>
                     </div>
                 </td>
-            </tr>
-        `;
+            </tr>`;
     } else {
-        pagedList.forEach(s => {
-            const tr = document.createElement('tr');
-            
-            // Badge de Estado
-            const statusBadge = s.activo 
-                ? '<span class="badge-active">Activo</span>' 
-                : '<span class="badge-danger">Baja</span>';
-            
-            const actionStatusText = s.activo ? 'Dar de baja' : 'Activar';
-            const actionStatusIcon = s.activo 
-                ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 text-danger"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>'
-                : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 text-success"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>';
-
-            const descText = s.descripcion || 'Sin descripción';
-            const truncatedDesc = s.descripcion && s.descripcion.length > 50 
-                ? s.descripcion.substring(0, 50) + '...' 
-                : descText;
-            const descTitle = s.descripcion ? `title="${escapeHtml(s.descripcion)}"` : '';
+        pagedList.forEach(service => {
+            const tr = document.createElement("tr");
+            const statusName = getStatusName(service);
+            const descText = service.descripcion || "Sin descripcion";
+            const truncatedDesc = descText.length > 60 ? `${descText.substring(0, 60)}...` : descText;
 
             tr.innerHTML = `
                 <td>
-                    <div class="cotizacion-main-text">${escapeHtml(s.nombre)}</div>
+                    <div class="cotizacion-main-text">${escapeHtml(service.nombre)}</div>
                 </td>
                 <td>
-                    <div class="description-text" ${descTitle}>${escapeHtml(truncatedDesc)}</div>
+                    <div class="description-text" title="${escapeHtml(descText)}">${escapeHtml(truncatedDesc)}</div>
                 </td>
                 <td>
-                    ${statusBadge}
+                    <span class="${getStatusBadgeClass(statusName)}">${escapeHtml(statusName)}</span>
                 </td>
                 <td class="text-end">
                     <div class="dropdown actions-dropdown d-inline-block">
@@ -202,352 +241,285 @@ function renderServices() {
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li>
-                                <button class="dropdown-item d-flex align-items-center" type="button" onclick="editService(${s.id})">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 text-primary"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                <button class="dropdown-item d-flex align-items-center" type="button" onclick="editService(${service.id})">
                                     Editar
                                 </button>
                             </li>
                             <li>
-                                <button class="dropdown-item d-flex align-items-center text-danger" type="button" onclick="deleteService(${s.id})">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 text-danger"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-                                    <span>Eliminar</span>
+                                <button class="dropdown-item d-flex align-items-center text-danger" type="button" onclick="deleteService(${service.id})">
+                                    Eliminar
                                 </button>
                             </li>
                         </ul>
                     </div>
-                </td>
-            `;
+                </td>`;
+
             tbody.appendChild(tr);
         });
     }
 
-    // Actualizar contadores e información en barra inferior
-    const infoText = totalRecords > 0 
-        ? `Mostrando ${startIndex + 1}-${endIndex} de ${totalRecords} registros`
-        : `Mostrando 0-0 de 0 registros`;
-    document.getElementById('paginationInfo').textContent = infoText;
+    setText(
+        "paginationInfo",
+        totalRecords > 0
+            ? `Mostrando ${startIndex + 1}-${endIndex} de ${totalRecords} registros`
+            : "Mostrando 0-0 de 0 registros"
+    );
 
-    // Renderizar botones de paginación
+    const countPill = document.querySelector(".table-module .records-pill");
+    if (countPill) countPill.textContent = `${totalRecords} servicios`;
+
+    const extraPill = document.querySelector(".table-module .records-pill-soft");
+    if (extraPill) extraPill.textContent = `Pagina ${currentPage} de ${totalPages}`;
+
     renderPagination(totalPages);
-
-    // Actualizar contadores en la cabecera de la tabla
-    const countPill = document.querySelector('.table-module .records-pill');
-    if (countPill) {
-        countPill.textContent = `${totalRecords} servicios`;
-    }
-
-    const extraPill = document.querySelector('.table-module .records-pill-soft');
-    if (extraPill) {
-        extraPill.textContent = `Página ${currentPage} de ${totalPages}`;
-    }
 }
 
-// Función para renderizar los números de página
 function renderPagination(totalPages) {
-    const paginationList = document.getElementById('paginationList');
-    paginationList.innerHTML = '';
+    const paginationList = document.getElementById("paginationList");
+    if (!paginationList) return;
 
-    if (totalPages <= 1) return; // No mostrar paginación si solo hay una página
+    paginationList.innerHTML = "";
+    if (totalPages <= 1) return;
 
-    // Botón de Anterior
-    const prevLi = document.createElement('li');
-    prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-    prevLi.innerHTML = `
-        <a class="page-link" href="#" onclick="changePage(event, ${currentPage - 1})" aria-label="Anterior">
-            <span aria-hidden="true">&laquo;</span>
-        </a>
-    `;
-    paginationList.appendChild(prevLi);
+    paginationList.appendChild(createPageItem("Anterior", currentPage - 1, currentPage === 1));
 
-    // Números de páginas
     for (let i = 1; i <= totalPages; i++) {
-        const li = document.createElement('li');
-        li.className = `page-item ${currentPage === i ? 'active' : ''}`;
-        li.innerHTML = `
-            <a class="page-link" href="#" onclick="changePage(event, ${i})">${i}</a>
-        `;
-        paginationList.appendChild(li);
+        paginationList.appendChild(createPageItem(String(i), i, false, currentPage === i));
     }
 
-    // Botón de Siguiente
-    const nextLi = document.createElement('li');
-    nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
-    nextLi.innerHTML = `
-        <a class="page-link" href="#" onclick="changePage(event, ${currentPage + 1})" aria-label="Siguiente">
-            <span aria-hidden="true">&raquo;</span>
-        </a>
-    `;
-    paginationList.appendChild(nextLi);
+    paginationList.appendChild(createPageItem("Siguiente", currentPage + 1, currentPage === totalPages));
 }
 
-// Cambiar página
+function createPageItem(text, page, disabled, active) {
+    const li = document.createElement("li");
+    li.className = `page-item ${disabled ? "disabled" : ""} ${active ? "active" : ""}`;
+    li.innerHTML = `<a class="page-link" href="#" onclick="changePage(event, ${page})">${text}</a>`;
+    return li;
+}
+
 function changePage(event, page) {
     if (event) event.preventDefault();
     currentPage = page;
     renderServices();
 }
 
-// Establecer filtro de estado
-function setStatusFilter(status) {
-    statusFilter = status;
-    
-    // Actualizar clases activas en los botones de pestañas
-    document.querySelectorAll('.custom-tabs-container .tab-item').forEach(btn => {
-        btn.classList.remove('active');
-    });
-
-    if (status === 'todos') document.getElementById('tabTodos').classList.add('active');
-    if (status === 'activos') document.getElementById('tabActivos').classList.add('active');
-    if (status === 'baja') document.getElementById('tabBaja').classList.add('active');
-
-    currentPage = 1; // Reiniciar a primera página al filtrar
+function setStatusFilter(statusId) {
+    statusFilter = statusId || "";
+    currentPage = 1;
+    renderStatusTabs();
     renderServices();
 }
 
-// Manejar búsqueda de texto
 function handleSearch(query) {
-    searchQuery = query;
-    currentPage = 1; // Reiniciar a primera página al buscar
+    searchQuery = query || "";
+    currentPage = 1;
     renderServices();
 }
 
-// Limpiar errores de validación
-function clearValidation() {
-    const nombreInput = document.getElementById('strNombre');
-    if (nombreInput) {
-        nombreInput.classList.remove('is-invalid', 'is-valid');
-    }
-    const descInput = document.getElementById('strDescripcion');
-    if (descInput) {
-        descInput.classList.remove('is-invalid', 'is-valid');
-    }
-}
-
-// Manejar el submit del formulario (Guardar o Actualizar)
-function handleFormSubmit(e) {
+async function handleFormSubmit(e) {
     e.preventDefault();
-    const nombreInput = document.getElementById('strNombre');
-    const descInput = document.getElementById('strDescripcion');
+
+    const nombreInput = document.getElementById("strNombre");
+    const descInput = document.getElementById("strDescripcion");
+    const statusField = document.getElementById("intIdStatus");
+
+    if (!nombreInput) return;
 
     const nombre = nombreInput.value.trim();
-    const descripcion = descInput.value.trim();
+    const descripcion = descInput ? descInput.value.trim() : "";
+    const statusVal = statusField ? statusField.value : "";
 
     if (!nombre) {
-        nombreInput.classList.add('is-invalid');
-        nombreInput.classList.remove('is-valid');
-        const feedback = document.getElementById('nombreFeedback');
-        if (feedback) {
-            feedback.textContent = 'El nombre del servicio es obligatorio.';
-        }
+        nombreInput.classList.add("is-invalid");
+        nombreInput.classList.remove("is-valid");
+        setText("nombreFeedback", "El nombre del servicio es obligatorio.");
         nombreInput.focus();
         return;
     }
 
-    // Validar expresión regular: nada de números, emojis o símbolos raros
-    const regexLettersOnly = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/;
-    if (!regexLettersOnly.test(nombre)) {
-        nombreInput.classList.add('is-invalid');
-        nombreInput.classList.remove('is-valid');
-        const feedback = document.getElementById('nombreFeedback');
-        if (feedback) {
-            feedback.textContent = 'El nombre solo debe contener letras y espacios (sin números, símbolos ni emojis).';
-        }
-        nombreInput.focus();
+    if (!statusVal) {
+        statusField.classList.add("is-invalid");
+        setText("statusFeedback", "Selecciona un estatus.");
+        statusField.focus();
         return;
     }
 
-    // Validar si ya existe otro servicio con el mismo nombre (ignora mayúsculas/minúsculas)
     const nombreLower = nombre.toLowerCase().trim();
     const existeDuplicado = services.some(s => s.nombre.toLowerCase().trim() === nombreLower && s.id !== editingId);
-    
+
     if (existeDuplicado) {
-        nombreInput.classList.add('is-invalid');
-        nombreInput.classList.remove('is-valid');
-        const feedback = document.getElementById('nombreFeedback');
-        if (feedback) {
-            feedback.textContent = 'El nombre del servicio ya existe.';
-        }
+        nombreInput.classList.add("is-invalid");
+        nombreInput.classList.remove("is-valid");
+        setText("nombreFeedback", "El nombre del servicio ya existe.");
         nombreInput.focus();
         return;
     }
-
-    // Si todo es válido, aplicar clases de éxito
-    nombreInput.classList.add('is-valid');
-    if (descripcion) {
-        descInput.classList.add('is-valid');
-    }
-
-    const url = editingId === null ? '/Servicios/SaveService' : '/Servicios/UpdateService';
-    const statusVal = editingId === null ? 1 : parseInt(document.getElementById('intIdStatus').value);
 
     const payload = {
         id: editingId || 0,
         strValor: nombre,
         strDescripcion: descripcion,
-        idCatStatus: statusVal
+        idCatStatus: Number.parseInt(statusVal, 10)
     };
 
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-    })
-    .then(response => response.json())
-    .then(result => {
-        if (result.success) {
-            Swal.fire({
-                icon: 'success',
-                title: editingId === null ? '¡Registro exitoso!' : '¡Actualización exitosa!',
-                text: editingId === null ? 'Servicio agregado exitosamente.' : 'Servicio actualizado exitosamente.',
-                confirmButtonColor: 'var(--teal-cavex)'
-            });
-            resetForm();
-            loadServicesFromServer();
-        } else {
-            nombreInput.classList.add('is-invalid');
-            nombreInput.classList.remove('is-valid');
-            const feedback = document.getElementById('nombreFeedback');
-            if (feedback) {
-                feedback.textContent = result.message || 'Error al guardar el servicio.';
-            }
+    const url = editingId === null
+        ? "/Servicios/SaveService"
+        : "/Servicios/UpdateService";
 
-            let errorText = result.message || "";
-            const isTechnicalError = errorText.toLowerCase().includes("database") || 
-                                     errorText.toLowerCase().includes("db") || 
-                                     errorText.toLowerCase().includes("sql") || 
-                                     errorText.toLowerCase().includes("conexion") || 
-                                     errorText.toLowerCase().includes("connection");
-
-            if (!errorText || isTechnicalError) {
-                errorText = editingId === null 
-                    ? 'Servicio no se pudo agregar exitosamente.' 
-                    : 'Servicio no se pudo actualizar exitosamente.';
-            }
-
-            Swal.fire({
-                icon: 'error',
-                title: 'No se pudo guardar',
-                text: errorText,
-                confirmButtonColor: 'var(--teal-cavex)'
-            });
-        }
-    })
-    .catch(err => {
-        console.error("Error al guardar el servicio:", err);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error de conexión',
-            text: editingId === null 
-                ? 'Servicio no se pudo agregar exitosamente. ¡Intenta de nuevo!' 
-                : 'Servicio no se pudo actualizar exitosamente. ¡Intenta de nuevo!',
-            confirmButtonColor: 'var(--teal-cavex)'
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
         });
-    });
+
+        const result = await response.json();
+
+        if (!result.success) {
+            showError(result.message || "No fue posible guardar el servicio.");
+            return;
+        }
+
+        Swal.fire({
+            icon: "success",
+            title: editingId === null ? "Registro exitoso" : "Actualizacion exitosa",
+            text: editingId === null ? "Servicio agregado exitosamente." : "Servicio actualizado exitosamente.",
+            confirmButtonColor: "var(--teal-cavex)"
+        });
+
+        resetForm();
+        await loadServicesFromServer();
+    } catch (error) {
+        console.error(error);
+        showError("Ocurrio un error al guardar el servicio.");
+    }
 }
 
-// Cargar datos en el formulario para edición
 function editService(id) {
     const service = services.find(s => s.id === id);
     if (!service) return;
 
     clearValidation();
     editingId = id;
-    document.getElementById('strNombre').value = service.nombre;
-    document.getElementById('strDescripcion').value = service.descripcion || '';
 
-    // Cargar el valor del Estatus en el Drop List
-    const statusField = document.getElementById('intIdStatus');
-    if (statusField) {
-        statusField.value = service.idCatStatus;
-    }
+    document.getElementById("strNombre").value = service.nombre;
 
-    // Cambiar estados del formulario
-    document.getElementById('formTitle').textContent = 'Editar servicio';
-    document.getElementById('formSubtitle').textContent = 'Modifica los detalles del servicio seleccionado.';
-    document.getElementById('btnSubmit').textContent = 'Guardar cambios';
-    document.getElementById('btnCancel').style.display = 'inline-block';
+    const descInput = document.getElementById("strDescripcion");
+    if (descInput) descInput.value = service.descripcion || "";
 
-    // Desplazar suavemente al formulario y enfocar el campo principal
-    document.querySelector('.filter-card').scrollIntoView({ behavior: 'smooth' });
-    document.getElementById('strNombre').focus();
+    const statusField = document.getElementById("intIdStatus");
+    if (statusField) statusField.value = service.idCatStatus || "";
+
+    setText("formTitle", "Editar servicio");
+    setText("formSubtitle", "Modifica los detalles del servicio seleccionado.");
+    setText("btnSubmit", "Guardar cambios");
+
+    const btnCancel = document.getElementById("btnCancel");
+    if (btnCancel) btnCancel.style.display = "inline-block";
+
+    const formCard = document.querySelector(".filter-card");
+    if (formCard) formCard.scrollIntoView({ behavior: "smooth" });
+
+    document.getElementById("strNombre").focus();
 }
 
-// Eliminar servicio
 function deleteService(id) {
     Swal.fire({
-        title: '¿Estás seguro?',
-        text: "¡No podrás revertir esta acción!",
-        icon: 'warning',
+        title: "Estas seguro?",
+        text: "No podras revertir esta accion.",
+        icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: '#ef4444',
-        cancelButtonColor: '#6b7280',
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            fetch('/Servicios/DeleteService?id=' + id, {
-                method: 'POST'
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: '¡Eliminado!',
-                        text: 'El servicio ha sido eliminado exitosamente.',
-                        confirmButtonColor: 'var(--teal-cavex)'
-                    });
-                    if (editingId === id) {
-                        resetForm();
-                    }
-                    loadServicesFromServer();
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'No se pudo eliminar',
-                        text: result.message || 'Inténtalo de nuevo más tarde.',
-                        confirmButtonColor: 'var(--teal-cavex)'
-                    });
-                }
-            })
-            .catch(err => {
-                console.error("Error al eliminar el servicio:", err);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error de conexión',
-                    text: 'No se pudo procesar la solicitud. ¡Intenta de nuevo!',
-                    confirmButtonColor: 'var(--teal-cavex)'
-                });
+        confirmButtonColor: "#ef4444",
+        cancelButtonColor: "#6b7280",
+        confirmButtonText: "Si, eliminar",
+        cancelButtonText: "Cancelar"
+    }).then(async result => {
+        if (!result.isConfirmed) return;
+
+        try {
+            const response = await fetch(`/Servicios/DeleteService?id=${id}`, {
+                method: "POST",
+                headers: { "Accept": "application/json" }
             });
+
+            const data = await response.json();
+
+            if (!data.success) {
+                showError(data.message || "No fue posible eliminar el servicio.");
+                return;
+            }
+
+            Swal.fire({
+                icon: "success",
+                title: "Eliminado",
+                text: "El servicio ha sido eliminado exitosamente.",
+                confirmButtonColor: "var(--teal-cavex)"
+            });
+
+            if (editingId === id) resetForm();
+            await loadServicesFromServer();
+        } catch (error) {
+            console.error(error);
+            showError("Ocurrio un error al eliminar el servicio.");
         }
     });
 }
 
-// Restablecer el formulario
 function resetForm() {
     editingId = null;
     clearValidation();
-    document.getElementById('formServicio').reset();
 
-    // Restablecer el valor del Estatus a Activo (1)
-    const statusField = document.getElementById('intIdStatus');
-    if (statusField) {
-        statusField.value = "1";
-    }
+    const form = document.getElementById("formServicio");
+    if (form) form.reset();
 
-    // Restaurar textos originales
-    document.getElementById('formTitle').textContent = 'Registrar servicio';
-    document.getElementById('formSubtitle').textContent = 'Ingresa el nombre y la descripción para registrar el servicio.';
-    document.getElementById('btnSubmit').textContent = 'Guardar servicio';
-    document.getElementById('btnCancel').style.display = 'none';
+    setText("formTitle", "Registrar servicio");
+    setText("formSubtitle", "Ingresa el nombre y la descripcion para registrar el servicio.");
+    setText("btnSubmit", "Guardar servicio");
+
+    const btnCancel = document.getElementById("btnCancel");
+    if (btnCancel) btnCancel.style.display = "none";
 }
 
-// Escape de caracteres HTML para seguridad
+function clearValidation() {
+    document.getElementById("strNombre")?.classList.remove("is-invalid", "is-valid");
+    document.getElementById("strDescripcion")?.classList.remove("is-invalid", "is-valid");
+    document.getElementById("intIdStatus")?.classList.remove("is-invalid", "is-valid");
+}
+
+function getStatusName(service) {
+    if (service.strCatStatus) return service.strCatStatus;
+
+    const status = statusCatalog.find(item => String(item.id) === service.idCatStatus);
+    return status ? status.nombre : "Sin estatus";
+}
+
+function getStatusBadgeClass(statusName) {
+    const normalized = (statusName || "").toLowerCase();
+    return normalized.includes("baja") || normalized.includes("inactivo") || normalized.includes("cancel")
+        ? "badge-danger"
+        : "badge-active";
+}
+
+function setText(id, value) {
+    const element = document.getElementById(id);
+    if (element) element.textContent = value;
+}
+
+function showError(message) {
+    Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: message,
+        confirmButtonColor: "var(--teal-cavex)"
+    });
+}
+
 function escapeHtml(text) {
-    if (!text) return '';
-    return text
+    if (!text) return "";
+    return String(text)
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")

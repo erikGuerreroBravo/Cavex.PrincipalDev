@@ -1,5 +1,7 @@
-﻿using Cavex.Principal.ApiClients.EmpCatAreaLaboral;
+using Cavex.Principal.ApiClients.CatStatus;
+using Cavex.Principal.ApiClients.EmpCatAreaLaboral;
 using Cavex.Principal.ApiClients.ServicioAClientes;
+using Cavex.Principal.ApiClients.Sucursales;
 using Cavex.Principal.Infrastructure.Policies;
 using Cavex.Principal.Infrastructure.Settings;
 using Cavex.Principal.Services.Implementations;
@@ -16,16 +18,15 @@ namespace Cavex.Principal.Infrastructure.Extensions
         {
             services.AddScoped<IServicioAClientesService, ServicioAClientesService>();
             services.AddScoped<IEmpCatAreaLaboralService, EmpCatAreaLaboralService>();
+            services.AddScoped<ISucursalesService, SucursalesService>();
+            services.AddScoped<ICatStatusService, CatStatusService>();
 
             return services;
         }
 
-        public static IServiceCollection AddApiClients(
-            this IServiceCollection services,
-            IConfiguration configuration)
+        public static IServiceCollection AddApiClients(this IServiceCollection services, IConfiguration configuration)
         {
-            services
-                .AddOptions<ApiSettings>()
+            services.AddOptions<ApiSettings>()
                 .Bind(configuration.GetSection(ApiSettings.SectionName))
                 .Validate(settings => !string.IsNullOrWhiteSpace(settings.BaseUrl), "ApiSettings:BaseUrl is required.")
                 .Validate(settings => Uri.TryCreate(settings.BaseUrl, UriKind.Absolute, out _), "ApiSettings:BaseUrl must be an absolute URL.")
@@ -40,8 +41,7 @@ namespace Cavex.Principal.Infrastructure.Extensions
                 })
             };
 
-            services
-                .AddRefitClient<IServicioAClientesApi>(refitSettings)
+            services.AddRefitClient<IServicioAClientesApi>(refitSettings)
                 .ConfigureHttpClient((sp, client) =>
                 {
                     var settings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
@@ -52,8 +52,29 @@ namespace Cavex.Principal.Infrastructure.Extensions
                 .AddPolicyHandler(PollyPolicies.TimeoutPolicy())
                 .AddPolicyHandler(PollyPolicies.CircuitBreakerPolicy());
 
-            services
-                .AddRefitClient<IEmpCatAreaLaboralApi>(refitSettings)
+            services.AddRefitClient<IEmpCatAreaLaboralApi>(refitSettings)
+                .ConfigureHttpClient((sp, client) =>
+                {
+                    var settings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
+                    client.BaseAddress = new Uri(settings.BaseUrl);
+                    client.Timeout = TimeSpan.FromSeconds(settings.TimeoutSeconds);
+                })
+                .AddPolicyHandler(PollyPolicies.RetryPolicy())
+                .AddPolicyHandler(PollyPolicies.TimeoutPolicy())
+                .AddPolicyHandler(PollyPolicies.CircuitBreakerPolicy());
+
+            services.AddRefitClient<ISucursalesApi>(refitSettings)
+                .ConfigureHttpClient((sp, client) =>
+                {
+                    var settings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
+                    client.BaseAddress = new Uri(settings.BaseUrl);
+                    client.Timeout = TimeSpan.FromSeconds(settings.TimeoutSeconds);
+                })
+                .AddPolicyHandler(PollyPolicies.RetryPolicy())
+                .AddPolicyHandler(PollyPolicies.TimeoutPolicy())
+                .AddPolicyHandler(PollyPolicies.CircuitBreakerPolicy());
+
+            services.AddRefitClient<ICatStatusApi>(refitSettings)
                 .ConfigureHttpClient((sp, client) =>
                 {
                     var settings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;

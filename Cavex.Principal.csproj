@@ -1,46 +1,46 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Filters\**" />
-    <Compile Remove="Helpers\**" />
-    <Content Remove="Filters\**" />
-    <Content Remove="Helpers\**" />
-    <EmbeddedResource Remove="Filters\**" />
-    <EmbeddedResource Remove="Helpers\**" />
-    <None Remove="Filters\**" />
-    <None Remove="Helpers\**" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="Filters\**" />
+		<Compile Remove="Helpers\**" />
+		<Content Remove="Filters\**" />
+		<Content Remove="Helpers\**" />
+		<EmbeddedResource Remove="Filters\**" />
+		<EmbeddedResource Remove="Helpers\**" />
+		<None Remove="Filters\**" />
+		<None Remove="Helpers\**" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.12" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.12">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="10.0.8" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.12" />
-    <PackageReference Include="Polly" Version="8.6.6" />
-    <PackageReference Include="Refit.HttpClientFactory" Version="11.0.1" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.12" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.12">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Http.Polly" Version="10.0.8" />
+		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.12" />
+		<PackageReference Include="Polly" Version="8.6.6" />
+		<PackageReference Include="Refit.HttpClientFactory" Version="8.0.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Models\EmpCatTipoContratacion\" />
-    <Folder Include="Models\EmpCondicionesLaborales\" />
-    <Folder Include="Models\EmpDireccion\" />
-    <Folder Include="Models\EmpEmpleado\" />
-    <Folder Include="Models\EmpHistorialArea\" />
-    <Folder Include="Models\EmpReferenciasPersonales\" />
-    <Folder Include="Models\EmpTelefono\" />
-    <Folder Include="Models\EmpDocumentosLaborales\" />
-    <Folder Include="Models\EmpExperiencia\" />
-    <Folder Include="Models\EmpCatPais\" />
-    <Folder Include="ViewModels\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Models\EmpCatTipoContratacion\" />
+		<Folder Include="Models\EmpCondicionesLaborales\" />
+		<Folder Include="Models\EmpDireccion\" />
+		<Folder Include="Models\EmpEmpleado\" />
+		<Folder Include="Models\EmpHistorialArea\" />
+		<Folder Include="Models\EmpReferenciasPersonales\" />
+		<Folder Include="Models\EmpTelefono\" />
+		<Folder Include="Models\EmpDocumentosLaborales\" />
+		<Folder Include="Models\EmpExperiencia\" />
+		<Folder Include="Models\EmpCatPais\" />
+		<Folder Include="ViewModels\" />
+	</ItemGroup>
 
 </Project>
