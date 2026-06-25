@@ -10,13 +10,12 @@ namespace Cavex.Principal.Models.ServicioAClientes
         [StringLength(150, ErrorMessage = "El valor no puede superar los 150 caracteres.")]
         public string StrValor { get; set; } = string.Empty;
 
-        
+
         [StringLength(450, ErrorMessage = "La descripcion no puede superar los 450 caracteres.")]
-        public string? StrDescripcion { get; set; } = string.Empty;
+        public string StrDescripcion { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "El estatus es obligatorio.")]
-        [Display(Name = "Estatus")]
-        public int IdCatStatus { get; set; }
+        public int IdCatStatus { get; set; } = 1;
 
     }
 }
