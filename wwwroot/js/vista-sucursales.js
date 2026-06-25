@@ -1,162 +1,231 @@
-// Variables locales para sucursales (Manejo local/en memoria para la interfaz de usuario)
-let sucursales = [
-    // Puedes inicializarlo vacío o con datos de prueba locales
-    { id: 1, nombre: "Sucursal Norte", descripcion: "Av. Industrial #100", idCatStatus: "1", activo: true },
-    { id: 2, nombre: "Sucursal Sur", descripcion: "Calzada de la Viga #450", idCatStatus: "2002", activo: false }
-];
+let sucursales = [];
+let statusCatalog = [];
 let editingId = null;
-
-// Variables de paginación y filtros
 let currentPage = 1;
 let pageSize = 10;
-let statusFilter = 'todos';
-let searchQuery = '';
-  
+let statusFilter = "";
+let searchQuery = "";
 
-// Renderizado inicial de la tabla
-document.addEventListener('DOMContentLoaded', () => {
-    renderSucursales();
-    
-    // Elementos de la vista
-    const nombreInput = document.getElementById('strNombreSucursal');
-    const descInput = document.getElementById('strDescripcionSucursal');
-    
-    // Sanitización en tiempo real
+document.addEventListener("DOMContentLoaded", async () => {
+    wireFormInputs();
+    await loadStatusOptions();
+    await loadSucursalesFromServer();
+});
+
+async function loadStatusOptions() {
+    const statusField = document.getElementById("intIdStatusSucursal");
+    if (statusField) {
+        statusField.innerHTML = '<option value="">-- Seleccionar Estado --</option>';
+    }
+
+    try {
+        const response = await fetch("/Sucursales/GetStatus", {
+            method: "GET",
+            headers: { "Accept": "application/json" }
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+            showError(result.message || "No fue posible cargar los estatus.");
+            renderStatusTabs();
+            return;
+        }
+
+        statusCatalog = (result.data || []).map(status => ({
+            id: status.id,
+            nombre: status.strValor || status.StrValor || `Estatus ${status.id}`,
+            descripcion: status.strDescripcion || status.StrDescripcion || ""
+        }));
+
+        if (statusField) {
+            statusCatalog.forEach(status => {
+                const option = document.createElement("option");
+                option.value = status.id;
+                option.textContent = status.nombre;
+                statusField.appendChild(option);
+            });
+        }
+
+        renderStatusTabs();
+    } catch (error) {
+        console.error(error);
+        showError("Ocurrio un error al cargar los estatus.");
+        renderStatusTabs();
+    }
+}
+
+async function loadSucursalesFromServer() {
+    try {
+        const response = await fetch("/Sucursales/GetSucursales", {
+            method: "GET",
+            headers: { "Accept": "application/json" }
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+            showError(result.message || "No fue posible cargar las sucursales.");
+            return;
+        }
+
+        sucursales = (result.data || []).map(item => {
+            const idCatStatus = item.idCatStatus ?? item.IdCatStatus;
+
+            return {
+                id: item.id,
+                nombre: item.strValor || item.StrValor || "",
+                descripcion: item.strDescripcion || item.StrDescripcion || "",
+                idCatStatus: idCatStatus === null || idCatStatus === undefined ? "" : String(idCatStatus),
+                strCatStatus: item.strCatStatus || item.StrCatStatus || ""
+            };
+        });
+
+        renderStatusTabs();
+        renderSucursales();
+    } catch (error) {
+        console.error(error);
+        showError("Ocurrio un error al cargar las sucursales.");
+    }
+}
+
+function wireFormInputs() {
+    const nombreInput = document.getElementById("strNombreSucursal");
+    const descInput = document.getElementById("strDescripcionSucursal");
+    const statusField = document.getElementById("intIdStatusSucursal");
+
     if (nombreInput) {
-        nombreInput.addEventListener('input', () => {
+        nombreInput.addEventListener("input", () => {
             const originalVal = nombreInput.value;
-            const cleanedVal = typeof sanitizeLettersOnly === 'function' 
-                ? sanitizeLettersOnly(originalVal) 
-                : originalVal.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s0-9#.-]/g, '');
-                
+            const cleanedVal = typeof sanitizeLettersOnly === "function"
+                ? sanitizeLettersOnly(originalVal)
+                : originalVal.replace(/[^a-zA-Z0-9#.\-\s]/g, "");
+
             if (originalVal !== cleanedVal) {
                 const start = nombreInput.selectionStart;
                 const end = nombreInput.selectionEnd;
                 nombreInput.value = cleanedVal;
                 try {
                     nombreInput.setSelectionRange(start, end);
-                } catch (err) {}
+                } catch (err) { }
             }
-            nombreInput.classList.remove('is-invalid', 'is-valid');
+
+            nombreInput.classList.remove("is-invalid", "is-valid");
         });
-        
-        nombreInput.addEventListener('blur', () => {
+
+        nombreInput.addEventListener("blur", () => {
             nombreInput.value = nombreInput.value.trim();
         });
     }
-    
+
     if (descInput) {
-        descInput.addEventListener('input', () => {
+        descInput.addEventListener("input", () => {
             const originalVal = descInput.value;
-            const cleanedVal = typeof sanitizeGeneralText === 'function' 
-                ? sanitizeGeneralText(originalVal) 
-                : originalVal.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s0-9#.,_()/-]/g, '');
-                
+            const cleanedVal = typeof sanitizeGeneralText === "function"
+                ? sanitizeGeneralText(originalVal)
+                : originalVal.replace(/[^a-zA-Z0-9#.,_()\/\-\s]/g, "");
+
             if (originalVal !== cleanedVal) {
                 const start = descInput.selectionStart;
                 const end = descInput.selectionEnd;
                 descInput.value = cleanedVal;
                 try {
                     descInput.setSelectionRange(start, end);
-                } catch (err) {}
+                } catch (err) { }
             }
-            descInput.classList.remove('is-invalid', 'is-valid');
+
+            descInput.classList.remove("is-invalid", "is-valid");
         });
-        
-        descInput.addEventListener('blur', () => {
+
+        descInput.addEventListener("blur", () => {
             descInput.value = descInput.value.trim();
         });
     }
-});
 
-// Renderizar la tabla de sucursales
+    if (statusField) {
+        statusField.addEventListener("change", () => {
+            statusField.classList.remove("is-invalid", "is-valid");
+        });
+    }
+}
+
+function renderStatusTabs() {
+    const tabsContainer = document.getElementById("statusTabs");
+    if (!tabsContainer) return;
+
+    tabsContainer.innerHTML = "";
+    tabsContainer.appendChild(createStatusTab("", "Todos", sucursales.length));
+
+    statusCatalog.forEach(status => {
+        const count = sucursales.filter(s => s.idCatStatus === String(status.id)).length;
+        tabsContainer.appendChild(createStatusTab(String(status.id), status.nombre, count));
+    });
+}
+
+function createStatusTab(value, text, count) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `tab-item ${statusFilter === value ? "active" : ""}`;
+    button.onclick = () => setStatusFilter(value);
+    button.innerHTML = `${escapeHtml(text)} <span class="tab-count count-all">${count}</span>`;
+    return button;
+}
+
 function renderSucursales() {
-    const tbody = document.getElementById('sucursalesTableBody');
+    const tbody = document.getElementById("sucursalesTableBody");
     if (!tbody) return;
-    tbody.innerHTML = '';
 
-    // Filtrar sucursales
-    let filtered = sucursales.filter(s => {
-        // Filtro por Estado
-        if (statusFilter === 'activos' && !s.activo) return false;
-        if (statusFilter === 'baja' && s.activo) return false;
+    tbody.innerHTML = "";
 
-        // Filtro por Búsqueda (Nombre o Descripción)
+    const filtered = sucursales.filter(s => {
+        if (statusFilter && s.idCatStatus !== statusFilter) return false;
+
         if (searchQuery) {
             const query = searchQuery.toLowerCase();
-            const nombreMatch = s.nombre.toLowerCase().includes(query);
-            const descMatch = (s.descripcion || '').toLowerCase().includes(query);
-            return nombreMatch || descMatch;
+            return s.nombre.toLowerCase().includes(query)
+                || (s.descripcion || "").toLowerCase().includes(query)
+                || getStatusName(s).toLowerCase().includes(query);
         }
 
         return true;
     });
 
-    // Actualizar Conteos en Pestañas
-    const countTodos = sucursales.length;
-    const countActivos = sucursales.filter(s => s.activo).length;
-    const countBaja = sucursales.filter(s => !s.activo).length;
-
-    const elTodos = document.getElementById('countTodos');
-    const elActivos = document.getElementById('countActivos');
-    const elBaja = document.getElementById('countBaja');
-
-    if (elTodos) elTodos.textContent = countTodos;
-    if (elActivos) elActivos.textContent = countActivos;
-    if (elBaja) elBaja.textContent = countBaja;
-
-    // Paginación
     const totalRecords = filtered.length;
     const totalPages = Math.ceil(totalRecords / pageSize) || 1;
-    
-    if (currentPage > totalPages) {
-        currentPage = totalPages;
-    }
-    if (currentPage < 1) {
-        currentPage = 1;
-    }
+
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
 
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = Math.min(startIndex + pageSize, totalRecords);
     const pagedList = filtered.slice(startIndex, endIndex);
 
-    // Renderizar vacío si no hay registros
     if (pagedList.length === 0) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="4" class="text-center py-5">
                     <div class="text-muted">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-2 opacity-50"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                         <p class="m-0 font-weight-700">No se encontraron sucursales</p>
-                        <small>Prueba ajustando los filtros o la búsqueda</small>
+                        <small>Prueba ajustando los filtros o la busqueda</small>
                     </div>
                 </td>
-            </tr>
-        `;
+            </tr>`;
     } else {
         pagedList.forEach(s => {
-            const tr = document.createElement('tr');
-            
-            // Badge de Estado
-            const statusBadge = s.activo 
-                ? '<span class="badge-active">Activo</span>' 
-                : '<span class="badge-danger">Baja</span>';
-
-            const descText = s.descripcion || 'Sin descripción';
-            const truncatedDesc = s.descripcion && s.descripcion.length > 60 
-                ? s.descripcion.substring(0, 60) + '...' 
-                : descText;
-            const descTitle = s.descripcion ? `title="${escapeHtml(s.descripcion)}"` : '';
+            const tr = document.createElement("tr");
+            const statusName = getStatusName(s);
+            const descText = s.descripcion || "Sin descripcion";
+            const truncatedDesc = descText.length > 60 ? `${descText.substring(0, 60)}...` : descText;
 
             tr.innerHTML = `
                 <td>
                     <div class="cotizacion-main-text">${escapeHtml(s.nombre)}</div>
                 </td>
                 <td>
-                    <div class="description-text" ${descTitle}>${escapeHtml(truncatedDesc)}</div>
+                    <div class="description-text" title="${escapeHtml(descText)}">${escapeHtml(truncatedDesc)}</div>
                 </td>
                 <td>
-                    ${statusBadge}
+                    <span class="${getStatusBadgeClass(statusName)}">${escapeHtml(statusName)}</span>
                 </td>
                 <td class="text-end">
                     <div class="dropdown actions-dropdown d-inline-block">
@@ -167,299 +236,290 @@ function renderSucursales() {
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li>
                                 <button class="dropdown-item d-flex align-items-center" type="button" onclick="editSucursal(${s.id})">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 text-primary"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                                     Editar
                                 </button>
                             </li>
                             <li>
                                 <button class="dropdown-item d-flex align-items-center text-danger" type="button" onclick="deleteSucursal(${s.id})">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 text-danger"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-                                    <span>Eliminar</span>
+                                    Eliminar
                                 </button>
                             </li>
                         </ul>
                     </div>
-                </td>
-            `;
+                </td>`;
+
             tbody.appendChild(tr);
         });
     }
 
-    // Actualizar contadores en barra inferior
-    const infoText = totalRecords > 0 
-        ? `Mostrando ${startIndex + 1}-${endIndex} de ${totalRecords} registros`
-        : `Mostrando 0-0 de 0 registros`;
-    const elInfo = document.getElementById('paginationInfo');
-    if (elInfo) elInfo.textContent = infoText;
+    setText(
+        "paginationInfo",
+        totalRecords > 0
+            ? `Mostrando ${startIndex + 1}-${endIndex} de ${totalRecords} registros`
+            : "Mostrando 0-0 de 0 registros"
+    );
 
-    // Renderizar botones de paginación
+    const countPill = document.querySelector(".table-module .records-pill");
+    if (countPill) countPill.textContent = `${totalRecords} sucursales`;
+
+    const extraPill = document.querySelector(".table-module .records-pill-soft");
+    if (extraPill) extraPill.textContent = `Pagina ${currentPage} de ${totalPages}`;
+
     renderPagination(totalPages);
-
-    // Actualizar contadores en la cabecera de la tabla
-    const countPill = document.querySelector('.table-module .records-pill');
-    if (countPill) {
-        countPill.textContent = `${totalRecords} sucursales`;
-    }
-
-    const extraPill = document.querySelector('.table-module .records-pill-soft');
-    if (extraPill) {
-        extraPill.textContent = `Página ${currentPage} de ${totalPages}`;
-    }
 }
 
-// Renderizar la paginación
 function renderPagination(totalPages) {
-    const paginationList = document.getElementById('paginationList');
+    const paginationList = document.getElementById("paginationList");
     if (!paginationList) return;
-    paginationList.innerHTML = '';
 
+    paginationList.innerHTML = "";
     if (totalPages <= 1) return;
 
-    // Botón de Anterior
-    const prevLi = document.createElement('li');
-    prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-    prevLi.innerHTML = `
-        <a class="page-link" href="#" onclick="changePage(event, ${currentPage - 1})" aria-label="Anterior">
-            <span aria-hidden="true">&laquo;</span>
-        </a>
-    `;
-    paginationList.appendChild(prevLi);
+    paginationList.appendChild(createPageItem("Anterior", currentPage - 1, currentPage === 1));
 
-    // Números de páginas
     for (let i = 1; i <= totalPages; i++) {
-        const li = document.createElement('li');
-        li.className = `page-item ${currentPage === i ? 'active' : ''}`;
-        li.innerHTML = `
-            <a class="page-link" href="#" onclick="changePage(event, ${i})">${i}</a>
-        `;
-        paginationList.appendChild(li);
+        paginationList.appendChild(createPageItem(String(i), i, false, currentPage === i));
     }
 
-    // Botón de Siguiente
-    const nextLi = document.createElement('li');
-    nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
-    nextLi.innerHTML = `
-        <a class="page-link" href="#" onclick="changePage(event, ${currentPage + 1})" aria-label="Siguiente">
-            <span aria-hidden="true">&raquo;</span>
-        </a>
-    `;
-    paginationList.appendChild(nextLi);
+    paginationList.appendChild(createPageItem("Siguiente", currentPage + 1, currentPage === totalPages));
 }
 
-// Cambiar página
+function createPageItem(text, page, disabled, active) {
+    const li = document.createElement("li");
+    li.className = `page-item ${disabled ? "disabled" : ""} ${active ? "active" : ""}`;
+    li.innerHTML = `<a class="page-link" href="#" onclick="changePage(event, ${page})">${text}</a>`;
+    return li;
+}
+
 function changePage(event, page) {
     if (event) event.preventDefault();
     currentPage = page;
     renderSucursales();
 }
 
-// Filtro de estado
-function setStatusFilter(status) {
-    statusFilter = status;
-    
-    document.querySelectorAll('.custom-tabs-container .tab-item').forEach(btn => {
-        btn.classList.remove('active');
-    });
-
-    const elTodos = document.getElementById('tabTodos');
-    const elActivos = document.getElementById('tabActivos');
-    const elBaja = document.getElementById('tabBaja');
-
-    if (status === 'todos' && elTodos) elTodos.classList.add('active');
-    if (status === 'activos' && elActivos) elActivos.classList.add('active');
-    if (status === 'baja' && elBaja) elBaja.classList.add('active');
-
+function setStatusFilter(statusId) {
+    statusFilter = statusId || "";
     currentPage = 1;
+    renderStatusTabs();
     renderSucursales();
 }
 
-// Búsqueda en tiempo real
 function handleSearch(query) {
-    searchQuery = query;
+    searchQuery = query || "";
     currentPage = 1;
     renderSucursales();
 }
 
-// Limpiar errores
-function clearValidation() {
-    const nombreInput = document.getElementById('strNombreSucursal');
-    if (nombreInput) {
-        nombreInput.classList.remove('is-invalid', 'is-valid');
-    }
-    const descInput = document.getElementById('strDescripcionSucursal');
-    if (descInput) {
-        descInput.classList.remove('is-invalid', 'is-valid');
-    }
-}
-
-// Formulario submit (Guardar / Editar localmente en memoria)
-function handleFormSubmit(e) {
+async function handleFormSubmit(e) {
     e.preventDefault();
 
-    const nombreInput = document.getElementById('strNombreSucursal');
-    const descInput = document.getElementById('strDescripcionSucursal');
+    const nombreInput = document.getElementById("strNombreSucursal");
+    const descInput = document.getElementById("strDescripcionSucursal");
+    const statusField = document.getElementById("intIdStatusSucursal");
 
     if (!nombreInput) return;
 
     const nombre = nombreInput.value.trim();
     const descripcion = descInput ? descInput.value.trim() : "";
+    const statusVal = statusField ? statusField.value : "";
 
     if (!nombre) {
-        nombreInput.classList.add('is-invalid');
-        nombreInput.classList.remove('is-valid');
-        const feedback = document.getElementById('nombreFeedback');
-        if (feedback) {
-            feedback.textContent = 'El nombre de la sucursal es obligatorio.';
-        }
+        nombreInput.classList.add("is-invalid");
+        nombreInput.classList.remove("is-valid");
+        const feedback = document.getElementById("nombreFeedback");
+        if (feedback) feedback.textContent = "El nombre de la sucursal es obligatorio.";
         nombreInput.focus();
         return;
     }
 
-    // Validar nombre duplicado en memoria
+    if (!statusVal) {
+        statusField.classList.add("is-invalid");
+        const feedback = document.getElementById("statusFeedback");
+        if (feedback) feedback.textContent = "Selecciona un estatus.";
+        statusField.focus();
+        return;
+    }
+
     const nombreLower = nombre.toLowerCase().trim();
     const existeDuplicado = sucursales.some(s => s.nombre.toLowerCase().trim() === nombreLower && s.id !== editingId);
-    
+
     if (existeDuplicado) {
-        nombreInput.classList.add('is-invalid');
-        nombreInput.classList.remove('is-valid');
-        const feedback = document.getElementById('nombreFeedback');
-        if (feedback) {
-            feedback.textContent = 'El nombre de la sucursal ya existe.';
-        }
+        nombreInput.classList.add("is-invalid");
+        nombreInput.classList.remove("is-valid");
+        const feedback = document.getElementById("nombreFeedback");
+        if (feedback) feedback.textContent = "El nombre de la sucursal ya existe.";
         nombreInput.focus();
         return;
     }
 
-    nombreInput.classList.add('is-valid');
-    if (descInput && descripcion) {
-        descInput.classList.add('is-valid');
+    const payload = {
+        strValor: nombre,
+        strDescripcion: descripcion,
+        idCatStatus: Number.parseInt(statusVal, 10)
+    };
+
+    if (editingId !== null) {
+        payload.id = editingId;
     }
 
-    const statusField = document.getElementById('intIdStatusSucursal');
-    const statusVal = statusField ? statusField.value : VALOR_STATUS_ACTIVO;
-    const isActivo = (statusVal === VALOR_STATUS_ACTIVO || statusVal === "");
+    const url = editingId === null
+        ? "/Sucursales/SaveSucursal"
+        : "/Sucursales/UpdateSucursal";
 
-    if (editingId === null) {
-        // Guardado local (Generamos un ID ficticio para pruebas locales)
-        const newId = sucursales.length > 0 ? Math.max(...sucursales.map(s => s.id)) + 1 : 1;
-        sucursales.push({
-            id: newId,
-            nombre: nombre,
-            descripcion: descripcion,
-            idCatStatus: statusVal,
-            activo: isActivo
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
         });
-        Swal.fire({
-            icon: 'success',
-            title: '¡Registro exitoso!',
-            text: 'Sucursal agregada exitosamente.',
-            confirmButtonColor: 'var(--teal-cavex)'
-        });
-    } else {
-        // Actualización local
-        const index = sucursales.findIndex(s => s.id === editingId);
-        if (index !== -1) {
-            sucursales[index].nombre = nombre;
-            sucursales[index].descripcion = descripcion;
-            sucursales[index].idCatStatus = statusVal;
-            sucursales[index].activo = isActivo;
+
+        const result = await response.json();
+
+        if (!result.success) {
+            showError(result.message || "No fue posible guardar la sucursal.");
+            return;
         }
-        Swal.fire({
-            icon: 'success',
-            title: '¡Actualización exitosa!',
-            text: 'Sucursal actualizada exitosamente.',
-            confirmButtonColor: 'var(--teal-cavex)'
-        });
-    }
 
-    resetForm();
-    renderSucursales();
+        Swal.fire({
+            icon: "success",
+            title: editingId === null ? "Registro exitoso" : "Actualizacion exitosa",
+            text: editingId === null ? "Sucursal agregada exitosamente." : "Sucursal actualizada exitosamente.",
+            confirmButtonColor: "var(--teal-cavex)"
+        });
+
+        resetForm();
+        await loadSucursalesFromServer();
+    } catch (error) {
+        console.error(error);
+        showError("Ocurrio un error al guardar la sucursal.");
+    }
 }
 
-// Cargar en formulario para editar
 function editSucursal(id) {
     const sucursal = sucursales.find(s => s.id === id);
     if (!sucursal) return;
 
     clearValidation();
     editingId = id;
-    
-    document.getElementById('strNombreSucursal').value = sucursal.nombre;
-    if (document.getElementById('strDescripcionSucursal')) {
-        document.getElementById('strDescripcionSucursal').value = sucursal.descripcion || '';
-    }
 
-    const statusField = document.getElementById('intIdStatusSucursal');
-    if (statusField) {
-        statusField.value = sucursal.idCatStatus;
-    }
+    document.getElementById("strNombreSucursal").value = sucursal.nombre;
 
-    // Cambiar estados del formulario a Edición
-    document.getElementById('formTitle').textContent = 'Editar sucursal';
-    document.getElementById('formSubtitle').textContent = 'Modifica los detalles de la sucursal seleccionada.';
-    document.getElementById('btnSubmit').textContent = 'Guardar cambios';
-    document.getElementById('btnCancel').style.display = 'inline-block';
+    const descInput = document.getElementById("strDescripcionSucursal");
+    if (descInput) descInput.value = sucursal.descripcion || "";
 
-    // Desplazar suavemente al formulario
-    const formCard = document.querySelector('.filter-card');
-    if (formCard) formCard.scrollIntoView({ behavior: 'smooth' });
-    document.getElementById('strNombreSucursal').focus();
+    const statusField = document.getElementById("intIdStatusSucursal");
+    if (statusField) statusField.value = sucursal.idCatStatus || "";
+
+    setText("formTitle", "Editar sucursal");
+    setText("formSubtitle", "Modifica los detalles de la sucursal seleccionada.");
+    setText("btnSubmit", "Guardar cambios");
+
+    const btnCancel = document.getElementById("btnCancel");
+    if (btnCancel) btnCancel.style.display = "inline-block";
+
+    const formCard = document.querySelector(".filter-card");
+    if (formCard) formCard.scrollIntoView({ behavior: "smooth" });
+
+    document.getElementById("strNombreSucursal").focus();
 }
 
-// Eliminar sucursal localmente
 function deleteSucursal(id) {
     Swal.fire({
-        title: '¿Estás seguro?',
-        text: "¡No podrás revertir esta acción!",
-        icon: 'warning',
+        title: "Estas seguro?",
+        text: "No podras revertir esta accion.",
+        icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: '#ef4444',
-        cancelButtonColor: '#6b7280',
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            sucursales = sucursales.filter(s => s.id !== id);
-            Swal.fire({
-                icon: 'success',
-                title: '¡Eliminado!',
-                text: 'La sucursal ha sido eliminada exitosamente (en memoria local).',
-                confirmButtonColor: 'var(--teal-cavex)'
+        confirmButtonColor: "#ef4444",
+        cancelButtonColor: "#6b7280",
+        confirmButtonText: "Si, eliminar",
+        cancelButtonText: "Cancelar"
+    }).then(async result => {
+        if (!result.isConfirmed) return;
+
+        try {
+            const response = await fetch(`/Sucursales/DeleteSucursal?id=${id}`, {
+                method: "POST",
+                headers: { "Accept": "application/json" }
             });
-            if (editingId === id) {
-                resetForm();
+
+            const data = await response.json();
+
+            if (!data.success) {
+                showError(data.message || "No fue posible eliminar la sucursal.");
+                return;
             }
-            renderSucursales();
+
+            Swal.fire({
+                icon: "success",
+                title: "Eliminado",
+                text: "La sucursal ha sido eliminada exitosamente.",
+                confirmButtonColor: "var(--teal-cavex)"
+            });
+
+            if (editingId === id) resetForm();
+            await loadSucursalesFromServer();
+        } catch (error) {
+            console.error(error);
+            showError("Ocurrio un error al eliminar la sucursal.");
         }
     });
 }
 
-// Limpiar el formulario
 function resetForm() {
     editingId = null;
     clearValidation();
-    
-    const form = document.getElementById('formSucursal');
+
+    const form = document.getElementById("formSucursal");
     if (form) form.reset();
 
-    const statusField = document.getElementById('intIdStatusSucursal');
-    if (statusField) {
-        statusField.value = "";
-    }
+    setText("formTitle", "Registrar sucursal");
+    setText("formSubtitle", "Ingresa el nombre y la descripcion para registrar la sucursal.");
+    setText("btnSubmit", "Guardar sucursal");
 
-    // Restaurar títulos y botones originales
-    document.getElementById('formTitle').textContent = 'Registrar sucursal';
-    document.getElementById('formSubtitle').textContent = 'Ingresa el nombre y la descripción para registrar la sucursal.';
-    document.getElementById('btnSubmit').textContent = 'Guardar sucursal';
-    
-    const btnCancel = document.getElementById('btnCancel');
-    if (btnCancel) btnCancel.style.display = 'none';
+    const btnCancel = document.getElementById("btnCancel");
+    if (btnCancel) btnCancel.style.display = "none";
 }
 
-// Escapar caracteres HTML por seguridad
+function clearValidation() {
+    document.getElementById("strNombreSucursal")?.classList.remove("is-invalid", "is-valid");
+    document.getElementById("strDescripcionSucursal")?.classList.remove("is-invalid", "is-valid");
+    document.getElementById("intIdStatusSucursal")?.classList.remove("is-invalid", "is-valid");
+}
+
+function getStatusName(sucursal) {
+    if (sucursal.strCatStatus) return sucursal.strCatStatus;
+
+    const status = statusCatalog.find(item => String(item.id) === sucursal.idCatStatus);
+    return status ? status.nombre : "Sin estatus";
+}
+
+function getStatusBadgeClass(statusName) {
+    const normalized = (statusName || "").toLowerCase();
+    return normalized.includes("baja") || normalized.includes("inactivo") || normalized.includes("cancel")
+        ? "badge-danger"
+        : "badge-active";
+}
+
+function setText(id, value) {
+    const element = document.getElementById(id);
+    if (element) element.textContent = value;
+}
+
+function showError(message) {
+    Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: message,
+        confirmButtonColor: "var(--teal-cavex)"
+    });
+}
+
 function escapeHtml(text) {
-    if (!text) return '';
-    return text
+    if (!text) return "";
+    return String(text)
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")

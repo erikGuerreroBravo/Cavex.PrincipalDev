@@ -36,8 +36,6 @@ namespace Cavex.Principal.Models.EmpExperiencia
         [Display(Name = "Motivo de salida")]
         public string StrMotivoSalida { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "El empleado es obligatorio.")]
-        [Display(Name = "Empleado")]
-        public int IdEmpEmpleado { get; set; }
+        
     }
 }

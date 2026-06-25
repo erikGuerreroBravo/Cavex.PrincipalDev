@@ -1,15 +1,15 @@
-@model Cavex.Principal.Models.CatSucursal.CatSucursalSaveDto;
+@model Cavex.Principal.Models.CatSucursal.CatSucursalSaveDto
 @{
     ViewData["Title"] = "Nueva Sucursal";
-    ViewData["HeaderEyebrow"] = "Configuración";
+    ViewData["HeaderEyebrow"] = "Configuracion";
     ViewData["HeaderTitle"] = "Nueva Sucursal";
-    ViewData["HeaderSubtitle"] = "Administra el catálogo de sucursales de la plataforma.";
+    ViewData["HeaderSubtitle"] = "Administra el catalogo de sucursales de la plataforma.";
 
     ViewData["TableTitle"] = "Listado de sucursales";
-    ViewData["TableSubtitle"] = "Catálogo de sucursales de traslado y sus descripciones.";
+    ViewData["TableSubtitle"] = "Catalogo de sucursales de traslado y sus descripciones.";
     ViewData["TableCount"] = 0;
     ViewData["TableCountLabel"] = "sucursales";
-    ViewData["TableExtraPill"] = "Catálogo Activo";
+    ViewData["TableExtraPill"] = "Catalogo Activo";
 }
 
 @section Head {
@@ -22,7 +22,7 @@
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
         <div>
             <h2 class="filter-title" id="formTitle">Registrar sucursal</h2>
-            <p class="cavex-subtitle" id="formSubtitle">Ingresa el nombre y la descripción para registrar la sucursal.</p>
+            <p class="cavex-subtitle" id="formSubtitle">Ingresa el nombre y la descripcion para registrar la sucursal.</p>
         </div>
     </div>
 
@@ -30,22 +30,20 @@
         <div class="row g-3">
             <div class="col-md-12">
                 <label class="form-label" for="strNombreSucursal">Nombre de la sucursal</label>
-                <input id="strNombreSucursal" name="strValor" class="form-control no-uppercase" placeholder="Ej. Sucursal Matriz" required />
+                <input id="strNombreSucursal" name="StrValor" class="form-control no-uppercase" placeholder="Ej. Sucursal Matriz" required />
                 <div class="invalid-feedback" id="nombreFeedback">El nombre de la sucursal ya existe.</div>
             </div>
             <div class="col-md-12">
-                <label class="form-label" for="strDescripcionSucursal">Dirección / Descripción (Opcional)</label>
-                <textarea id="strDescripcionSucursal" name="Descripcion" class="form-control no-uppercase" rows="3" placeholder="Ej. Av. Juárez #456, Col. Del Valle" style="resize: none;"></textarea>
-                <div class="invalid-feedback" id="descripcionFeedback">La descripción contiene caracteres no válidos.</div>
+                <label class="form-label" for="strDescripcionSucursal">Direccion / Descripcion (Opcional)</label>
+                <textarea id="strDescripcionSucursal" name="StrDescripcion" class="form-control no-uppercase" rows="3" placeholder="Ej. Av. Juarez #456, Col. Del Valle" style="resize: none;"></textarea>
+                <div class="invalid-feedback" id="descripcionFeedback">La descripcion contiene caracteres no validos.</div>
             </div>
-                <div class="col-md-12" id="statusContainer">
+            <div class="col-md-12" id="statusContainer">
                 <label class="form-label" for="intIdStatusSucursal">Estado de la sucursal</label>
-                <select id="intIdStatusSucursal" name="IdCatStatus" class="form-select">
+                <select id="intIdStatusSucursal" name="IdCatStatus" class="form-select" required>
                     <option value="">-- Seleccionar Estado --</option>
-                    <option value="1">Activo</option>
-                    <option value="2002">Dar de Baja</option>
                 </select>
-                <div class="invalid-feedback" id="statusFeedback">El estado seleccionado no es válido.</div>
+                <div class="invalid-feedback" id="statusFeedback">Selecciona un estatus.</div>
             </div>
         </div>
 
@@ -58,20 +56,9 @@
 
 <div class="cavex-card table-module">
     <partial name="_TableCardHeader" />
-    
-    <!-- Barra de Búsqueda y Pestañas de Estado -->
+
     <div class="table-filter-bar d-flex flex-wrap justify-content-between align-items-center gap-3">
-        <div class="custom-tabs-container">
-            <button type="button" class="tab-item active" onclick="setStatusFilter('todos')" id="tabTodos">
-                Todos <span class="tab-count count-all" id="countTodos">0</span>
-            </button>
-            <button type="button" class="tab-item" onclick="setStatusFilter('activos')" id="tabActivos">
-                Activos <span class="tab-count count-active" id="countActivos">0</span>
-            </button>
-            <button type="button" class="tab-item" onclick="setStatusFilter('baja')" id="tabBaja">
-                Baja <span class="tab-count count-inactive" id="countBaja">0</span>
-            </button>
-        </div>
+        <div class="custom-tabs-container" id="statusTabs"></div>
         <div class="table-search-box position-relative">
             <input type="text" id="tableSearch" class="form-control" placeholder="Buscar sucursal..." oninput="handleSearch(this.value)" />
             <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -86,26 +73,21 @@
             <thead>
                 <tr>
                     <th>Nombre de la sucursal</th>
-                    <th>Ubicación / Descripción</th>
+                    <th>Ubicacion / Descripcion</th>
                     <th style="width: 120px;">Estado</th>
                     <th class="text-end" style="width: 160px;">Acciones</th>
                 </tr>
             </thead>
-            <tbody id="sucursalesTableBody">
-                <!-- Generado dinámicamente por JavaScript -->
-            </tbody>
+            <tbody id="sucursalesTableBody"></tbody>
         </table>
     </div>
 
-    <!-- Barra de Paginación -->
     <div class="table-footer-bar">
         <div class="pagination-info small" id="paginationInfo">
             Mostrando 0-0 de 0 registros
         </div>
-        <nav aria-label="Navegación de sucursales">
-            <ul class="pagination pagination-cavex m-0" id="paginationList">
-                <!-- Generado dinámicamente -->
-            </ul>
+        <nav aria-label="Navegacion de sucursales">
+            <ul class="pagination pagination-cavex m-0" id="paginationList"></ul>
         </nav>
     </div>
 </div>
