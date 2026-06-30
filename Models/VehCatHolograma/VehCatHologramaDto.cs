@@ -1,9 +1,8 @@
-﻿using System.ComponentModel;    
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Cavex.Principal.Models.EmpCatGenero
+namespace Cavex.Principal.Models.VehCatHolograma
 {
-    public class EmpCatGeneroDto
+    public class VehCatHologramaDto
     {
         public int Id { get; set; }
 
@@ -12,7 +11,5 @@ namespace Cavex.Principal.Models.EmpCatGenero
 
         [Display(Name = "Descripcion")]
         public string StrDescripcion { get; set; }
-
-
     }
 }
