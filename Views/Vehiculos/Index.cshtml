@@ -1,0 +1,112 @@
+@{
+    ViewData["Title"] = "Vehículos";
+    ViewData["HeaderEyebrow"] = "Administración";
+    ViewData["HeaderTitle"] = "Vehículos";
+    ViewData["HeaderSubtitle"] = "Consulta el inventario simulado con la estructura de VehDatosGenerales.";
+    ViewData["HeaderButtonText"] = "Nuevo vehículo";
+    ViewData["HeaderButtonController"] = "Vehiculos";
+    ViewData["HeaderButtonAction"] = "Create";
+
+    ViewData["TableTitle"] = "Listado de vehículos";
+    ViewData["TableSubtitle"] = "Registros de ejemplo alineados con los catálogos vehiculares.";
+    ViewData["TableCount"] = 0;
+    ViewData["TableCountLabel"] = "vehículos";
+    ViewData["TableExtraPill"] = "Datos simulados";
+}
+
+@section Head {
+    <link rel="stylesheet" href="~/css/vista-servicios.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/vista-vehiculos.css" asp-append-version="true" />
+}
+
+<!-- Header global configurado mediante ViewData.
+     El alta permanece como acción principal y las demás rutas son accesos operativos. -->
+<partial name="_PageHeader" />
+
+<!-- Acceso secundario al control de servicios sin alterar la acción principal de alta de vehículos. -->
+<div class="vehiculos-index-actions">
+    <a class="btn btn-cavex" asp-controller="Vehiculos" asp-action="Detalle" asp-route-id="1">
+        Ver historial
+    </a>
+    <a class="btn btn-outline-cavex" asp-controller="Vehiculos" asp-action="Asignaciones">
+        Asignaciones
+    </a>
+    <a class="btn btn-outline-cavex" asp-controller="Vehiculos" asp-action="DaniosAccidentes">
+        Daños / Accidentes
+    </a>
+    <a class="btn btn-outline-cavex" asp-controller="Vehiculos" asp-action="Llantas">
+        Llantas
+    </a>
+    <a class="btn btn-outline-cavex" asp-controller="Vehiculos" asp-action="Gasolina">
+        Gasolina
+    </a>
+    <a class="btn btn-outline-cavex" asp-controller="Vehiculos" asp-action="Infracciones">
+        Infracciones
+    </a>
+    <a class="btn btn-outline-cavex" asp-controller="Vehiculos" asp-action="Documentos">
+        Documentos
+    </a>
+    <a class="btn btn-outline-cavex" asp-controller="Vehiculos" asp-action="NuevoServicio">
+        Nuevo servicio
+    </a>
+</div>
+
+<!-- Tabla simulada con las columnas operativas de dbo.VehDatosGenerales.
+     Búsqueda, filtros, paginación y filas se renderizan desde vista-vehiculos.js. -->
+<div class="cavex-card table-module vehiculos-table-module vehiculo-module-table">
+    <partial name="_TableCardHeader" />
+
+    <div class="table-filter-bar d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div class="custom-tabs-container">
+            <button type="button" class="tab-item active" data-vehiculo-filter="todos">
+                Todos <span class="tab-count count-all" id="vehiculosCountTodos">0</span>
+            </button>
+            <button type="button" class="tab-item" data-vehiculo-filter="activos">
+                Activos <span class="tab-count count-active" id="vehiculosCountActivos">0</span>
+            </button>
+            <button type="button" class="tab-item" data-vehiculo-filter="mantenimiento">
+                Mantenimiento <span class="tab-count count-inactive" id="vehiculosCountMantenimiento">0</span>
+            </button>
+        </div>
+
+        <div class="table-search-box position-relative">
+            <input type="text" id="vehiculosTableSearch" class="form-control" placeholder="Buscar vehículo..." />
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle executive-table table-cavex-compact">
+            <thead>
+                <tr>
+                    <th>Foto</th>
+                    <th>Placa</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Año</th>
+                    <th>Color</th>
+                    <th>Kilometraje</th>
+                    <th style="width: 140px;">Estatus</th>
+                    <th class="text-end" style="width: 150px;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="vehiculosTableBody"></tbody>
+        </table>
+    </div>
+
+    <div class="table-footer-bar">
+        <div class="pagination-info small" id="vehiculosPaginationInfo">
+            Mostrando 0-0 de 0 registros
+        </div>
+        <nav aria-label="Navegacion de vehiculos">
+            <ul class="pagination pagination-cavex m-0" id="vehiculosPaginationList"></ul>
+        </nav>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/vista-vehiculos.js" asp-append-version="true"></script>
+}

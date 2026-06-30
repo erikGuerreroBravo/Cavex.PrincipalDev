@@ -1,0 +1,210 @@
+@{
+    ViewData["Title"] = "Daños y accidentes";
+    ViewData["HeaderEyebrow"] = "Historial vehicular";
+    ViewData["HeaderTitle"] = "Daños y accidentes";
+    ViewData["HeaderSubtitle"] = "Registra eventos, daños, reparaciones, seguros, evidencias y seguimiento por unidad.";
+    ViewData["HeaderBadgeText"] = "Frontend preparado";
+}
+
+@section Head {
+    <link rel="stylesheet" href="~/css/vista-vehiculos.css" asp-append-version="true" />
+}
+
+<!-- Header compartido del módulo Vehículos. -->
+<partial name="_PageHeader" />
+
+<!-- Formulario de daños y accidentes.
+     La póliza solo se habilita cuando el evento se marca como cubierto por seguro. -->
+<form id="danioAccidenteForm" class="vehiculo-create-form danio-accidente-form vehiculo-module-form" novalidate>
+    <div class="danio-form-grid">
+        <div class="danio-main-column">
+            <!-- Datos del vehículo: representa la FK obligatoria idVehDatosGenerales. -->
+            <section class="cavex-card form-section-card vehiculo-section-card">
+                <h3 class="form-section-title"><span class="form-section-number">1</span>Datos del vehículo</h3>
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label" for="danio-idVehDatosGenerales">Vehículo</label>
+                        <select id="danio-idVehDatosGenerales" name="idVehDatosGenerales" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                        </select>
+                        <div class="invalid-feedback" id="danio-idVehDatosGeneralesError">Selecciona un vehículo válido.</div>
+                    </div>
+                </div>
+
+                <!-- Mini-card contextual alimentada por VehDatosGenerales simulado. -->
+                <div id="danioVehiculoCard" class="danio-vehiculo-card" hidden>
+                    <div><span>Placa</span><strong id="danioVehiculoPlaca">—</strong></div>
+                    <div><span>Marca</span><strong id="danioVehiculoMarca">—</strong></div>
+                    <div><span>Modelo</span><strong id="danioVehiculoModelo">—</strong></div>
+                    <div><span>Año</span><strong id="danioVehiculoAnio">—</strong></div>
+                    <div><span>Kilometraje actual</span><strong id="danioVehiculoKilometraje">—</strong></div>
+                </div>
+            </section>
+
+            <!-- Datos del evento: campos operativos y estatus de VehDaniosAccidentes. -->
+            <section class="cavex-card form-section-card vehiculo-section-card danio-evento-card">
+                <h3 class="form-section-title"><span class="form-section-number">2</span>Datos del evento</h3>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="danio-idEmpEmpleado">Empleado responsable</label>
+                        <select id="danio-idEmpEmpleado" name="idEmpEmpleado" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                        </select>
+                        <div class="invalid-feedback" id="danio-idEmpEmpleadoError">Selecciona un empleado válido.</div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" for="danio-dteFechaEvento">Fecha del evento</label>
+                        <input id="danio-dteFechaEvento" name="dteFechaEvento" type="date" class="form-control" required />
+                        <div class="invalid-feedback" id="danio-dteFechaEventoError">Captura una fecha válida.</div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" for="danio-idVehCatStatus">Estatus</label>
+                        <select id="danio-idVehCatStatus" name="idVehCatStatus" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                        </select>
+                        <div class="invalid-feedback" id="danio-idVehCatStatusError">Selecciona un estatus válido.</div>
+                    </div>
+                    <div class="col-12">
+                        <div class="danio-label-row">
+                            <label class="form-label" for="danio-strDescripcion">Descripción</label>
+                            <span id="danioDescripcionContador" class="danio-counter">0/500</span>
+                        </div>
+                        <textarea id="danio-strDescripcion" name="strDescripcion" maxlength="500" rows="4" class="form-control" placeholder="Describe el daño, accidente o evento..." required></textarea>
+                        <div class="invalid-feedback" id="danio-strDescripcionError">La descripción es obligatoria y admite hasta 500 caracteres.</div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="danio-strUbicacion">Ubicación <span class="vehiculo-optional-label">Opcional</span></label>
+                        <input id="danio-strUbicacion" name="strUbicacion" type="text" maxlength="300" class="form-control" placeholder="Lugar donde ocurrió el evento" />
+                        <div class="invalid-feedback" id="danio-strUbicacionError">La ubicación admite máximo 300 caracteres.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reparación y seguro: idVehSeguro se vuelve obligatorio solo cuando aplica cobertura. -->
+            <section class="cavex-card form-section-card vehiculo-section-card danio-seguro-card">
+                <h3 class="form-section-title"><span class="form-section-number">3</span>Reparación y seguro</h3>
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-5">
+                        <label class="form-label" for="danio-mnyMontoReparacion">Monto de reparación <span class="vehiculo-optional-label">Opcional</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input id="danio-mnyMontoReparacion" name="mnyMontoReparacion" type="number" min="0" max="999999" step="0.01" class="form-control" placeholder="0.00" />
+                        </div>
+                        <div class="invalid-feedback" id="danio-mnyMontoReparacionError">Captura un monto entre $0.00 y $999,999.00.</div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="danio-switch-block">
+                            <span class="form-label">Cubierto por seguro</span>
+                            <div class="form-check form-switch">
+                                <input id="danioSeguroSwitch" class="form-check-input" type="checkbox" role="switch" />
+                                <label id="danioSeguroSwitchLabel" class="form-check-label" for="danioSeguroSwitch">No</label>
+                            </div>
+                        </div>
+                        <!-- El hidden conserva siempre el valor booleano NOT NULL para el backend futuro. -->
+                        <input id="danio-bitCubiertoPorSeguro" name="bitCubiertoPorSeguro" type="hidden" value="false" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="danio-idVehSeguro">Póliza <span class="vehiculo-optional-label">Condicional</span></label>
+                        <select id="danio-idVehSeguro" name="idVehSeguro" class="form-select" disabled>
+                            <option value="">No aplica</option>
+                        </select>
+                        <div class="invalid-feedback" id="danio-idVehSeguroError">Selecciona una póliza válida.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Evidencia opcional: la carga real y strUrlEvidencia quedan pendientes del backend. -->
+            <section class="cavex-card form-section-card vehiculo-section-card">
+                <h3 class="form-section-title"><span class="form-section-number">4</span>Evidencia</h3>
+                <label class="form-label" for="danioEvidenciaArchivo">Archivo <span class="vehiculo-optional-label">Opcional</span></label>
+                <div id="danioEvidenciaArea" class="danio-evidencia-area" role="button" tabindex="0">
+                    <input id="danioEvidenciaArchivo" type="file" class="vehiculo-file-input" accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp" />
+                    <input id="danio-strUrlEvidencia" name="strUrlEvidencia" type="hidden" value="" />
+                    <div id="danioEvidenciaPrompt" class="danio-evidencia-prompt">
+                        <strong>Arrastra la evidencia aquí</strong>
+                        <span>PDF, JPG, JPEG, PNG o WEBP · máximo 5 MB</span>
+                    </div>
+                    <div id="danioEvidenciaSeleccionada" class="danio-evidencia-file" hidden>
+                        <div>
+                            <span id="danioEvidenciaTipo">Archivo</span>
+                            <strong id="danioEvidenciaNombre">Evidencia seleccionada</strong>
+                        </div>
+                        <button id="btnQuitarEvidenciaDanio" type="button" class="btn btn-outline-cavex btn-sm">Quitar</button>
+                    </div>
+                </div>
+                <div id="danioEvidenciaArchivoError" class="invalid-feedback danio-upload-error"></div>
+            </section>
+
+            <!-- Observaciones NULL con límite equivalente a VARCHAR(500). -->
+            <section class="cavex-card form-section-card vehiculo-section-card">
+                <h3 class="form-section-title"><span class="form-section-number">5</span>Observaciones</h3>
+                <div class="danio-label-row">
+                    <label class="form-label" for="danio-strObservaciones">Notas adicionales <span class="vehiculo-optional-label">Opcional</span></label>
+                    <span id="danioObservacionesContador" class="danio-counter">0/500</span>
+                </div>
+                <textarea id="danio-strObservaciones" name="strObservaciones" maxlength="500" rows="3" class="form-control" placeholder="Seguimiento, acuerdos o detalles adicionales..."></textarea>
+                <div class="invalid-feedback" id="danio-strObservacionesError">Las observaciones admiten máximo 500 caracteres.</div>
+            </section>
+        </div>
+
+        <!-- Vista previa lateral actualizada en vivo con etiquetas y valores separados. -->
+        <aside class="vehiculo-side-panel">
+            <div class="summary-panel vehiculo-preview-card danio-preview-card">
+                <div class="vehiculo-preview-heading">
+                    <div><span class="dashboard-kicker">Vista previa</span><h3>Resumen del evento</h3></div>
+                    <span class="vehiculo-preview-live">En vivo</span>
+                </div>
+                <div class="danio-preview-status">
+                    <span>Estatus</span>
+                    <strong id="previewDanioEstatus" class="danio-status danio-status-reported">Reportado</strong>
+                </div>
+                <div class="vehiculo-summary-list">
+                    <div class="vehiculo-summary-item"><span>Vehículo</span><strong id="previewDanioVehiculo">Sin seleccionar</strong></div>
+                    <div class="vehiculo-summary-item"><span>Placa</span><strong id="previewDanioPlaca">—</strong></div>
+                    <div class="vehiculo-summary-item"><span>Empleado</span><strong id="previewDanioEmpleado">Sin seleccionar</strong></div>
+                    <div class="vehiculo-summary-item"><span>Fecha</span><strong id="previewDanioFecha">—</strong></div>
+                    <div class="vehiculo-summary-item danio-summary-wide"><span>Descripción</span><strong id="previewDanioDescripcion">Sin descripción</strong></div>
+                    <div class="vehiculo-summary-item danio-summary-wide"><span>Ubicación</span><strong id="previewDanioUbicacion">No especificada</strong></div>
+                    <div class="vehiculo-summary-item"><span>Reparación</span><strong id="previewDanioMonto">$0.00</strong></div>
+                    <div class="vehiculo-summary-item"><span>Cubierto</span><strong id="previewDanioSeguro">No</strong></div>
+                    <div class="vehiculo-summary-item danio-summary-wide"><span>Póliza</span><strong id="previewDanioPoliza">No aplica</strong></div>
+                    <div class="vehiculo-summary-item danio-summary-wide"><span>Evidencia</span><strong id="previewDanioEvidencia">Sin archivo</strong></div>
+                    <div class="vehiculo-summary-item danio-summary-wide"><span>Observaciones</span><strong id="previewDanioObservaciones">Sin observaciones</strong></div>
+                </div>
+                <div class="protected-alert mt-3 mb-0">Captura simulada. No se guardará en base de datos.</div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Botones de captura; Guardar valida pero no ejecuta POST. -->
+    <div class="form-action-bar vehiculo-action-bar">
+        <a class="btn btn-outline-cavex" asp-controller="Vehiculos" asp-action="Index">Cancelar / Volver</a>
+        <button id="btnLimpiarDanioAccidente" type="button" class="btn btn-outline-cavex">Limpiar</button>
+        <button type="submit" class="btn btn-cavex">Guardar evento</button>
+    </div>
+</form>
+
+<!-- Tabla inferior de eventos simulados para validar consulta y acciones futuras.
+     Marcar resuelto y cancelar no cambian los datos mientras no exista backend. -->
+<section class="cavex-card table-module danios-recientes-card vehiculo-module-table">
+    <div class="servicio-table-heading">
+        <div><span class="dashboard-kicker">Seguimiento</span><h3>Eventos recientes</h3><p>Daños y accidentes simulados con seguimiento, seguro y evidencia.</p></div>
+        <span class="records-pill">4 eventos</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle executive-table table-cavex-compact">
+            <thead>
+                <tr>
+                    <th>Vehículo</th><th>Placa</th><th>Empleado</th><th>Fecha evento</th>
+                    <th>Descripción</th><th>Ubicación</th><th>Monto reparación</th>
+                    <th>Seguro</th><th>Estatus</th><th>Evidencia</th><th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="daniosRecientesBody"></tbody>
+        </table>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/js/vista-vehiculos.js" asp-append-version="true"></script>
+}

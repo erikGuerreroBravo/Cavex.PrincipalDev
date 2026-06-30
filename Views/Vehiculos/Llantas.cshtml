@@ -1,0 +1,211 @@
+@{
+    ViewData["Title"] = "Control de llantas";
+    ViewData["HeaderEyebrow"] = "Seguridad vehicular";
+    ViewData["HeaderTitle"] = "Control de llantas";
+    ViewData["HeaderSubtitle"] = "Registra compras, posiciones, kilometraje, rotaciones, vida estimada y evidencias por unidad.";
+    ViewData["HeaderBadgeText"] = "Frontend preparado";
+}
+
+@section Head {
+    <link rel="stylesheet" href="~/css/vista-vehiculos.css" asp-append-version="true" />
+}
+
+<!-- Header compartido del módulo Vehículos. -->
+<partial name="_PageHeader" />
+
+<!-- Formulario de VehControlLlanta.
+     Fechas, estatus y evidencia respetan nulabilidad y límites del esquema previsto. -->
+<form id="llantaVehiculoForm" class="vehiculo-create-form llanta-vehiculo-form vehiculo-module-form" novalidate>
+    <div class="llanta-form-grid">
+        <div class="llanta-main-column">
+            <!-- Datos del vehículo: representa idVehDatosGenerales, FK obligatoria de dbo.VehControlLlanta. -->
+            <section class="cavex-card form-section-card vehiculo-section-card">
+                <h3 class="form-section-title"><span class="form-section-number">1</span>Datos del vehículo</h3>
+                <div class="row g-3">
+                    <div class="col-lg-7">
+                        <label class="form-label" for="llanta-idVehDatosGenerales">Vehículo</label>
+                        <select id="llanta-idVehDatosGenerales" name="idVehDatosGenerales" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                        </select>
+                        <div class="invalid-feedback" id="llanta-idVehDatosGeneralesError">Selecciona un vehículo válido.</div>
+                    </div>
+                    <div class="col-lg-5">
+                        <label class="form-label" for="llanta-decKilometrajeActual">Kilometraje actual</label>
+                        <div class="input-group">
+                            <input id="llanta-decKilometrajeActual" name="decKilometrajeActual" type="number" min="0" max="999999" step="1" class="form-control" placeholder="0" required />
+                            <span class="input-group-text">km</span>
+                        </div>
+                        <div class="invalid-feedback" id="llanta-decKilometrajeActualError">Captura un kilometraje válido.</div>
+                    </div>
+                </div>
+
+                <!-- Mini-card alimentada por VehDatosGenerales simulado para dar contexto antes de capturar. -->
+                <div id="llantaVehiculoCard" class="llanta-vehiculo-card" hidden>
+                    <div><span>Placa</span><strong id="llantaVehiculoPlaca">—</strong></div>
+                    <div><span>Marca</span><strong id="llantaVehiculoMarca">—</strong></div>
+                    <div><span>Modelo</span><strong id="llantaVehiculoModelo">—</strong></div>
+                    <div><span>Año</span><strong id="llantaVehiculoAnio">—</strong></div>
+                    <div><span>Kilometraje registrado</span><strong id="llantaVehiculoKilometraje">—</strong></div>
+                </div>
+            </section>
+
+            <!-- Datos de la llanta: columnas NOT NULL de dbo.VehControlLlanta. -->
+            <section class="cavex-card form-section-card vehiculo-section-card">
+                <h3 class="form-section-title"><span class="form-section-number">2</span>Datos de la llanta</h3>
+                <div class="row g-3">
+                    <div class="col-md-6 col-xl-4">
+                        <label class="form-label" for="llanta-idVehCatMarcaLlanta">Marca de llanta</label>
+                        <select id="llanta-idVehCatMarcaLlanta" name="idVehCatMarcaLlanta" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                        </select>
+                        <div class="invalid-feedback" id="llanta-idVehCatMarcaLlantaError">Selecciona una marca válida.</div>
+                    </div>
+                    <div class="col-md-6 col-xl-4">
+                        <label class="form-label" for="llanta-strModelo">Modelo</label>
+                        <input id="llanta-strModelo" name="strModelo" type="text" maxlength="50" class="form-control" placeholder="Ej. Primacy 4" required />
+                        <div class="invalid-feedback" id="llanta-strModeloError">El modelo es obligatorio y admite hasta 50 caracteres.</div>
+                    </div>
+                    <div class="col-md-6 col-xl-4">
+                        <label class="form-label" for="llanta-strMedida">Medida</label>
+                        <input id="llanta-strMedida" name="strMedida" type="text" maxlength="50" class="form-control" placeholder="205/55 R16" required />
+                        <div class="invalid-feedback" id="llanta-strMedidaError">Captura una medida válida, por ejemplo 205/55 R16.</div>
+                    </div>
+                    <div class="col-md-6 col-xl-4">
+                        <label class="form-label" for="llanta-dteFechaCompra">Fecha de compra</label>
+                        <input id="llanta-dteFechaCompra" name="dteFechaCompra" type="date" class="form-control" required />
+                        <div class="invalid-feedback" id="llanta-dteFechaCompraError">Captura una fecha válida.</div>
+                    </div>
+                    <div class="col-md-6 col-xl-4">
+                        <label class="form-label" for="llanta-mnyCosto">Costo</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input id="llanta-mnyCosto" name="mnyCosto" type="number" min="0.01" max="999999" step="0.01" class="form-control" placeholder="0.00" required />
+                        </div>
+                        <div class="invalid-feedback" id="llanta-mnyCostoError">Captura un costo mayor que cero.</div>
+                    </div>
+                    <div class="col-md-6 col-xl-4">
+                        <label class="form-label" for="llanta-idVehCatPosicionLlanta">Posición</label>
+                        <select id="llanta-idVehCatPosicionLlanta" name="idVehCatPosicionLlanta" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                        </select>
+                        <div class="invalid-feedback" id="llanta-idVehCatPosicionLlantaError">Selecciona una posición válida.</div>
+                    </div>
+                    <div class="col-md-6 col-xl-4">
+                        <label class="form-label" for="llanta-idVehCatStatus">Estatus</label>
+                        <select id="llanta-idVehCatStatus" name="idVehCatStatus" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                        </select>
+                        <div class="invalid-feedback" id="llanta-idVehCatStatusError">Selecciona un estatus válido.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Fechas opcionales: columnas NULL usadas para alertas futuras de vida y rotación. -->
+            <section class="cavex-card form-section-card vehiculo-section-card llanta-fechas-card">
+                <h3 class="form-section-title"><span class="form-section-number">3</span>Fechas de vida y rotación</h3>
+                <div class="llanta-help-alert">Estos datos permiten generar alertas futuras de rotación o cambio de llantas.</div>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label" for="llanta-dteFechaFinVidaEstimada">Vida estimada <span class="vehiculo-optional-label">Opcional</span></label>
+                        <input id="llanta-dteFechaFinVidaEstimada" name="dteFechaFinVidaEstimada" type="date" class="form-control" />
+                        <div class="invalid-feedback" id="llanta-dteFechaFinVidaEstimadaError">Debe ser igual o posterior a la compra.</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="llanta-dteFechaRotacion">Última rotación <span class="vehiculo-optional-label">Opcional</span></label>
+                        <input id="llanta-dteFechaRotacion" name="dteFechaRotacion" type="date" class="form-control" />
+                        <div class="invalid-feedback" id="llanta-dteFechaRotacionError">Debe ser igual o posterior a la compra.</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="llanta-dteFechaSiguienteRotacion">Siguiente rotación <span class="vehiculo-optional-label">Opcional</span></label>
+                        <input id="llanta-dteFechaSiguienteRotacion" name="dteFechaSiguienteRotacion" type="date" class="form-control" />
+                        <div class="invalid-feedback" id="llanta-dteFechaSiguienteRotacionError">Debe respetar la fecha base de compra o rotación.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Evidencia opcional: el backend futuro convertirá el archivo local en strUrlEvidencia. -->
+            <section class="cavex-card form-section-card vehiculo-section-card">
+                <h3 class="form-section-title"><span class="form-section-number">4</span>Evidencia</h3>
+                <label class="form-label" for="llantaEvidenciaArchivo">Archivo <span class="vehiculo-optional-label">Opcional</span></label>
+                <div id="llantaEvidenciaArea" class="llanta-evidencia-area" role="button" tabindex="0">
+                    <input id="llantaEvidenciaArchivo" type="file" class="vehiculo-file-input" accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp" />
+                    <input id="llanta-strUrlEvidencia" name="strUrlEvidencia" type="hidden" value="" />
+                    <div id="llantaEvidenciaPrompt" class="llanta-evidencia-prompt">
+                        <strong>Arrastra la evidencia aquí</strong>
+                        <span>PDF, JPG, JPEG, PNG o WEBP · máximo 5 MB</span>
+                    </div>
+                    <div id="llantaEvidenciaSeleccionada" class="llanta-evidencia-file" hidden>
+                        <div>
+                            <span id="llantaEvidenciaTipo">Archivo</span>
+                            <strong id="llantaEvidenciaNombre">Evidencia seleccionada</strong>
+                        </div>
+                        <button id="btnQuitarEvidenciaLlanta" type="button" class="btn btn-outline-cavex btn-sm">Quitar</button>
+                    </div>
+                </div>
+                <div id="llantaEvidenciaArchivoError" class="invalid-feedback llanta-upload-error"></div>
+            </section>
+        </div>
+
+        <!-- Vista previa lateral en vivo, separando etiquetas y valores para lectura rápida. -->
+        <aside class="vehiculo-side-panel">
+            <div class="summary-panel vehiculo-preview-card llanta-preview-card">
+                <div class="vehiculo-preview-heading">
+                    <div><span class="dashboard-kicker">Vista previa</span><h3>Resumen de la llanta</h3></div>
+                    <span class="vehiculo-preview-live">En vivo</span>
+                </div>
+                <div class="llanta-preview-status">
+                    <span>Estatus</span>
+                    <strong id="previewLlantaEstatus" class="llanta-status llanta-status-active">Activa</strong>
+                </div>
+                <div class="vehiculo-summary-list">
+                    <div class="vehiculo-summary-item"><span>Vehículo</span><strong id="previewLlantaVehiculo">Sin seleccionar</strong></div>
+                    <div class="vehiculo-summary-item"><span>Placa</span><strong id="previewLlantaPlaca">—</strong></div>
+                    <div class="vehiculo-summary-item"><span>Marca</span><strong id="previewLlantaMarca">Sin seleccionar</strong></div>
+                    <div class="vehiculo-summary-item"><span>Modelo</span><strong id="previewLlantaModelo">Sin modelo</strong></div>
+                    <div class="vehiculo-summary-item"><span>Medida</span><strong id="previewLlantaMedida">Sin medida</strong></div>
+                    <div class="vehiculo-summary-item"><span>Posición</span><strong id="previewLlantaPosicion">Sin seleccionar</strong></div>
+                    <div class="vehiculo-summary-item"><span>Compra</span><strong id="previewLlantaFechaCompra">—</strong></div>
+                    <div class="vehiculo-summary-item"><span>Costo</span><strong id="previewLlantaCosto">$0.00</strong></div>
+                    <div class="vehiculo-summary-item"><span>Kilometraje</span><strong id="previewLlantaKilometraje">0 km</strong></div>
+                    <div class="vehiculo-summary-item"><span>Vida estimada</span><strong id="previewLlantaVida">—</strong></div>
+                    <div class="vehiculo-summary-item"><span>Última rotación</span><strong id="previewLlantaRotacion">—</strong></div>
+                    <div class="vehiculo-summary-item"><span>Siguiente rotación</span><strong id="previewLlantaSiguienteRotacion">—</strong></div>
+                    <div class="vehiculo-summary-item"><span>Evidencia</span><strong id="previewLlantaEvidencia">Sin archivo</strong></div>
+                </div>
+                <div class="protected-alert mt-3 mb-0">Captura simulada. No se guardará en base de datos.</div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Botones de captura: Guardar solo valida mientras no exista POST /api/vehiculos/llantas. -->
+    <div class="form-action-bar vehiculo-action-bar">
+        <a class="btn btn-outline-cavex" asp-controller="Vehiculos" asp-action="Index">Cancelar / Volver</a>
+        <button id="btnLimpiarLlanta" type="button" class="btn btn-outline-cavex">Limpiar</button>
+        <button type="submit" class="btn btn-cavex">Guardar llanta</button>
+    </div>
+</form>
+
+<!-- Tabla inferior: consulta simulada con las columnas solicitadas para la pantalla.
+     Registrar rotación y dar de baja permanecen como acciones demostrativas. -->
+<section class="cavex-card table-module llantas-recientes-card vehiculo-module-table">
+    <div class="servicio-table-heading">
+        <div><span class="dashboard-kicker">Control</span><h3>Llantas registradas</h3><p>Registros simulados para validar consulta, estatus, evidencia y acciones.</p></div>
+        <span class="records-pill">4 llantas</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle executive-table table-cavex-compact">
+            <thead>
+                <tr>
+                    <th>Vehículo</th><th>Placa</th><th>Marca</th><th>Modelo</th><th>Medida</th>
+                    <th>Posición</th><th>Kilometraje</th><th>Costo</th><th>Siguiente rotación</th>
+                    <th>Estatus</th><th>Evidencia</th><th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="llantasRegistradasBody"></tbody>
+        </table>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/js/vista-vehiculos.js" asp-append-version="true"></script>
+}

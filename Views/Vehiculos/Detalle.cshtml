@@ -1,0 +1,27 @@
+@{
+    ViewData["Title"] = "Historial del vehículo";
+    ViewData["HeaderEyebrow"] = "Control vehicular";
+    ViewData["HeaderTitle"] = "Historial del vehículo";
+    ViewData["HeaderSubtitle"] = "Espacio reservado para la adaptación del diseño final.";
+    ViewData["HeaderBadgeText"] = "Pantalla temporal";
+}
+
+<!-- Header estándar conservado para no romper la ruta mientras se adapta el diseño definitivo. -->
+<partial name="_PageHeader" />
+
+<!-- Placeholder temporal sin datos ni JavaScript funcional.
+     Los enlaces mantienen la navegación hacia el listado y la captura de servicios. -->
+<section class="cavex-card text-center">
+    <span class="eyebrow">Próxima actualización</span>
+    <h2 class="filter-title">Historial del vehículo</h2>
+    <p class="cavex-subtitle mb-4">Esta pantalla será reemplazada por el diseño final adaptado.</p>
+
+    <div class="d-flex flex-wrap justify-content-center gap-2">
+        <a class="btn btn-outline-cavex" asp-controller="Vehiculos" asp-action="Index">
+            Volver a vehículos
+        </a>
+        <a class="btn btn-cavex" asp-controller="Vehiculos" asp-action="NuevoServicio">
+            Nuevo servicio
+        </a>
+    </div>
+</section>

@@ -1,0 +1,261 @@
+@{
+    ViewData["Title"] = "Nuevo servicio vehicular";
+    ViewData["HeaderEyebrow"] = "Control de mantenimiento";
+    ViewData["HeaderTitle"] = "Registrar servicio";
+    ViewData["HeaderSubtitle"] = "Captura un servicio con la estructura de VehControlServicio.";
+    ViewData["HeaderBadgeText"] = "Frontend preparado";
+}
+
+@section Head {
+    <link rel="stylesheet" href="~/css/vista-vehiculos.css" asp-append-version="true" />
+}
+
+<!-- Header compartido; comunica que la captura usa datos simulados y aún no persiste. -->
+<partial name="_PageHeader" />
+
+<!-- Formulario principal de VehControlServicio.
+     Los nombres representan columnas SQL; cálculos y archivos se preparan solo en navegador. -->
+<form id="vehiculoServicioForm" class="vehiculo-create-form servicio-vehiculo-form vehiculo-module-form" novalidate>
+    <div class="servicio-form-grid">
+        <div class="servicio-main-column">
+            <!-- Datos del vehículo: la selección representa la FK idVehDatosGenerales. -->
+            <section class="cavex-card form-section-card vehiculo-section-card">
+                <h3 class="form-section-title"><span class="form-section-number">1</span>Datos del vehículo</h3>
+                <div class="row g-3">
+                    <div class="col-lg-7">
+                        <label class="form-label" for="idVehDatosGenerales">Vehículo</label>
+                        <select id="idVehDatosGenerales" name="idVehDatosGenerales" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                        </select>
+                        <div class="invalid-feedback" id="idVehDatosGeneralesError">Selecciona un vehículo.</div>
+                    </div>
+                    <div class="col-lg-5">
+                        <label class="form-label" for="decKilometrajeActual">Kilometraje al realizar el servicio</label>
+                        <div class="input-group">
+                            <input id="decKilometrajeActual" name="decKilometrajeActual" type="number" min="0" max="999999" step="1" class="form-control" placeholder="0" required />
+                            <span class="input-group-text">km</span>
+                        </div>
+                        <div class="invalid-feedback" id="decKilometrajeActualError">Captura un kilometraje válido.</div>
+                    </div>
+                </div>
+
+                <!-- Esta mini-card se actualiza con el registro simulado seleccionado. -->
+                <div class="servicio-vehiculo-card" id="servicioVehiculoCard" hidden>
+                    <div>
+                        <span class="servicio-mini-label">Placa</span>
+                        <strong id="servicioVehiculoPlaca">—</strong>
+                    </div>
+                    <div>
+                        <span class="servicio-mini-label">Unidad</span>
+                        <strong id="servicioVehiculoUnidad">—</strong>
+                    </div>
+                    <div>
+                        <span class="servicio-mini-label">Año</span>
+                        <strong id="servicioVehiculoAnio">—</strong>
+                    </div>
+                    <div>
+                        <span class="servicio-mini-label">Kilometraje registrado</span>
+                        <strong id="servicioVehiculoKilometraje">—</strong>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Datos descriptivos y catálogos relacionados con el servicio. -->
+            <section class="cavex-card form-section-card vehiculo-section-card">
+                <h3 class="form-section-title"><span class="form-section-number">2</span>Datos del servicio</h3>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="idVehCatTipoServicio">Tipo de servicio</label>
+                        <select id="idVehCatTipoServicio" name="idVehCatTipoServicio" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                        </select>
+                        <div class="invalid-feedback" id="idVehCatTipoServicioError">Selecciona un tipo de servicio.</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="dteFechaServicio">Fecha del servicio</label>
+                        <input id="dteFechaServicio" name="dteFechaServicio" type="date" class="form-control" required />
+                        <div class="invalid-feedback" id="dteFechaServicioError">Captura una fecha válida.</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="idVehCatTaller">Taller</label>
+                        <select id="idVehCatTaller" name="idVehCatTaller" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                        </select>
+                        <div class="invalid-feedback" id="idVehCatTallerError">Selecciona un taller.</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="idVehCatResponsableServicio">Responsable del servicio</label>
+                        <select id="idVehCatResponsableServicio" name="idVehCatResponsableServicio" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                        </select>
+                        <div class="invalid-feedback" id="idVehCatResponsableServicioError">Selecciona un responsable.</div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="strDescripcion">Descripción <span class="vehiculo-optional-label">Opcional</span></label>
+                        <textarea id="strDescripcion" name="strDescripcion" class="form-control" maxlength="500" rows="4" placeholder="Trabajo realizado, hallazgos o piezas reemplazadas."></textarea>
+                        <div class="invalid-feedback" id="strDescripcionError">La descripción no debe superar 500 caracteres.</div>
+                        <div class="vehiculo-character-counter" aria-live="polite"><span id="servicioDescripcionCounter">0</span>/500</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Costos: mnyCostoTotal refleja la columna calculada persistida de SQL Server. -->
+            <section class="cavex-card form-section-card vehiculo-section-card servicio-costos-card">
+                <h3 class="form-section-title"><span class="form-section-number">3</span>Costos del servicio</h3>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label" for="mnyCostoManoObra">Mano de obra</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input id="mnyCostoManoObra" name="mnyCostoManoObra" type="number" min="0" max="999999" step="0.01" value="0.00" class="form-control" required />
+                        </div>
+                        <div class="invalid-feedback" id="mnyCostoManoObraError">Captura un costo válido.</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="mnyCostoRefacciones">Refacciones</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input id="mnyCostoRefacciones" name="mnyCostoRefacciones" type="number" min="0" max="999999" step="0.01" value="0.00" class="form-control" required />
+                        </div>
+                        <div class="invalid-feedback" id="mnyCostoRefaccionesError">Captura un costo válido.</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="mnyCostoTotal">Costo total</label>
+                        <div class="input-group servicio-total-calculado">
+                            <span class="input-group-text">$</span>
+                            <input id="mnyCostoTotal" name="mnyCostoTotal" type="text" value="0.00" class="form-control" readonly aria-describedby="costoTotalAyuda" />
+                        </div>
+                        <small id="costoTotalAyuda" class="form-text">Columna calculada en base de datos: mano de obra + refacciones.</small>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Próximo servicio: ambos campos son opcionales porque aceptan NULL. -->
+            <section class="cavex-card form-section-card vehiculo-section-card">
+                <h3 class="form-section-title"><span class="form-section-number">4</span>Próximo servicio</h3>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="intProximoServicioPorKm">Próximo servicio por kilometraje <span class="vehiculo-optional-label">Opcional</span></label>
+                        <div class="input-group">
+                            <input id="intProximoServicioPorKm" name="intProximoServicioPorKm" type="number" min="0" max="2147483647" step="1" class="form-control" placeholder="Ej. 50000" />
+                            <span class="input-group-text">km</span>
+                        </div>
+                        <div class="invalid-feedback" id="intProximoServicioPorKmError">Debe ser mayor al kilometraje actual.</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="dteProximoServicioPorFecha">Próximo servicio por fecha <span class="vehiculo-optional-label">Opcional</span></label>
+                        <input id="dteProximoServicioPorFecha" name="dteProximoServicioPorFecha" type="date" class="form-control" />
+                        <div class="invalid-feedback" id="dteProximoServicioPorFechaError">La fecha debe ser igual o posterior al servicio.</div>
+                    </div>
+                    <div class="col-12">
+                        <div class="servicio-help-alert">Estos datos permiten generar alertas futuras de mantenimiento.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Forma de pago y archivo auxiliar para obtener strUrlComprobantePago en el backend futuro. -->
+            <section class="cavex-card form-section-card vehiculo-section-card">
+                <h3 class="form-section-title"><span class="form-section-number">5</span>Forma de pago y comprobante</h3>
+                <div class="servicio-pago-grid">
+                    <div>
+                        <label class="form-label" for="idVehFormaPago">Forma de pago</label>
+                        <select id="idVehFormaPago" name="idVehFormaPago" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                        </select>
+                        <div class="invalid-feedback" id="idVehFormaPagoError">Selecciona una forma de pago.</div>
+                    </div>
+                    <div>
+                        <label class="form-label" for="servicioComprobanteArchivo">Comprobante <span class="vehiculo-optional-label">Opcional</span></label>
+                        <div id="servicioComprobanteArea" class="servicio-comprobante-area" role="button" tabindex="0">
+                            <!-- El archivo no se envía todavía; la ruta generada se guardará después en strUrlComprobantePago. -->
+                            <input id="servicioComprobanteArchivo" type="file" class="vehiculo-file-input" accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp" />
+                            <input id="strUrlComprobantePago" name="strUrlComprobantePago" type="hidden" value="" />
+                            <div id="servicioComprobantePrompt" class="servicio-comprobante-prompt">
+                                <strong>Arrastra el comprobante aquí</strong>
+                                <span>PDF, JPG, JPEG, PNG o WEBP · máximo 5 MB</span>
+                            </div>
+                            <div id="servicioComprobanteSeleccionado" class="servicio-comprobante-seleccionado" hidden>
+                                <div>
+                                    <span class="servicio-file-badge">Archivo</span>
+                                    <strong id="servicioComprobanteNombre">Comprobante seleccionado</strong>
+                                </div>
+                                <button id="btnQuitarComprobante" type="button" class="btn btn-outline-cavex btn-sm">Quitar</button>
+                            </div>
+                        </div>
+                        <div id="servicioComprobanteArchivoError" class="invalid-feedback servicio-upload-error"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Vista previa: separa etiquetas y valores para una lectura rápida. -->
+        <aside class="vehiculo-side-panel">
+            <div class="summary-panel vehiculo-preview-card servicio-preview-card">
+                <div class="vehiculo-preview-heading">
+                    <div><span class="dashboard-kicker">Vista previa</span><h3>Resumen del servicio</h3></div>
+                    <span class="vehiculo-preview-live">En vivo</span>
+                </div>
+                <div class="servicio-preview-total">
+                    <span>Costo total</span>
+                    <strong id="previewServicioTotal">$0.00</strong>
+                </div>
+                <div class="vehiculo-summary-list">
+                    <div class="vehiculo-summary-item"><span>Vehículo</span><strong id="previewServicioVehiculo">Sin seleccionar</strong></div>
+                    <div class="vehiculo-summary-item"><span>Placa</span><strong id="previewServicioPlaca">—</strong></div>
+                    <div class="vehiculo-summary-item"><span>Servicio</span><strong id="previewServicioTipo">Sin seleccionar</strong></div>
+                    <div class="vehiculo-summary-item"><span>Fecha</span><strong id="previewServicioFecha">—</strong></div>
+                    <div class="vehiculo-summary-item"><span>Kilometraje</span><strong id="previewServicioKm">0 km</strong></div>
+                    <div class="vehiculo-summary-item"><span>Taller</span><strong id="previewServicioTaller">Sin seleccionar</strong></div>
+                    <div class="vehiculo-summary-item"><span>Responsable</span><strong id="previewServicioResponsable">Sin seleccionar</strong></div>
+                    <div class="vehiculo-summary-item"><span>Próx. km</span><strong id="previewServicioProximoKm">No definido</strong></div>
+                    <div class="vehiculo-summary-item"><span>Próx. fecha</span><strong id="previewServicioProximaFecha">No definida</strong></div>
+                    <div class="vehiculo-summary-item"><span>Pago</span><strong id="previewServicioPago">Sin seleccionar</strong></div>
+                </div>
+                <div class="protected-alert mt-3 mb-0">Captura simulada. No se guardará en base de datos.</div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Botones: Guardar valida únicamente en navegador hasta disponer del POST real. -->
+    <div class="form-action-bar vehiculo-action-bar">
+        <a class="btn btn-outline-cavex" asp-controller="Vehiculos" asp-action="Index">Cancelar / Volver</a>
+        <button id="btnLimpiarServicio" type="button" class="btn btn-outline-cavex">Limpiar</button>
+        <button type="submit" class="btn btn-cavex">Guardar servicio</button>
+    </div>
+</form>
+
+<!-- Historial simulado con la proyección visual de VehControlServicio.
+     Las acciones inferiores son demostrativas hasta disponer de endpoints de consulta y edición. -->
+<section class="cavex-card table-module servicio-recientes-card vehiculo-module-table">
+    <div class="servicio-table-heading">
+        <div>
+            <span class="dashboard-kicker">Historial</span>
+            <h3>Servicios recientes</h3>
+            <p>Datos simulados para validar la presentación del módulo.</p>
+        </div>
+        <span class="records-pill">3 servicios</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle executive-table table-cavex-compact">
+            <thead>
+                <tr>
+                    <th>Vehículo</th>
+                    <th>Fecha</th>
+                    <th>Tipo de servicio</th>
+                    <th>Taller</th>
+                    <th>Kilometraje</th>
+                    <th>Mano de obra</th>
+                    <th>Refacciones</th>
+                    <th>Total</th>
+                    <th>Responsable</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="serviciosRecientesBody"></tbody>
+        </table>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/js/vista-vehiculos.js" asp-append-version="true"></script>
+}

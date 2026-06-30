@@ -1,0 +1,193 @@
+@{
+    ViewData["Title"] = "Control de gasolina";
+    ViewData["HeaderEyebrow"] = "Consumo vehicular";
+    ViewData["HeaderTitle"] = "Control de gasolina";
+    ViewData["HeaderSubtitle"] = "Registra cargas de combustible, costos, kilometraje, gasolinera y comprobantes por unidad.";
+    ViewData["HeaderBadgeText"] = "Frontend preparado";
+}
+
+@section Head {
+    <link rel="stylesheet" href="~/css/vista-vehiculos.css" asp-append-version="true" />
+}
+
+<!-- Header compartido del módulo Vehículos. -->
+<partial name="_PageHeader" />
+
+<!-- Formulario de VehControlGasolina.
+     El cálculo de litros es exclusivamente visual y no agrega una columna al modelo SQL. -->
+<form id="gasolinaVehiculoForm" class="vehiculo-create-form gasolina-vehiculo-form vehiculo-module-form" novalidate>
+    <div class="gasolina-form-grid">
+        <div class="gasolina-main-column">
+            <!-- Datos del vehículo: FK y kilometraje NOT NULL de VehControlGasolina. -->
+            <section class="cavex-card form-section-card vehiculo-section-card">
+                <h3 class="form-section-title"><span class="form-section-number">1</span>Datos del vehículo</h3>
+                <div class="row g-3">
+                    <div class="col-lg-7">
+                        <label class="form-label" for="gasolina-idVehDatosGenerales">Vehículo</label>
+                        <select id="gasolina-idVehDatosGenerales" name="idVehDatosGenerales" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                        </select>
+                        <div class="invalid-feedback" id="gasolina-idVehDatosGeneralesError">Selecciona un vehículo.</div>
+                    </div>
+                    <div class="col-lg-5">
+                        <label class="form-label" for="gasolina-decKilometrajeActual">Kilometraje al cargar</label>
+                        <div class="input-group">
+                            <input id="gasolina-decKilometrajeActual" name="decKilometrajeActual" type="number" min="0" max="999999" step="1" class="form-control" placeholder="0" required />
+                            <span class="input-group-text">km</span>
+                        </div>
+                        <div class="invalid-feedback" id="gasolina-decKilometrajeActualError">Captura un kilometraje válido.</div>
+                    </div>
+                </div>
+
+                <!-- Mini-card alimentada por la proyección simulada de VehDatosGenerales. -->
+                <div id="gasolinaVehiculoCard" class="gasolina-vehiculo-card" hidden>
+                    <div><span>Placa</span><strong id="gasolinaVehiculoPlaca">—</strong></div>
+                    <div><span>Unidad</span><strong id="gasolinaVehiculoUnidad">—</strong></div>
+                    <div><span>Año</span><strong id="gasolinaVehiculoAnio">—</strong></div>
+                    <div><span>Kilometraje registrado</span><strong id="gasolinaVehiculoKilometraje">—</strong></div>
+                </div>
+            </section>
+
+            <!-- Datos de carga y catálogos relacionados. -->
+            <section class="cavex-card form-section-card vehiculo-section-card">
+                <h3 class="form-section-title"><span class="form-section-number">2</span>Datos de la carga</h3>
+                <div class="row g-3">
+                    <div class="col-md-6 col-xl-4">
+                        <label class="form-label" for="gasolina-dteFechaCarga">Fecha de carga</label>
+                        <input id="gasolina-dteFechaCarga" name="dteFechaCarga" type="date" class="form-control" required />
+                        <div class="invalid-feedback" id="gasolina-dteFechaCargaError">Captura una fecha válida.</div>
+                    </div>
+                    <div class="col-md-6 col-xl-4">
+                        <label class="form-label" for="gasolina-idVehCatGasolineras">Gasolinera</label>
+                        <select id="gasolina-idVehCatGasolineras" name="idVehCatGasolineras" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                        </select>
+                        <div class="invalid-feedback" id="gasolina-idVehCatGasolinerasError">Selecciona una gasolinera.</div>
+                    </div>
+                    <div class="col-md-6 col-xl-4">
+                        <label class="form-label" for="gasolina-idEmpEmpleado">Empleado responsable</label>
+                        <select id="gasolina-idEmpEmpleado" name="idEmpEmpleado" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                        </select>
+                        <div class="invalid-feedback" id="gasolina-idEmpEmpleadoError">Selecciona un empleado.</div>
+                    </div>
+                    <div class="col-md-6 col-xl-4">
+                        <label class="form-label" for="gasolina-mnyMontoPagado">Monto pagado</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input id="gasolina-mnyMontoPagado" name="mnyMontoPagado" type="number" min="0.01" max="999999" step="0.01" class="form-control" placeholder="0.00" required />
+                        </div>
+                        <div class="invalid-feedback" id="gasolina-mnyMontoPagadoError">Captura un monto mayor que cero.</div>
+                    </div>
+                    <div class="col-md-6 col-xl-4">
+                        <label class="form-label" for="gasolina-mnyPrecioLitro">Precio por litro</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input id="gasolina-mnyPrecioLitro" name="mnyPrecioLitro" type="number" min="0.01" max="99.99" step="0.01" class="form-control" placeholder="0.00" required />
+                            <span class="input-group-text">/ L</span>
+                        </div>
+                        <div class="invalid-feedback" id="gasolina-mnyPrecioLitroError">Captura un precio entre $0.01 y $99.99.</div>
+                    </div>
+                    <div class="col-md-6 col-xl-4">
+                        <label class="form-label" for="gasolina-idVehFormaPago">Forma de pago</label>
+                        <select id="gasolina-idVehFormaPago" name="idVehFormaPago" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                        </select>
+                        <div class="invalid-feedback" id="gasolina-idVehFormaPagoError">Selecciona una forma de pago.</div>
+                    </div>
+                </div>
+
+                <!-- Cálculo informativo: no es campo ni columna de dbo.VehControlGasolina. -->
+                <div class="gasolina-litros-card" aria-live="polite">
+                    <div class="gasolina-litros-icon" aria-hidden="true">L</div>
+                    <div>
+                        <span>Litros estimados</span>
+                        <strong id="gasolinaLitrosEstimados">0.00 L</strong>
+                        <small>Monto pagado ÷ precio por litro. Dato únicamente visual.</small>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Comprobante opcional: el backend futuro asignará la ruta a strUrlComprobantePago. -->
+            <section class="cavex-card form-section-card vehiculo-section-card">
+                <h3 class="form-section-title"><span class="form-section-number">3</span>Comprobante de pago</h3>
+                <label class="form-label" for="gasolinaComprobanteArchivo">Archivo <span class="vehiculo-optional-label">Opcional</span></label>
+                <div id="gasolinaComprobanteArea" class="gasolina-comprobante-area" role="button" tabindex="0">
+                    <input id="gasolinaComprobanteArchivo" type="file" class="vehiculo-file-input" accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp" />
+                    <input id="gasolina-strUrlComprobantePago" name="strUrlComprobantePago" type="hidden" value="" />
+                    <div id="gasolinaComprobantePrompt" class="gasolina-comprobante-prompt">
+                        <strong>Arrastra el comprobante aquí</strong>
+                        <span>PDF, JPG, JPEG, PNG o WEBP · máximo 5 MB</span>
+                    </div>
+                    <div id="gasolinaComprobanteSeleccionado" class="gasolina-comprobante-file" hidden>
+                        <div>
+                            <span id="gasolinaComprobanteTipo">Archivo</span>
+                            <strong id="gasolinaComprobanteNombre">Comprobante seleccionado</strong>
+                        </div>
+                        <button id="btnQuitarComprobanteGasolina" type="button" class="btn btn-outline-cavex btn-sm">Quitar</button>
+                    </div>
+                </div>
+                <div id="gasolinaComprobanteArchivoError" class="invalid-feedback gasolina-upload-error"></div>
+            </section>
+        </div>
+
+        <!-- Vista previa lateral con labels independientes de sus valores. -->
+        <aside class="vehiculo-side-panel">
+            <div class="summary-panel vehiculo-preview-card gasolina-preview-card">
+                <div class="vehiculo-preview-heading">
+                    <div><span class="dashboard-kicker">Vista previa</span><h3>Resumen de la carga</h3></div>
+                    <span class="vehiculo-preview-live">En vivo</span>
+                </div>
+                <div class="gasolina-preview-litros">
+                    <span>Litros estimados</span>
+                    <strong id="previewGasolinaLitros">0.00 L</strong>
+                </div>
+                <div class="vehiculo-summary-list">
+                    <div class="vehiculo-summary-item"><span>Vehículo</span><strong id="previewGasolinaVehiculo">Sin seleccionar</strong></div>
+                    <div class="vehiculo-summary-item"><span>Placa</span><strong id="previewGasolinaPlaca">—</strong></div>
+                    <div class="vehiculo-summary-item"><span>Fecha</span><strong id="previewGasolinaFecha">—</strong></div>
+                    <div class="vehiculo-summary-item"><span>Kilometraje</span><strong id="previewGasolinaKilometraje">0 km</strong></div>
+                    <div class="vehiculo-summary-item"><span>Gasolinera</span><strong id="previewGasolinaGasolinera">Sin seleccionar</strong></div>
+                    <div class="vehiculo-summary-item"><span>Monto</span><strong id="previewGasolinaMonto">$0.00</strong></div>
+                    <div class="vehiculo-summary-item"><span>Precio litro</span><strong id="previewGasolinaPrecio">$0.00</strong></div>
+                    <div class="vehiculo-summary-item"><span>Forma pago</span><strong id="previewGasolinaFormaPago">Sin seleccionar</strong></div>
+                    <div class="vehiculo-summary-item"><span>Empleado</span><strong id="previewGasolinaEmpleado">Sin seleccionar</strong></div>
+                    <div class="vehiculo-summary-item"><span>Comprobante</span><strong id="previewGasolinaComprobante">Sin archivo</strong></div>
+                </div>
+                <div class="protected-alert mt-3 mb-0">Captura simulada. No se guardará en base de datos.</div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Acciones; Guardar solo valida mientras no exista POST /api/vehiculos/gasolina. -->
+    <div class="form-action-bar vehiculo-action-bar">
+        <a class="btn btn-outline-cavex" asp-controller="Vehiculos" asp-action="Index">Cancelar / Volver</a>
+        <button id="btnLimpiarGasolina" type="button" class="btn btn-outline-cavex">Limpiar</button>
+        <button type="submit" class="btn btn-cavex">Guardar carga</button>
+    </div>
+</form>
+
+<!-- Tabla inferior de cargas simuladas para consulta visual.
+     El menú contextual conserva sus acciones preparadas sin ejecutar persistencia. -->
+<section class="cavex-card table-module gasolina-recientes-card vehiculo-module-table">
+    <div class="servicio-table-heading">
+        <div><span class="dashboard-kicker">Consumo</span><h3>Cargas recientes</h3><p>Registros simulados para validar el control de combustible.</p></div>
+        <span class="records-pill">4 cargas</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle executive-table table-cavex-compact">
+            <thead>
+                <tr>
+                    <th>Vehículo</th><th>Placa</th><th>Fecha de carga</th><th>Kilometraje</th>
+                    <th>Gasolinera</th><th>Monto pagado</th><th>Precio litro</th><th>Litros estimados</th>
+                    <th>Forma de pago</th><th>Empleado</th><th>Comprobante</th><th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="gasolinaRecientesBody"></tbody>
+        </table>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/js/vista-vehiculos.js" asp-append-version="true"></script>
+}

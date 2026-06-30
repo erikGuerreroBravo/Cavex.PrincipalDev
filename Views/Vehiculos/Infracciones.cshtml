@@ -1,0 +1,193 @@
+@{
+    ViewData["Title"] = "Infracciones del vehículo";
+    ViewData["HeaderEyebrow"] = "Control vehicular";
+    ViewData["HeaderTitle"] = "Infracciones del vehículo";
+    ViewData["HeaderSubtitle"] = "Registra multas, pagos, comprobantes y observaciones relacionadas con cada unidad.";
+    ViewData["HeaderBadgeText"] = "Frontend preparado";
+}
+
+@section Head {
+    <link rel="stylesheet" href="~/css/vista-vehiculos.css" asp-append-version="true" />
+}
+
+<!-- Header consistente con las demás pantallas del módulo Vehículos. -->
+<partial name="_PageHeader" />
+
+<!-- Formulario de VehInfracciones.
+     La sección de pago cambia su obligatoriedad según el estatus, sin alterar los names SQL. -->
+<form id="infraccionVehiculoForm" class="vehiculo-create-form infraccion-vehiculo-form vehiculo-module-form" novalidate>
+    <div class="infraccion-form-grid">
+        <div class="infraccion-main-column">
+            <!-- Datos principales: columnas NOT NULL de dbo.VehInfracciones. -->
+            <section class="cavex-card form-section-card vehiculo-section-card">
+                <h3 class="form-section-title"><span class="form-section-number">1</span>Datos principales</h3>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="infraccion-idVehDatosGenerales">Vehículo</label>
+                        <select id="infraccion-idVehDatosGenerales" name="idVehDatosGenerales" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                        </select>
+                        <div class="invalid-feedback" id="infraccion-idVehDatosGeneralesError">Selecciona un vehículo.</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="infraccion-idEmpEmpleado">Empleado responsable</label>
+                        <select id="infraccion-idEmpEmpleado" name="idEmpEmpleado" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                        </select>
+                        <div class="invalid-feedback" id="infraccion-idEmpEmpleadoError">Selecciona un empleado.</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="infraccion-dteFechaInfraccion">Fecha de infracción</label>
+                        <input id="infraccion-dteFechaInfraccion" name="dteFechaInfraccion" type="date" class="form-control" required />
+                        <div class="invalid-feedback" id="infraccion-dteFechaInfraccionError">Captura una fecha válida.</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="infraccion-idVehCatStatus">Estatus</label>
+                        <select id="infraccion-idVehCatStatus" name="idVehCatStatus" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                        </select>
+                        <div class="invalid-feedback" id="infraccion-idVehCatStatusError">Selecciona un estatus.</div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="infraccion-strMotivo">Motivo</label>
+                        <textarea id="infraccion-strMotivo" name="strMotivo" maxlength="500" rows="4" class="form-control" placeholder="Describe la conducta, multa o motivo de la infracción." required></textarea>
+                        <div class="invalid-feedback" id="infraccion-strMotivoError">El motivo es obligatorio y admite hasta 500 caracteres.</div>
+                        <div class="vehiculo-character-counter" aria-live="polite"><span id="infraccionMotivoCounter">0</span>/500</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Datos de pago: son NULL en SQL y se vuelven obligatorios solo para estatus Pagada. -->
+            <section id="infraccionPagoCard" class="cavex-card form-section-card vehiculo-section-card infraccion-pago-card">
+                <div class="infraccion-section-heading">
+                    <h3 class="form-section-title"><span class="form-section-number">2</span>Datos de pago</h3>
+                    <span id="infraccionPagoRequirement" class="infraccion-requirement-badge">Opcional</span>
+                </div>
+                <div id="infraccionPagoHelp" class="infraccion-payment-help">
+                    Los datos de pago se solicitan obligatoriamente cuando el estatus es Pagada.
+                </div>
+                <div class="row g-3 mt-0">
+                    <div class="col-md-4">
+                        <label class="form-label" for="infraccion-mnyMontoPagado">Monto pagado <span class="vehiculo-optional-label infraccion-payment-optional">Opcional</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input id="infraccion-mnyMontoPagado" name="mnyMontoPagado" type="number" min="0" max="999999" step="0.01" class="form-control" placeholder="0.00" />
+                        </div>
+                        <div class="invalid-feedback" id="infraccion-mnyMontoPagadoError">Captura un monto válido.</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="infraccion-dteFechaPago">Fecha de pago <span class="vehiculo-optional-label infraccion-payment-optional">Opcional</span></label>
+                        <input id="infraccion-dteFechaPago" name="dteFechaPago" type="date" class="form-control" />
+                        <div class="invalid-feedback" id="infraccion-dteFechaPagoError">La fecha no puede ser anterior a la infracción.</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="infraccion-idVehFormaPago">Forma de pago <span class="vehiculo-optional-label infraccion-payment-optional">Opcional</span></label>
+                        <select id="infraccion-idVehFormaPago" name="idVehFormaPago" class="form-select">
+                            <option value="">Seleccionar...</option>
+                        </select>
+                        <div class="invalid-feedback" id="infraccion-idVehFormaPagoError">Selecciona una forma de pago.</div>
+                    </div>
+                </div>
+
+                <!-- Comprobante auxiliar; la ruta futura se almacenará en strUrlComprobantePago. -->
+                <div class="infraccion-comprobante-block">
+                    <label class="form-label" for="infraccionComprobanteArchivo">Comprobante de pago <span class="vehiculo-optional-label">Recomendado al pagar</span></label>
+                    <div id="infraccionComprobanteArea" class="infraccion-comprobante-area" role="button" tabindex="0">
+                        <input id="infraccionComprobanteArchivo" type="file" class="vehiculo-file-input" accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp" />
+                        <input id="infraccion-strUrlComprobantePago" name="strUrlComprobantePago" type="hidden" value="" />
+                        <div id="infraccionComprobantePrompt" class="infraccion-comprobante-prompt">
+                            <strong>Arrastra el comprobante aquí</strong>
+                            <span>PDF, JPG, JPEG, PNG o WEBP · máximo 5 MB</span>
+                        </div>
+                        <div id="infraccionComprobanteSeleccionado" class="infraccion-comprobante-file" hidden>
+                            <div>
+                                <span id="infraccionComprobanteTipo">Archivo</span>
+                                <strong id="infraccionComprobanteNombre">Comprobante seleccionado</strong>
+                            </div>
+                            <button id="btnQuitarComprobanteInfraccion" type="button" class="btn btn-outline-cavex btn-sm">Quitar</button>
+                        </div>
+                    </div>
+                    <div id="infraccionComprobanteArchivoError" class="invalid-feedback infraccion-upload-error"></div>
+                </div>
+            </section>
+
+            <!-- Observaciones: campo NULL independiente del motivo obligatorio. -->
+            <section class="cavex-card form-section-card vehiculo-section-card">
+                <h3 class="form-section-title"><span class="form-section-number">3</span>Observaciones</h3>
+                <label class="form-label" for="infraccion-strObservaciones">Observaciones <span class="vehiculo-optional-label">Opcional</span></label>
+                <textarea id="infraccion-strObservaciones" name="strObservaciones" maxlength="500" rows="4" class="form-control" placeholder="Notas administrativas, seguimiento o aclaraciones."></textarea>
+                <div class="invalid-feedback" id="infraccion-strObservacionesError">Las observaciones no deben superar 500 caracteres.</div>
+                <div class="vehiculo-character-counter" aria-live="polite"><span id="infraccionObservacionesCounter">0</span>/500</div>
+            </section>
+        </div>
+
+        <!-- Vista previa lateral: presenta textos de catálogo y no sus ids. -->
+        <aside class="vehiculo-side-panel">
+            <div class="summary-panel vehiculo-preview-card infraccion-preview-card">
+                <div class="vehiculo-preview-heading">
+                    <div><span class="dashboard-kicker">Vista previa</span><h3>Resumen de infracción</h3></div>
+                    <span class="vehiculo-preview-live">En vivo</span>
+                </div>
+                <div class="infraccion-preview-status">
+                    <span>Estatus actual</span>
+                    <strong id="previewInfraccionStatus" class="infraccion-status infraccion-status-pending">Pendiente</strong>
+                </div>
+                <div class="vehiculo-summary-list">
+                    <div class="vehiculo-summary-item"><span>Vehículo</span><strong id="previewInfraccionVehiculo">Sin seleccionar</strong></div>
+                    <div class="vehiculo-summary-item"><span>Placa</span><strong id="previewInfraccionPlaca">—</strong></div>
+                    <div class="vehiculo-summary-item"><span>Empleado</span><strong id="previewInfraccionEmpleado">Sin seleccionar</strong></div>
+                    <div class="vehiculo-summary-item"><span>Fecha</span><strong id="previewInfraccionFecha">—</strong></div>
+                    <div class="vehiculo-summary-item infraccion-preview-motivo"><span>Motivo</span><strong id="previewInfraccionMotivo">Sin capturar</strong></div>
+                    <div class="vehiculo-summary-item"><span>Monto</span><strong id="previewInfraccionMonto">$0.00</strong></div>
+                    <div class="vehiculo-summary-item"><span>Fecha pago</span><strong id="previewInfraccionFechaPago">No registrada</strong></div>
+                    <div class="vehiculo-summary-item"><span>Forma pago</span><strong id="previewInfraccionFormaPago">Sin seleccionar</strong></div>
+                    <div class="vehiculo-summary-item"><span>Comprobante</span><strong id="previewInfraccionComprobante">Sin archivo</strong></div>
+                </div>
+                <div class="protected-alert mt-3 mb-0">Captura simulada. No se guardará en base de datos.</div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Acciones del formulario; Guardar únicamente ejecuta validación frontend. -->
+    <div class="form-action-bar vehiculo-action-bar">
+        <a class="btn btn-outline-cavex" asp-controller="Vehiculos" asp-action="Index">Cancelar / Volver</a>
+        <button id="btnLimpiarInfraccion" type="button" class="btn btn-outline-cavex">Limpiar</button>
+        <button type="submit" class="btn btn-cavex">Guardar infracción</button>
+    </div>
+</form>
+
+<!-- Tabla de consulta simulada con acciones tipificadas.
+     Ver, editar, pagar y cancelar solo muestran información mientras no exista API. -->
+<section class="cavex-card table-module infracciones-recientes-card vehiculo-module-table">
+    <div class="servicio-table-heading">
+        <div>
+            <span class="dashboard-kicker">Seguimiento</span>
+            <h3>Infracciones recientes</h3>
+            <p>Registros simulados para validar consulta y estados.</p>
+        </div>
+        <span class="records-pill">4 infracciones</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle executive-table table-cavex-compact">
+            <thead>
+                <tr>
+                    <th>Vehículo</th>
+                    <th>Placa</th>
+                    <th>Empleado</th>
+                    <th>Fecha infracción</th>
+                    <th>Motivo</th>
+                    <th>Monto</th>
+                    <th>Estatus</th>
+                    <th>Fecha pago</th>
+                    <th>Comprobante</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="infraccionesRecientesBody"></tbody>
+        </table>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/js/vista-vehiculos.js" asp-append-version="true"></script>
+}
