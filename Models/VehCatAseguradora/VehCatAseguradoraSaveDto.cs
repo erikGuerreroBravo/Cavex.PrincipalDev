@@ -4,9 +4,9 @@ namespace Cavex.Principal.Models.VehCatAseguradora
 {
     public class VehCatAseguradoraSaveDto
     {
-        [Required(ErrorMessage = "El Nombre es obligatorio.")]
+        [Required(ErrorMessage = "El nombre de la aseguradora es obligatorio.")]
         [StringLength(100, ErrorMessage = "El valor no puede superar los 100 caracteres.")]
-        [Display(Name = "Nombre")]
+        [Display(Name = "Aseguradora")]
         public string StrValor { get; set; } = string.Empty;
 
 
