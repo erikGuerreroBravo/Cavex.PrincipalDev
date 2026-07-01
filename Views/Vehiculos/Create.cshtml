@@ -3,7 +3,6 @@
     ViewData["HeaderEyebrow"] = "Inventario vehicular";
     ViewData["HeaderTitle"] = "Registro de vehículo";
     ViewData["HeaderSubtitle"] = "Captura los datos de la unidad con la estructura de VehDatosGenerales.";
-    ViewData["HeaderBadgeText"] = "Frontend preparado";
 }
 
 @section Head {
@@ -23,7 +22,7 @@
                 <h3 class="form-section-title"><span class="form-section-number">1</span>Datos principales</h3>
                 <div class="row g-3">
                     <div class="col-md-6 col-xl-4">
-                        <label class="form-label" for="strNumSerie">Número de serie / VIN</label>
+                        <label class="form-label" for="strNumSerie">Número de serie</label>
                         <input id="strNumSerie" name="strNumSerie" maxlength="20" pattern="[A-Za-z0-9]+" class="form-control" placeholder="Ej. 3N1AB7AP0HY000001" autocomplete="off" required />
                         <div class="invalid-feedback" id="strNumSerieError">El número de serie es obligatorio.</div>
                     </div>
@@ -170,11 +169,7 @@
         <aside class="vehiculo-side-panel">
             <div class="summary-panel vehiculo-preview-card">
                 <div class="vehiculo-preview-heading">
-                    <div><span class="dashboard-kicker">Vista previa</span><h3>Resumen de la unidad</h3></div>
-                    <span class="vehiculo-preview-live">En vivo</span>
-                </div>
-                <div class="vehicle-photo-preview" id="vehiculoFotoPreview">
-                    <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9L18 10l-2-4H8l-2 4-2.5 1.1C2.7 11.4 2 12.1 2 13v3c0 .6.4 1 1 1h2" /><circle cx="7" cy="17" r="2" /><circle cx="17" cy="17" r="2" /></svg>
+                    <div><span class="dashboard-kicker">Vista previa</span></div>
                 </div>
                 <div class="vehiculo-summary-list">
                     <div class="vehiculo-summary-item"><span>Unidad</span><strong id="previewUnidad">Sin datos</strong></div>
@@ -188,7 +183,6 @@
                     <div class="vehiculo-summary-item"><span>Kilometraje</span><strong id="previewKilometraje">0 km</strong></div>
                     <div class="vehiculo-summary-item vehiculo-summary-status"><span>Estatus</span><strong id="previewEstatus" class="badge-active">Activo</strong></div>
                 </div>
-                <div class="protected-alert mt-3 mb-0">Captura simulada. No se guardará en base de datos.</div>
             </div>
         </aside>
     </div>
@@ -196,7 +190,6 @@
     <!-- Acciones del formulario; el submit solo valida hasta contar con POST /api/vehiculos. -->
     <div class="form-action-bar vehiculo-action-bar">
         <a class="btn btn-outline-cavex" asp-controller="Vehiculos" asp-action="Index">Cancelar / Volver</a>
-        <button type="button" class="btn btn-outline-cavex" id="btnLimpiarVehiculo">Limpiar</button>
         <button type="submit" class="btn btn-cavex">Guardar vehículo</button>
     </div>
 </form>

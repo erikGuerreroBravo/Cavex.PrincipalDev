@@ -3,7 +3,6 @@
     ViewData["HeaderEyebrow"] = "Seguridad vehicular";
     ViewData["HeaderTitle"] = "Control de llantas";
     ViewData["HeaderSubtitle"] = "Registra compras, posiciones, kilometraje, rotaciones, vida estimada y evidencias por unidad.";
-    ViewData["HeaderBadgeText"] = "Frontend preparado";
 }
 
 @section Head {
@@ -103,7 +102,6 @@
             <!-- Fechas opcionales: columnas NULL usadas para alertas futuras de vida y rotación. -->
             <section class="cavex-card form-section-card vehiculo-section-card llanta-fechas-card">
                 <h3 class="form-section-title"><span class="form-section-number">3</span>Fechas de vida y rotación</h3>
-                <div class="llanta-help-alert">Estos datos permiten generar alertas futuras de rotación o cambio de llantas.</div>
                 <div class="row g-3">
                     <div class="col-md-4">
                         <label class="form-label" for="llanta-dteFechaFinVidaEstimada">Vida estimada <span class="vehiculo-optional-label">Opcional</span></label>
@@ -150,8 +148,7 @@
         <aside class="vehiculo-side-panel">
             <div class="summary-panel vehiculo-preview-card llanta-preview-card">
                 <div class="vehiculo-preview-heading">
-                    <div><span class="dashboard-kicker">Vista previa</span><h3>Resumen de la llanta</h3></div>
-                    <span class="vehiculo-preview-live">En vivo</span>
+                    <div><span class="dashboard-kicker">Vista previa</span></div>
                 </div>
                 <div class="llanta-preview-status">
                     <span>Estatus</span>
@@ -172,7 +169,6 @@
                     <div class="vehiculo-summary-item"><span>Siguiente rotación</span><strong id="previewLlantaSiguienteRotacion">—</strong></div>
                     <div class="vehiculo-summary-item"><span>Evidencia</span><strong id="previewLlantaEvidencia">Sin archivo</strong></div>
                 </div>
-                <div class="protected-alert mt-3 mb-0">Captura simulada. No se guardará en base de datos.</div>
             </div>
         </aside>
     </div>
@@ -180,31 +176,9 @@
     <!-- Botones de captura: Guardar solo valida mientras no exista POST /api/vehiculos/llantas. -->
     <div class="form-action-bar vehiculo-action-bar">
         <a class="btn btn-outline-cavex" asp-controller="Vehiculos" asp-action="Index">Cancelar / Volver</a>
-        <button id="btnLimpiarLlanta" type="button" class="btn btn-outline-cavex">Limpiar</button>
         <button type="submit" class="btn btn-cavex">Guardar llanta</button>
     </div>
 </form>
-
-<!-- Tabla inferior: consulta simulada con las columnas solicitadas para la pantalla.
-     Registrar rotación y dar de baja permanecen como acciones demostrativas. -->
-<section class="cavex-card table-module llantas-recientes-card vehiculo-module-table">
-    <div class="servicio-table-heading">
-        <div><span class="dashboard-kicker">Control</span><h3>Llantas registradas</h3><p>Registros simulados para validar consulta, estatus, evidencia y acciones.</p></div>
-        <span class="records-pill">4 llantas</span>
-    </div>
-    <div class="table-responsive">
-        <table class="table table-hover align-middle executive-table table-cavex-compact">
-            <thead>
-                <tr>
-                    <th>Vehículo</th><th>Placa</th><th>Marca</th><th>Modelo</th><th>Medida</th>
-                    <th>Posición</th><th>Kilometraje</th><th>Costo</th><th>Siguiente rotación</th>
-                    <th>Estatus</th><th>Evidencia</th><th class="text-end">Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="llantasRegistradasBody"></tbody>
-        </table>
-    </div>
-</section>
 
 @section Scripts {
     <script src="~/js/vista-vehiculos.js" asp-append-version="true"></script>

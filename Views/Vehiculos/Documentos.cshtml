@@ -3,7 +3,6 @@
     ViewData["HeaderEyebrow"] = "Expediente vehicular";
     ViewData["HeaderTitle"] = "Documentos del vehículo";
     ViewData["HeaderSubtitle"] = "Controla factura, tarjeta de circulación, tenencia, verificación, seguro, permisos y placas.";
-    ViewData["HeaderBadgeText"] = "Frontend preparado";
 }
 
 @section Head {
@@ -235,8 +234,7 @@
         <aside class="vehiculo-side-panel">
             <div class="summary-panel vehiculo-preview-card documento-preview-card">
                 <div class="vehiculo-preview-heading">
-                    <div><span class="dashboard-kicker">Vista previa</span><h3>Documento activo</h3></div>
-                    <span class="vehiculo-preview-live">En vivo</span>
+                    <div><span class="dashboard-kicker">Vista previa</span></div>
                 </div>
                 <div class="documento-preview-type" id="previewDocumentoTipo">Factura</div>
                 <div class="vehiculo-summary-list">
@@ -249,7 +247,6 @@
                     <div class="vehiculo-summary-item vehiculo-summary-status"><span>Estado</span><strong id="previewDocumentoStatus" class="documento-status documento-status-empty">Sin capturar</strong></div>
                     <div class="vehiculo-summary-item"><span>Archivo</span><strong id="previewDocumentoArchivo">Sin archivo</strong></div>
                 </div>
-                <div class="protected-alert mt-3 mb-0">Vista simulada. No se guardará información.</div>
             </div>
         </aside>
     </div>
@@ -257,25 +254,9 @@
     <!-- Acciones: Guardar y Limpiar operan exclusivamente sobre el tab activo. -->
     <div class="form-action-bar vehiculo-action-bar documentos-action-bar">
         <a class="btn btn-outline-cavex" asp-controller="Vehiculos" asp-action="Index">Cancelar / Volver</a>
-        <button id="btnLimpiarDocumento" type="button" class="btn btn-outline-cavex">Limpiar tab actual</button>
         <button type="submit" class="btn btn-cavex">Guardar documento</button>
     </div>
 </form>
-
-<!-- Tabla inferior de actividad documental simulada.
-     Los botones no descargan ni modifican archivos hasta conectar el backend. -->
-<section class="cavex-card table-module documentos-recientes-card vehiculo-module-table">
-    <div class="servicio-table-heading">
-        <div><span class="dashboard-kicker">Actividad</span><h3>Documentos recientes</h3><p>Registros simulados del expediente vehicular.</p></div>
-        <span class="records-pill">5 documentos</span>
-    </div>
-    <div class="table-responsive">
-        <table class="table table-hover align-middle executive-table table-cavex-compact">
-            <thead><tr><th>Vehículo</th><th>Documento</th><th>Folio / Número</th><th>Fecha de registro</th><th>Fecha de vencimiento</th><th>Estado</th><th>Archivo</th><th class="text-end">Acciones</th></tr></thead>
-            <tbody id="documentosRecientesBody"></tbody>
-        </table>
-    </div>
-</section>
 
 @section Scripts {
     <script src="~/js/vista-vehiculos.js" asp-append-version="true"></script>
