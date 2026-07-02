@@ -437,7 +437,28 @@ function renderVehiculosTable() {
             <td>${escapeHtml(v.strColor)}</td>
             <td>${Number(v.decKilometrajeActual).toLocaleString("es-MX")} km</td>
             <td>${renderVehiculoBadge(v.strStatus)}</td>
-            <td class="text-end"><button class="btn-action-trigger btn-sm" type="button" onclick="mostrarAlertaVehiculoDemo()">Acciones</button></td>
+            <td class="text-end">
+                    <div class="dropdown actions-dropdown d-inline-block">
+                        <button class="btn-action-trigger btn-sm" type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport" aria-expanded="false">
+                            <span>Acciones</span>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <button class="dropdown-item d-flex align-items-center" type="button" onclick="editarVehiculoDemo(${v.id})">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 text-primary"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                    Editar
+                                </button>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="/Vehiculos/Detalle/${v.id}">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 text-info"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    Ver detalles
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
         </tr>`).join("") : '<tr><td colspan="9" class="text-center py-5 text-muted">No se encontraron vehículos.</td></tr>';
 
     setText("vehiculosCountTodos", String(vehiculosDemo.length));
@@ -473,6 +494,12 @@ function mostrarAlertaVehiculoDemo() {
     Swal.fire({ icon: "info", title: "Acción simulada", text: "Esta acción se conectará cuando exista el backend del módulo.", confirmButtonColor: "var(--teal-cavex)" });
 }
 
+// Muestra una alerta informativa para la edición simulada de un vehículo.
+function editarVehiculoDemo(id) {
+    const vehiculo = vehiculosDemo.find(v => v.id === id);
+    Swal.fire({ icon: "info", title: "Editar vehículo", text: vehiculo ? `La edición de "${vehiculo.strMarca} ${vehiculo.strModelo} (${vehiculo.strPlaca})" se habilitará cuando exista el backend.` : "Esta acción se conectará cuando exista el backend del módulo.", confirmButtonColor: "var(--teal-cavex)" });
+}
+
 // Devuelve el SVG reutilizable mostrado cuando una unidad no tiene fotografía.
 function vehicleIcon() {
     return '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9L18 10l-2-4H8l-2 4-2.5 1.1C2.7 11.4 2 12.1 2 13v3c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>';
@@ -488,55 +515,6 @@ function setText(id, value) {
 function escapeHtml(text) {
     return String(text || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
-
-// Vehículos simulados con la proyección necesaria de dbo.VehDatosGenerales.
-// TODO backend: sustituir este arreglo por GET /api/vehiculos.
-const servicioVehiculosSimulados = [
-    { id: 1, strPlaca: "ABC-123-D", marca: "Toyota", strModelo: "RAV4", intAnio: 2021, decKilometrajeActual: 45230 },
-    { id: 2, strPlaca: "XYZ-987-A", marca: "Nissan", strModelo: "Versa", intAnio: 2020, decKilometrajeActual: 38600 }
-];
-
-// Los catálogos mantienen la forma id, strValor y strDescripcion esperada del backend.
-// TODO backend: usar GET /api/vehiculos/catalogos/tipos-servicio, /talleres,
-// /formas-pago y /responsables-servicio.
-const servicioCatalogosSimulados = {
-    idVehCatTipoServicio: [
-        { id: 1, strValor: "Cambio de aceite y filtro", strDescripcion: "Servicio preventivo de aceite y filtro" },
-        { id: 2, strValor: "Revisión de frenos", strDescripcion: "Inspección del sistema de frenos" },
-        { id: 3, strValor: "Rotación de llantas", strDescripcion: "Rotación preventiva de neumáticos" },
-        { id: 4, strValor: "Alineación y balanceo", strDescripcion: "Ajuste de alineación y balanceo" },
-        { id: 5, strValor: "Revisión general", strDescripcion: "Diagnóstico general de la unidad" },
-        { id: 6, strValor: "Servicio preventivo", strDescripcion: "Mantenimiento preventivo programado" },
-        { id: 7, strValor: "Servicio correctivo", strDescripcion: "Reparación correctiva de la unidad" },
-        { id: 8, strValor: "Revisión 24 puntos", strDescripcion: "Inspección integral de 24 puntos" }
-    ],
-    idVehCatTaller: [
-        { id: 1, strValor: "Taller interno Cavex", strDescripcion: "Taller propio de Cavex" },
-        { id: 2, strValor: "Agencia autorizada", strDescripcion: "Agencia autorizada por fabricante" },
-        { id: 3, strValor: "Taller externo", strDescripcion: "Proveedor externo de mantenimiento" },
-        { id: 4, strValor: "Servicio móvil", strDescripcion: "Servicio realizado en sitio" }
-    ],
-    idVehFormaPago: [
-        { id: 1, strValor: "Efectivo", strDescripcion: "Pago en efectivo" },
-        { id: 2, strValor: "Transferencia", strDescripcion: "Pago por transferencia bancaria" },
-        { id: 3, strValor: "Tarjeta", strDescripcion: "Pago con tarjeta" },
-        { id: 4, strValor: "Crédito", strDescripcion: "Pago a crédito" },
-        { id: 5, strValor: "Otro", strDescripcion: "Otra forma de pago" }
-    ],
-    idVehCatResponsableServicio: [
-        { id: 1, strValor: "Encargado de mantenimiento", strDescripcion: "Responsable del área de mantenimiento" },
-        { id: 2, strValor: "Coordinador operativo", strDescripcion: "Coordinación operativa" },
-        { id: 3, strValor: "Supervisor de flota", strDescripcion: "Supervisión de la flota" },
-        { id: 4, strValor: "Administración", strDescripcion: "Área administrativa" }
-    ]
-};
-
-// Historial de muestra con nombres compatibles con VehControlServicio y textos de catálogo resueltos.
-const serviciosRecientesSimulados = [
-    { id: 1, vehiculo: "Toyota RAV4 · ABC-123-D", dteFechaServicio: "2026-06-20", tipoServicio: "Cambio de aceite y filtro", taller: "Taller interno Cavex", decKilometrajeActual: 45230, mnyCostoManoObra: 650, mnyCostoRefacciones: 1280, mnyCostoTotal: 1930, responsable: "Encargado de mantenimiento" },
-    { id: 2, vehiculo: "Nissan Versa · XYZ-987-A", dteFechaServicio: "2026-05-14", tipoServicio: "Revisión de frenos", taller: "Agencia autorizada", decKilometrajeActual: 38600, mnyCostoManoObra: 950, mnyCostoRefacciones: 2400, mnyCostoTotal: 3350, responsable: "Supervisor de flota" },
-    { id: 3, vehiculo: "Toyota RAV4 · ABC-123-D", dteFechaServicio: "2026-03-08", tipoServicio: "Alineación y balanceo", taller: "Taller externo", decKilometrajeActual: 41820, mnyCostoManoObra: 500, mnyCostoRefacciones: 0, mnyCostoTotal: 500, responsable: "Coordinador operativo" }
-];
 
 // Inicializa solo /Vehiculos/NuevoServicio; las otras pantallas salen de inmediato.
 function inicializarNuevoServicioVehiculo() {
@@ -952,87 +930,6 @@ function formatearFechaServicio(valor) {
 function formatearMonedaServicio(valor) {
     return Number(valor || 0).toLocaleString("es-MX", { style: "currency", currency: "MXN", minimumFractionDigits: 2 });
 }
-
-// Proyección simulada de VehDatosGenerales para el expediente documental.
-// TODO backend: reemplazar por GET /api/vehiculos.
-const documentosVehiculosSimulados = [
-    { id: 1, strPlaca: "ABC-123-D", marca: "Toyota", strModelo: "RAV4", intAnio: 2021 },
-    { id: 2, strPlaca: "XYZ-987-A", marca: "Nissan", strModelo: "Versa", intAnio: 2020 }
-];
-
-// Catálogos compartidos por las tablas detalle, con id como valor y strValor como etiqueta.
-const documentosCatalogosSimulados = {
-    status: [
-        { id: 1, strValor: "Vigente", strDescripcion: "Documento vigente" },
-        { id: 2, strValor: "Próximo a vencer", strDescripcion: "Documento próximo a vencer" },
-        { id: 3, strValor: "Vencido", strDescripcion: "Documento vencido" },
-        { id: 4, strValor: "Cancelado", strDescripcion: "Documento cancelado" }
-    ],
-    formasPago: [
-        { id: 1, strValor: "Efectivo", strDescripcion: "Pago en efectivo" },
-        { id: 2, strValor: "Transferencia", strDescripcion: "Transferencia bancaria" },
-        { id: 3, strValor: "Tarjeta", strDescripcion: "Pago con tarjeta" },
-        { id: 4, strValor: "Crédito", strDescripcion: "Pago a crédito" }
-    ],
-    aseguradoras: [
-        { id: 1, strValor: "AXA", strDescripcion: "Aseguradora AXA" },
-        { id: 2, strValor: "GNP", strDescripcion: "Grupo Nacional Provincial" },
-        { id: 3, strValor: "Quálitas", strDescripcion: "Quálitas Compañía de Seguros" },
-        { id: 4, strValor: "HDI", strDescripcion: "HDI Seguros" }
-    ],
-    coberturas: [
-        { id: 1, strValor: "Amplia", strDescripcion: "Cobertura amplia" },
-        { id: 2, strValor: "Limitada", strDescripcion: "Cobertura limitada" },
-        { id: 3, strValor: "Responsabilidad civil", strDescripcion: "Responsabilidad civil" }
-    ],
-    tiposPermiso: [
-        { id: 1, strValor: "Transporte privado", strDescripcion: "Permiso de transporte privado" },
-        { id: 2, strValor: "Transporte de personal", strDescripcion: "Permiso para transporte de personal" },
-        { id: 3, strValor: "Federal", strDescripcion: "Permiso federal" },
-        { id: 4, strValor: "Estatal", strDescripcion: "Permiso estatal" }
-    ],
-    hologramas: [
-        { id: 1, strValor: "00", strDescripcion: "Holograma doble cero" },
-        { id: 2, strValor: "0", strDescripcion: "Holograma cero" },
-        { id: 3, strValor: "1", strDescripcion: "Holograma uno" },
-        { id: 4, strValor: "2", strDescripcion: "Holograma dos" }
-    ],
-    arrendatarios: [
-        { id: 1, strValor: "Cavex Operaciones", strDescripcion: "Cavex Operaciones" },
-        { id: 2, strValor: "Arrendadora Nacional", strDescripcion: "Arrendadora Nacional" },
-        { id: 3, strValor: "Leasing Empresarial", strDescripcion: "Leasing Empresarial" }
-    ],
-    entidades: [
-        { id: 1, strValor: "Ciudad de México", strDescripcion: "CDMX" },
-        { id: 2, strValor: "Estado de México", strDescripcion: "México" },
-        { id: 3, strValor: "Querétaro", strDescripcion: "Querétaro" },
-        { id: 4, strValor: "Morelos", strDescripcion: "Morelos" }
-    ]
-};
-
-// Estados superiores simulados; después se obtendrán por vehículo.
-// TODO backend: GET /api/vehiculos/documentos/{idVehDatosGenerales}.
-const documentosResumenSimulado = [
-    { key: "factura", nombre: "Factura", estado: "Vigente", vencimiento: null },
-    { key: "tarjeta", nombre: "Tarjeta de circulación", estado: "Próximo a vencer", vencimiento: "2026-08-15" },
-    { key: "tenencia", nombre: "Tenencia", estado: "Vigente", vencimiento: "2027-03-31" },
-    { key: "verificacion", nombre: "Verificación", estado: "Próximo a vencer", vencimiento: "2026-07-30" },
-    { key: "seguro", nombre: "Seguro", estado: "Vencido", vencimiento: "2026-05-20" },
-    { key: "permiso", nombre: "Permiso de transporte", estado: "Sin capturar", vencimiento: null },
-    { key: "revista", nombre: "Revista vehicular", estado: "Vigente", vencimiento: "2026-12-10" },
-    { key: "contrato", nombre: "Contrato de arrendamiento", estado: "Sin capturar", vencimiento: null },
-    { key: "placas", nombre: "Placas", estado: "Vigente", vencimiento: "2027-01-31" }
-];
-
-const documentosRecientesSimulados = [
-    { vehiculo: "Toyota RAV4 · ABC-123-D", documento: "Tarjeta de circulación", folio: "TC-458921", fecha: "2026-06-10", vencimiento: "2026-08-15", estado: "Próximo a vencer", archivo: "tarjeta-rav4.pdf" },
-    { vehiculo: "Toyota RAV4 · ABC-123-D", documento: "Tenencia", folio: "TEN-2026-8841", fecha: "2026-03-18", vencimiento: "2027-03-31", estado: "Vigente", archivo: "tenencia-2026.pdf" },
-    { vehiculo: "Nissan Versa · XYZ-987-A", documento: "Seguro", folio: "POL-998721", fecha: "2025-05-20", vencimiento: "2026-05-20", estado: "Vencido", archivo: "poliza-versa.pdf" },
-    { vehiculo: "Nissan Versa · XYZ-987-A", documento: "Verificación", folio: "VER-260184", fecha: "2026-01-30", vencimiento: "2026-07-30", estado: "Próximo a vencer", archivo: "Sin archivo" },
-    { vehiculo: "Toyota RAV4 · ABC-123-D", documento: "Placas", folio: "ABC-123-D", fecha: "2026-01-31", vencimiento: "2027-01-31", estado: "Vigente", archivo: "placas-rav4.pdf" }
-];
-
-let documentoActivo = "factura";
 
 // Inicializa exclusivamente /Vehiculos/Documentos y deja intactas las demás pantallas.
 function inicializarDocumentosVehiculo() {
@@ -1456,59 +1353,6 @@ function claseEstadoDocumento(estado) {
     return "documento-status-empty";
 }
 
-/*
- * Endpoints futuros por tab:
- * POST /api/vehiculos/documentos/factura
- * POST /api/vehiculos/documentos/tarjeta-circulacion
- * POST /api/vehiculos/documentos/tenencia
- * POST /api/vehiculos/documentos/verificacion
- * POST /api/vehiculos/documentos/seguro
- * POST /api/vehiculos/documentos/permiso-transporte
- * POST /api/vehiculos/documentos/revista-vehicular
- * POST /api/vehiculos/documentos/contrato-arrendamiento
- * POST /api/vehiculos/documentos/placas
- */
-
-// Proyecciones simuladas de las dos FK principales de dbo.VehInfracciones.
-// TODO backend: reemplazar por GET /api/vehiculos y GET /api/empleados.
-const infraccionesVehiculosSimulados = [
-    { id: 1, strPlaca: "ABC-123-D", marca: "Toyota", strModelo: "RAV4", intAnio: 2021 },
-    { id: 2, strPlaca: "XYZ-987-A", marca: "Nissan", strModelo: "Versa", intAnio: 2020 }
-];
-
-const infraccionesEmpleadosSimulados = [
-    { id: 1, nombreCompleto: "Juan Pérez López", area: "Operaciones" },
-    { id: 2, nombreCompleto: "Carlos Hernández Ruiz", area: "Mantenimiento" }
-];
-
-// Catálogos simulados con la estructura id, strValor y strDescripcion.
-// TODO backend: GET /api/vehiculos/catalogos/status y GET /api/vehiculos/catalogos/formas-pago.
-const infraccionesCatalogosSimulados = {
-    status: [
-        { id: 1, strValor: "Pendiente", strDescripcion: "Infracción pendiente de pago" },
-        { id: 2, strValor: "Pagada", strDescripcion: "Infracción pagada" },
-        { id: 3, strValor: "Cancelada", strDescripcion: "Infracción cancelada" },
-        { id: 4, strValor: "En revisión", strDescripcion: "Infracción en proceso de revisión" }
-    ],
-    formasPago: [
-        { id: 1, strValor: "Efectivo", strDescripcion: "Pago en efectivo" },
-        { id: 2, strValor: "Transferencia", strDescripcion: "Transferencia bancaria" },
-        { id: 3, strValor: "Tarjeta", strDescripcion: "Pago con tarjeta" },
-        { id: 4, strValor: "Crédito", strDescripcion: "Pago a crédito" },
-        { id: 5, strValor: "Otro", strDescripcion: "Otra forma de pago" }
-    ]
-};
-
-// Registros de muestra con nombres compatibles con VehInfracciones y textos de FK resueltos.
-// TODO backend: GET /api/vehiculos/infracciones/{idVehDatosGenerales}.
-const infraccionesRecientesSimuladas = [
-    { id: 1, vehiculo: "Toyota RAV4", strPlaca: "ABC-123-D", empleado: "Juan Pérez López", dteFechaInfraccion: "2026-06-18", strMotivo: "Exceso de velocidad", mnyMontoPagado: null, status: "Pendiente", dteFechaPago: null, comprobante: null },
-    { id: 2, vehiculo: "Nissan Versa", strPlaca: "XYZ-987-A", empleado: "Carlos Hernández Ruiz", dteFechaInfraccion: "2026-05-22", strMotivo: "Estacionamiento en zona restringida", mnyMontoPagado: 1245, status: "Pagada", dteFechaPago: "2026-05-27", comprobante: "multa-versa.pdf" },
-    { id: 3, vehiculo: "Toyota RAV4", strPlaca: "ABC-123-D", empleado: "Juan Pérez López", dteFechaInfraccion: "2026-04-10", strMotivo: "Falta administrativa en revisión", mnyMontoPagado: null, status: "En revisión", dteFechaPago: null, comprobante: null },
-    { id: 4, vehiculo: "Nissan Versa", strPlaca: "XYZ-987-A", empleado: "Carlos Hernández Ruiz", dteFechaInfraccion: "2026-02-03", strMotivo: "Boleta emitida por error", mnyMontoPagado: null, status: "Cancelada", dteFechaPago: null, comprobante: null }
-];
-
-let infraccionComprobanteSeleccionado = null;
 
 // Inicializa únicamente /Vehiculos/Infracciones y conserva aisladas las demás pantallas.
 function inicializarInfraccionesVehiculo() {
@@ -1919,49 +1763,6 @@ function claseStatusInfraccion(status) {
     return "infraccion-status-pending";
 }
 
-// Vehículos y empleados simulados con la proyección requerida por VehControlGasolina.
-// TODO backend: reemplazar por GET /api/vehiculos y GET /api/empleados.
-const gasolinaVehiculosSimulados = [
-    { id: 1, strPlaca: "ABC-123-D", marca: "Toyota", strModelo: "RAV4", intAnio: 2021, decKilometrajeActual: 45230 },
-    { id: 2, strPlaca: "XYZ-987-A", marca: "Nissan", strModelo: "Versa", intAnio: 2020, decKilometrajeActual: 38600 }
-];
-
-const gasolinaEmpleadosSimulados = [
-    { id: 1, nombreCompleto: "Juan Pérez López", area: "Operaciones" },
-    { id: 2, nombreCompleto: "Carlos Hernández Ruiz", area: "Mantenimiento" }
-];
-
-// Catálogos con estructura id, strValor y strDescripcion.
-// TODO backend: GET /api/vehiculos/catalogos/gasolineras y GET /api/vehiculos/catalogos/formas-pago.
-const gasolinaCatalogosSimulados = {
-    gasolineras: [
-        { id: 1, strValor: "Pemex", strDescripcion: "Estación Pemex" },
-        { id: 2, strValor: "BP", strDescripcion: "Estación BP" },
-        { id: 3, strValor: "Shell", strDescripcion: "Estación Shell" },
-        { id: 4, strValor: "Mobil", strDescripcion: "Estación Mobil" },
-        { id: 5, strValor: "G500", strDescripcion: "Estación G500" },
-        { id: 6, strValor: "Otra", strDescripcion: "Otra gasolinera" }
-    ],
-    formasPago: [
-        { id: 1, strValor: "Efectivo", strDescripcion: "Pago en efectivo" },
-        { id: 2, strValor: "Transferencia", strDescripcion: "Transferencia bancaria" },
-        { id: 3, strValor: "Tarjeta", strDescripcion: "Pago con tarjeta" },
-        { id: 4, strValor: "Crédito", strDescripcion: "Pago a crédito" },
-        { id: 5, strValor: "Otro", strDescripcion: "Otra forma de pago" }
-    ]
-};
-
-// Historial de muestra; litrosEstimados es una proyección visual, no una columna SQL.
-// TODO backend: GET /api/vehiculos/gasolina/{idVehDatosGenerales}.
-const gasolinaRecientesSimuladas = [
-    { id: 1, vehiculo: "Toyota RAV4", strPlaca: "ABC-123-D", dteFechaCarga: "2026-06-24", decKilometrajeActual: 45230, gasolinera: "Pemex", mnyMontoPagado: 1250, mnyPrecioLitro: 24.49, formaPago: "Tarjeta", empleado: "Juan Pérez López", comprobante: "carga-rav4.pdf" },
-    { id: 2, vehiculo: "Nissan Versa", strPlaca: "XYZ-987-A", dteFechaCarga: "2026-06-18", decKilometrajeActual: 38600, gasolinera: "BP", mnyMontoPagado: 980, mnyPrecioLitro: 23.85, formaPago: "Transferencia", empleado: "Carlos Hernández Ruiz", comprobante: null },
-    { id: 3, vehiculo: "Toyota RAV4", strPlaca: "ABC-123-D", dteFechaCarga: "2026-06-08", decKilometrajeActual: 44710, gasolinera: "Shell", mnyMontoPagado: 1320, mnyPrecioLitro: 24.75, formaPago: "Crédito", empleado: "Juan Pérez López", comprobante: "ticket-shell.webp" },
-    { id: 4, vehiculo: "Nissan Versa", strPlaca: "XYZ-987-A", dteFechaCarga: "2026-05-29", decKilometrajeActual: 37940, gasolinera: "Mobil", mnyMontoPagado: 875, mnyPrecioLitro: 23.65, formaPago: "Efectivo", empleado: "Carlos Hernández Ruiz", comprobante: null }
-];
-
-let gasolinaComprobanteSeleccionado = null;
-
 // Inicializa solo /Vehiculos/Gasolina para no interferir con otras pantallas.
 function inicializarGasolinaVehiculo() {
     const form = document.getElementById("gasolinaVehiculoForm");
@@ -2350,36 +2151,6 @@ function obtenerVehiculoGasolinaSeleccionado() {
     const id = Number(document.getElementById("gasolina-idVehDatosGenerales")?.value);
     return gasolinaVehiculosSimulados.find(vehiculo => vehiculo.id === id) || null;
 }
-
-// Proyección simulada de VehDatosGenerales requerida por el control de llantas.
-// TODO backend: reemplazar este arreglo por GET /api/vehiculos.
-const llantaVehiculosSimulados = [
-    { id: 1, strPlaca: "ABC-123-D", marca: "Toyota", strModelo: "RAV4", intAnio: 2021, decKilometrajeActual: 45230 },
-    { id: 2, strPlaca: "XYZ-987-A", marca: "Nissan", strModelo: "Versa", intAnio: 2020, decKilometrajeActual: 38600 }
-];
-
-// Catálogos simulados con ids equivalentes a las llaves foráneas de VehControlLlanta.
-// TODO backend: sustituirlos por GET /api/vehiculos/catalogos/marcas-llanta,
-// GET /api/vehiculos/catalogos/posiciones-llanta y GET /api/vehiculos/catalogos/status.
-const llantaCatalogosSimulados = {
-    marcas: ["Michelin", "Bridgestone", "Goodyear", "Pirelli", "Continental", "Firestone", "Otra"]
-        .map((strValor, indice) => ({ id: indice + 1, strValor })),
-    posiciones: ["Delantera izquierda", "Delantera derecha", "Trasera izquierda", "Trasera derecha", "Refacción", "Eje adicional"]
-        .map((strValor, indice) => ({ id: indice + 1, strValor })),
-    status: ["Activa", "En revisión", "Requiere cambio", "Reemplazada", "Baja"]
-        .map((strValor, indice) => ({ id: indice + 1, strValor }))
-};
-
-// Registros de consulta para validar la tabla antes de implementar
-// GET /api/vehiculos/llantas/{idVehDatosGenerales}.
-const llantasRegistradasSimuladas = [
-    { vehiculo: "Toyota RAV4 2021", placa: "ABC-123-D", marca: "Michelin", modelo: "Primacy 4", medida: "225/65 R17", posicion: "Delantera izquierda", kilometraje: 45230, costo: 3850, siguienteRotacion: "2026-09-15", status: "Activa", evidencia: "factura-michelin.pdf" },
-    { vehiculo: "Toyota RAV4 2021", placa: "ABC-123-D", marca: "Michelin", modelo: "Primacy 4", medida: "225/65 R17", posicion: "Delantera derecha", kilometraje: 45230, costo: 3850, siguienteRotacion: "2026-09-15", status: "En revisión", evidencia: "llanta-frontal.jpg" },
-    { vehiculo: "Nissan Versa 2020", placa: "XYZ-987-A", marca: "Continental", modelo: "UltraContact", medida: "195/60 R15", posicion: "Trasera izquierda", kilometraje: 38600, costo: 2490, siguienteRotacion: "2026-08-28", status: "Requiere cambio", evidencia: null },
-    { vehiculo: "Nissan Versa 2020", placa: "XYZ-987-A", marca: "Firestone", modelo: "F-Series", medida: "195/60 R15", posicion: "Refacción", kilometraje: 37000, costo: 2150, siguienteRotacion: null, status: "Reemplazada", evidencia: "reemplazo.webp" }
-];
-
-let llantaEvidenciaSeleccionada = null;
 
 // Inicializa exclusivamente /Vehiculos/Llantas y evita alterar las demás pantallas.
 function inicializarLlantasVehiculo() {
@@ -2843,42 +2614,6 @@ function fechaIsoLocalLlanta(fecha) {
     return `${anio}-${mes}-${dia}`;
 }
 
-// Proyección simulada de VehDatosGenerales para daños y accidentes.
-// TODO backend: reemplazar este arreglo por GET /api/vehiculos.
-const danioVehiculosSimulados = [
-    { id: 1, strPlaca: "ABC-123-D", marca: "Toyota", strModelo: "RAV4", intAnio: 2021, decKilometrajeActual: 45230 },
-    { id: 2, strPlaca: "XYZ-987-A", marca: "Nissan", strModelo: "Versa", intAnio: 2020, decKilometrajeActual: 38600 }
-];
-
-// Empleados responsables con la proyección necesaria de EmpEmpleado.
-// TODO backend: reemplazar este arreglo por GET /api/empleados.
-const danioEmpleadosSimulados = [
-    { id: 1, nombreCompleto: "Juan Pérez López", area: "Operaciones" },
-    { id: 2, nombreCompleto: "Carlos Hernández Ruiz", area: "Mantenimiento" },
-    { id: 3, nombreCompleto: "María González Torres", area: "Administración" }
-];
-
-// Pólizas disponibles y estatus simulados para las llaves foráneas de VehDaniosAccidentes.
-// TODO backend: consultar GET /api/vehiculos/seguros/{idVehDatosGenerales}
-// y GET /api/vehiculos/catalogos/status.
-const danioSegurosSimulados = [
-    { id: 1, aseguradora: "Qualitas", numeroPoliza: "POL-123456789", cobertura: "Amplia" },
-    { id: 2, aseguradora: "GNP", numeroPoliza: "GNP-987654321", cobertura: "Limitada" }
-];
-
-const danioStatusSimulados = ["Reportado", "En revisión", "En reparación", "Resuelto", "Cancelado"]
-    .map((strValor, indice) => ({ id: indice + 1, strValor }));
-
-// Consulta simulada hasta implementar GET /api/vehiculos/danios-accidentes/{idVehDatosGenerales}.
-const daniosRecientesSimulados = [
-    { vehiculo: "Toyota RAV4 2021", placa: "ABC-123-D", empleado: "Juan Pérez López", fecha: "2026-06-21", descripcion: "Golpe menor en defensa trasera durante maniobra.", ubicacion: "Patio de operaciones", monto: 4800, seguro: "No", status: "Reportado", evidencia: "defensa-trasera.jpg" },
-    { vehiculo: "Nissan Versa 2020", placa: "XYZ-987-A", empleado: "Carlos Hernández Ruiz", fecha: "2026-06-10", descripcion: "Daño en puerta delantera derecha.", ubicacion: "Av. Universidad", monto: 12750, seguro: "Qualitas · POL-123456789", status: "En reparación", evidencia: "reporte-ajustador.pdf" },
-    { vehiculo: "Toyota RAV4 2021", placa: "ABC-123-D", empleado: "María González Torres", fecha: "2026-05-28", descripcion: "Fisura en parabrisas por impacto de grava.", ubicacion: "Carretera federal 57", monto: 6900, seguro: "GNP · GNP-987654321", status: "En revisión", evidencia: "parabrisas.webp" },
-    { vehiculo: "Nissan Versa 2020", placa: "XYZ-987-A", empleado: "Juan Pérez López", fecha: "2026-04-17", descripcion: "Rayón superficial en salpicadera izquierda.", ubicacion: null, monto: null, seguro: "No", status: "Resuelto", evidencia: null }
-];
-
-let danioEvidenciaSeleccionada = null;
-
 // Inicializa exclusivamente /Vehiculos/DaniosAccidentes.
 function inicializarDaniosAccidentesVehiculo() {
     const form = document.getElementById("danioAccidenteForm");
@@ -3329,29 +3064,6 @@ function obtenerVehiculoDanioSeleccionado() {
     const id = Number(document.getElementById("danio-idVehDatosGenerales")?.value);
     return danioVehiculosSimulados.find(vehiculo => vehiculo.id === id) || null;
 }
-
-// Vehículos simulados con la proyección requerida de VehDatosGenerales.
-// TODO backend: reemplazar este arreglo por GET /api/vehiculos.
-const asignacionVehiculosSimulados = [
-    { id: 1, strPlaca: "ABC-123-D", marca: "Toyota", strModelo: "RAV4", intAnio: 2021, decKilometrajeActual: 45230 },
-    { id: 2, strPlaca: "XYZ-987-A", marca: "Nissan", strModelo: "Versa", intAnio: 2020, decKilometrajeActual: 38600 }
-];
-
-// Empleados simulados con contexto operativo; solo idEmpEmpleado se guarda en la asignación.
-// TODO backend: reemplazar este arreglo por GET /api/empleados.
-const asignacionEmpleadosSimulados = [
-    { id: 1, nombreCompleto: "Juan Pérez López", area: "Operaciones", puesto: "Chofer" },
-    { id: 2, nombreCompleto: "Carlos Hernández Ruiz", area: "Mantenimiento", puesto: "Supervisor" },
-    { id: 3, nombreCompleto: "María González Torres", area: "Administración", puesto: "Administradora" }
-];
-
-// Registros para la tabla hasta implementar GET /api/vehiculos/asignaciones/{idVehDatosGenerales}.
-const asignacionesRecientesSimuladas = [
-    { vehiculo: "Toyota RAV4 2021", placa: "ABC-123-D", empleado: "Juan Pérez López", area: "Operaciones", fecha: "2026-06-29", inicial: 45230, final: null, total: null },
-    { vehiculo: "Nissan Versa 2020", placa: "XYZ-987-A", empleado: "Carlos Hernández Ruiz", area: "Mantenimiento", fecha: "2026-06-24", inicial: 38120, final: 38600, total: 480 },
-    { vehiculo: "Toyota RAV4 2021", placa: "ABC-123-D", empleado: "María González Torres", area: "Administración", fecha: "2026-06-18", inicial: 44890, final: 44820, total: -70 },
-    { vehiculo: "Nissan Versa 2020", placa: "XYZ-987-A", empleado: "Juan Pérez López", area: "Operaciones", fecha: "2026-06-12", inicial: 37400, final: 38120, total: 720 }
-];
 
 // Inicializa exclusivamente /Vehiculos/Asignaciones.
 function inicializarAsignacionesVehiculo() {

@@ -3,7 +3,6 @@
     ViewData["HeaderEyebrow"] = "Control vehicular";
     ViewData["HeaderTitle"] = "Infracciones del vehículo";
     ViewData["HeaderSubtitle"] = "Registra multas, pagos, comprobantes y observaciones relacionadas con cada unidad.";
-    ViewData["HeaderBadgeText"] = "Frontend preparado";
 }
 
 @section Head {
@@ -62,9 +61,6 @@
                 <div class="infraccion-section-heading">
                     <h3 class="form-section-title"><span class="form-section-number">2</span>Datos de pago</h3>
                     <span id="infraccionPagoRequirement" class="infraccion-requirement-badge">Opcional</span>
-                </div>
-                <div id="infraccionPagoHelp" class="infraccion-payment-help">
-                    Los datos de pago se solicitan obligatoriamente cuando el estatus es Pagada.
                 </div>
                 <div class="row g-3 mt-0">
                     <div class="col-md-4">
@@ -125,8 +121,7 @@
         <aside class="vehiculo-side-panel">
             <div class="summary-panel vehiculo-preview-card infraccion-preview-card">
                 <div class="vehiculo-preview-heading">
-                    <div><span class="dashboard-kicker">Vista previa</span><h3>Resumen de infracción</h3></div>
-                    <span class="vehiculo-preview-live">En vivo</span>
+                    <div><span class="dashboard-kicker">Vista previa</span></div>
                 </div>
                 <div class="infraccion-preview-status">
                     <span>Estatus actual</span>
@@ -143,7 +138,6 @@
                     <div class="vehiculo-summary-item"><span>Forma pago</span><strong id="previewInfraccionFormaPago">Sin seleccionar</strong></div>
                     <div class="vehiculo-summary-item"><span>Comprobante</span><strong id="previewInfraccionComprobante">Sin archivo</strong></div>
                 </div>
-                <div class="protected-alert mt-3 mb-0">Captura simulada. No se guardará en base de datos.</div>
             </div>
         </aside>
     </div>
@@ -151,42 +145,9 @@
     <!-- Acciones del formulario; Guardar únicamente ejecuta validación frontend. -->
     <div class="form-action-bar vehiculo-action-bar">
         <a class="btn btn-outline-cavex" asp-controller="Vehiculos" asp-action="Index">Cancelar / Volver</a>
-        <button id="btnLimpiarInfraccion" type="button" class="btn btn-outline-cavex">Limpiar</button>
         <button type="submit" class="btn btn-cavex">Guardar infracción</button>
     </div>
 </form>
-
-<!-- Tabla de consulta simulada con acciones tipificadas.
-     Ver, editar, pagar y cancelar solo muestran información mientras no exista API. -->
-<section class="cavex-card table-module infracciones-recientes-card vehiculo-module-table">
-    <div class="servicio-table-heading">
-        <div>
-            <span class="dashboard-kicker">Seguimiento</span>
-            <h3>Infracciones recientes</h3>
-            <p>Registros simulados para validar consulta y estados.</p>
-        </div>
-        <span class="records-pill">4 infracciones</span>
-    </div>
-    <div class="table-responsive">
-        <table class="table table-hover align-middle executive-table table-cavex-compact">
-            <thead>
-                <tr>
-                    <th>Vehículo</th>
-                    <th>Placa</th>
-                    <th>Empleado</th>
-                    <th>Fecha infracción</th>
-                    <th>Motivo</th>
-                    <th>Monto</th>
-                    <th>Estatus</th>
-                    <th>Fecha pago</th>
-                    <th>Comprobante</th>
-                    <th class="text-end">Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="infraccionesRecientesBody"></tbody>
-        </table>
-    </div>
-</section>
 
 @section Scripts {
     <script src="~/js/vista-vehiculos.js" asp-append-version="true"></script>

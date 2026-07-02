@@ -72,10 +72,5 @@ namespace Cavex.Principal.Controllers
             ViewData["VehiculoId"] = id ?? 1;
             return View();
         }
-
-        public IActionResult Detalle()
-        {
-            return View();
-        }
     }
 }
