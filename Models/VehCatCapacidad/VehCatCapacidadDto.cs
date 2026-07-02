@@ -6,7 +6,7 @@ namespace Cavex.Principal.Models.VehCatCapacidad
     {
         public int Id { get; set; }
 
-        [Display(Name = "Genero")]
+        [Display(Name = "Capacidad")]
         public string StrValor { get; set; }
 
         [Display(Name = "Descripcion")]

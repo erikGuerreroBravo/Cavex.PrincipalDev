@@ -6,7 +6,7 @@ namespace Cavex.Principal.Models.VehCatHolograma
     {
         public int Id { get; set; }
 
-        [Display(Name = "Genero")]
+        [Display(Name = "Tipo de Holograma")]
         public string StrValor { get; set; }
 
         [Display(Name = "Descripcion")]

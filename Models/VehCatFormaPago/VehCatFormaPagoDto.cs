@@ -6,7 +6,7 @@ namespace Cavex.Principal.Models.VehCatFormaPago
     {
         public int Id { get; set; }
 
-        [Display(Name = "Genero")]
+        [Display(Name = "Forma de Pago")]
         public string StrValor { get; set; }
 
         [Display(Name = "Descripcion")]
