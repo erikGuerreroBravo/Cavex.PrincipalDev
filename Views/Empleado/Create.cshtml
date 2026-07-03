@@ -210,24 +210,12 @@
                 <h2>Dirección</h2>
             </div>
 
-            <div class="form-row cols-3">
-                <div class="form-group">
-                    <label>País</label>
-                    <select asp-for="Pais" id="ddlPais" required>
-                        <option value="" disabled selected>Seleccionar país</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Estado</label>
-                    <select asp-for="Estado" id="ddlEstado" required>
-                        <option value="" disabled selected>Seleccionar estado</option>
-                    </select>
-                </div>
-                <div class="form-group">
+            <div class="form-row cols-1">
+                <div class="form-group dropdown-group">
                     <label>Colonia</label>
-                    <select asp-for="Colonia" id="ddlColonia" required>
-                        <option value="" disabled selected>Seleccionar colonia</option>
-                    </select>
+                    <input type="hidden" asp-for="Colonia" id="hdnColoniaId" name="Colonia" required />
+                    <input type="text" id="txtColonia" placeholder="Escribe para buscar colonia..." autocomplete="off" required />
+                    <div id="colonia-suggestions" class="suggestions-container" style="display: none;"></div>
                 </div>
             </div>
 

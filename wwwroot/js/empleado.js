@@ -630,16 +630,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function validarPasoEmpleado4() {
         const results = [];
-        const pais = document.getElementById('ddlPais');
-        const est = document.getElementById('ddlEstado');
-        const col = document.getElementById('ddlColonia');
+        const colId = document.getElementById('hdnColoniaId');
+        const colTxt = document.getElementById('txtColonia');
         const cp = document.getElementById('txtCodigoPostal');
         const ext = document.getElementById('txtNumeroExterior');
         const interior = document.getElementById('txtNumeroInterior');
 
-        results.push(obtenerEstadoInput(pais, validarSelect, true));
-        results.push(obtenerEstadoInput(est, validarSelect, true));
-        results.push(obtenerEstadoInput(col, validarSelect, true));
+        // Validar que se haya seleccionado una colonia de la lista de sugerencias
+        const hasSelectedColonia = colId && colId.value && colId.value.trim() !== '';
+        if (!hasSelectedColonia) {
+            mostrarError(colTxt, 'Debe seleccionar una colonia de las sugerencias.');
+            results.push('missing');
+        } else {
+            limpiarError(colTxt);
+            results.push('valid');
+        }
+
         results.push(obtenerEstadoInput(cp, validarCodigoPostal, true));
         results.push(obtenerEstadoInput(ext, (i) => {
             const num = Number(i.value);
@@ -851,48 +857,591 @@ document.addEventListener('DOMContentLoaded', function() {
                     confirmButtonColor: 'var(--teal-cavex)'
                 });
             } else {
-                const formData = new FormData(form);
+                // Construir JSON payload para EmpEmpleadoSaveDto
+                const referencias = [];
+                document.querySelectorAll('#referencias-container .referencia-item').forEach(item => {
+                    const nom = item.querySelector('.txtRefNombre').value;
+                    const par = item.querySelector('.txtRefParentesco').value;
+                    const tel = item.querySelector('.txtRefTelefono').value;
+                    referencias.push({
+                        strNombreCompleto: nom,
+                        strParentezco: par,
+                        intTelefono: parseInt(tel)
+                    });
+                });
+
+                const experienciaLaboral = [];
+                document.querySelectorAll('#experiencias-container .experiencia-item').forEach(item => {
+                    const emp = item.querySelector('.txtExpEmpresa').value;
+                    const puesto = item.querySelector('.txtExpPuesto').value;
+                    const area = item.querySelector('.txtExpArea').value;
+                    const fi = item.querySelector('.txtExpFechaInicio').value;
+                    const ff = item.querySelector('.txtExpFechaFin').value;
+                    const sueldo = item.querySelector('.txtExpSueldo').value;
+                    const motivo = item.querySelector('.txtExpMotivo').value;
+                    experienciaLaboral.push({
+                        strEmpresa: emp,
+                        strPuesto: puesto,
+                        strArea: area,
+                        dteFechaIncio: fi,
+                        dteFechaFin: ff,
+                        mnySueldo: parseFloat(sueldo),
+                        strMotivoSalida: motivo
+                    });
+                });
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const empleadoId = urlParams.get('id');
+                const isEdit = !!empleadoId;
+                const requestUrl = isEdit ? '/Empleado/UpdateEmpleado?id=' + empleadoId : '/Empleado/SaveEmpleado';
+
+                const payload = {
+                    strNombre: document.getElementById('txtNombre').value,
+                    strApellidoPaterno: document.getElementById('txtApellidoPaterno').value,
+                    strApellidoMaterno: document.getElementById('txtApellidoMaterno').value || null,
+                    dteFechaNacimiento: document.getElementById('txtFechaNacimiento').value,
+                    strRfc: document.getElementById('txtRFC').value,
+                    strCurp: document.getElementById('txtCURP').value,
+                    intEdad: parseInt(document.getElementById('txtEdad').value),
+                    strCorreoElectronico: document.getElementById('txtCorreo').value,
+                    intNss: parseInt(document.getElementById('txtNSS').value),
+                    idEmpCatGenero: parseInt(document.getElementById('idGenero').value),
+                    idEmpCatEstadoCivil: parseInt(document.getElementById('ddlEstadoCivil').value),
+                    idEmpCatNacionalidad: parseInt(document.getElementById('ddlNacionalidad').value),
+                    idEmpCatTipoContratacion: 1,
+                    idCatStatus: 1,
+                    idEmpCatAreaLaboral: parseInt(document.getElementById('ddlAreaLaboral').value),
+                    direccion: {
+                        idEmpCatColonia: parseInt(document.getElementById('hdnColoniaId').value),
+                        intNumExterior: parseInt(document.getElementById('txtNumeroExterior').value),
+                        intNumInterior: parseInt(document.getElementById('txtNumeroInterior').value) || null
+                    },
+                    datosAcademicos: {
+                        strNivelEstudios: document.getElementById('txtNivelEstudios').value,
+                        strInstitucion: document.getElementById('txtInstitucion').value,
+                        strCarrera: document.getElementById('txtCarrera').value,
+                        strEstatus: document.getElementById('txtEstatus').value,
+                        dteFechaInicio: document.getElementById('txtFechaInicioEstudios').value,
+                        dteFechaFin: document.getElementById('txtFechaFinEstudios').value
+                    },
+                    documentosLaborales: {
+                        strUrlIdentificacionOficial: document.getElementById('file-identificacion').files[0]?.name 
+                            ? "/uploads/" + document.getElementById('file-identificacion').files[0].name 
+                            : (window.existingDocumentUrls?.identificacion || "/uploads/identificacion.pdf"),
+                        strUrlComprobanteDomicilio: document.getElementById('file-comprobante').files[0]?.name 
+                            ? "/uploads/" + document.getElementById('file-comprobante').files[0].name 
+                            : (window.existingDocumentUrls?.comprobante || "/uploads/comprobante.pdf"),
+                        strUrlCurriculumVitae: document.getElementById('file-cv').files[0]?.name 
+                            ? "/uploads/" + document.getElementById('file-cv').files[0].name 
+                            : (window.existingDocumentUrls?.cv || "/uploads/cv.pdf"),
+                        strUrlContrato: document.getElementById('file-contrato').files[0]?.name 
+                            ? "/uploads/" + document.getElementById('file-contrato').files[0].name 
+                            : (window.existingDocumentUrls?.contrato || "/uploads/contrato.pdf"),
+                        strUrlLicencia: document.getElementById('file-licencia').files[0]?.name 
+                            ? "/uploads/" + document.getElementById('file-licencia').files[0].name 
+                            : (window.existingDocumentUrls?.licencia || "/uploads/licencia.pdf")
+                    },
+                    condicionesLaborales: {
+                        bitCercaniaVivienda: document.getElementById('chkVivienda').checked,
+                        bitDisponibilidadDeViaje: document.getElementById('chkViaje').checked,
+                        mnySueldoMensual: parseFloat(document.getElementById('txtSueldoMensual').value),
+                        bitExperienciaEnArea: document.getElementById('chkExp').checked,
+                        bitDisponibilidadCambioResidencia: document.getElementById('chkExpPuesto').checked,
+                        dteFechaIngreso: new Date().toISOString().split('T')[0]
+                    },
+                    referencias: referencias,
+                    experienciaLaboral: experienciaLaboral,
+                    telefonos: [
+                        {
+                            strNumeroFijo: document.getElementById('txtTelefonoFijo').value || "",
+                            strNumeroCelular: document.getElementById('txtTelefonoCelular').value
+                        }
+                    ]
+                };
+
                 try {
-                    console.log('Enviando datos al backend...');
                     Swal.fire({
-                        icon: 'success',
-                        title: '¡Éxito!',
-                        text: '¡Empleado y archivos guardados exitosamente!',
-                        confirmButtonColor: 'var(--teal-cavex)',
-                        confirmButtonText: 'Ver listado de empleados'
-                    }).then(() => {
-                        window.location.href = '/Empleado/Index';
+                        title: 'Guardando empleado...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    
+                    fetch(requestUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Éxito!',
+                                text: isEdit ? '¡Empleado actualizado exitosamente!' : '¡Empleado guardado exitosamente!',
+                                confirmButtonColor: 'var(--teal-cavex)',
+                                confirmButtonText: 'Ver listado de empleados'
+                            }).then(() => {
+                                window.location.href = '/Empleado/Index';
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error al guardar',
+                                text: result.message || 'No se pudo guardar el empleado.',
+                                confirmButtonColor: 'var(--teal-cavex)'
+                            });
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Error al registrar:", err);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error de red',
+                            text: 'No se pudo contactar con el servidor. Intenta de nuevo.',
+                            confirmButtonColor: 'var(--teal-cavex)'
+                        });
                     });
                 } catch (error) {
-                    let errorText = error.message || "";
-                    const isTechnicalError = errorText.toLowerCase().includes("database") || 
-                                             errorText.toLowerCase().includes("db") || 
-                                             errorText.toLowerCase().includes("sql") || 
-                                             errorText.toLowerCase().includes("conexion") || 
-                                             errorText.toLowerCase().includes("connection");
-
-                    if (!errorText || isTechnicalError) {
-                        errorText = 'No se pudo guardar el empleado. ¡Intenta de nuevo!';
-                    }
-
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error de registro',
-                        text: errorText,
-                        confirmButtonColor: 'var(--teal-cavex)'
-                    });
+                    console.error("Error en try-catch:", error);
                 }
             }
         });
     }
 
-    // Inicializar los nombres de los arreglos dinámicos
-    actualizarNombresDinamicos();
+    function loadCatalogs() {
+        // ── GÉNERO: carga desde /Empleado/GetGeneros ──
+        const p1 = fetch('/Empleado/GetGeneros')
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error('HTTP error ' + response.status);
+                }
+                return response.json();
+            })
+            .then(function (result) {
+                if (!result.success) {
+                    console.error('[Género] success=false, message:', result.message);
+                    return;
+                }
+                if (!result.data || !Array.isArray(result.data)) {
+                    console.error('[Género] data no es un array:', result.data);
+                    return;
+                }
+                console.log('[Género] Items recibidos:', result.data.length);
 
-    // Validación inicial (no pintará nada visualmente porque touched aún no está en true para los campos)
-    actualizarStepperEmpleado();
+                var select = document.getElementById('idGenero');
+                if (!select) {
+                    return;
+                }
 
-    // ── Stepper flotante: sigue el scroll ──
+                // Limpiar y poblar el select
+                select.innerHTML = '<option value="" disabled selected>Seleccionar Género</option>';
+                result.data.forEach(function (item) {
+                    var opt = document.createElement('option');
+                    opt.value = item.id;
+                    opt.textContent = item.strValor;
+                    select.appendChild(opt);
+                });
+            })
+            .catch(function (err) {
+                console.error('[Género] ERROR al cargar:', err);
+            });
+
+        // ── ESTADO CIVIL ──
+        const p2 = fetch('/Empleado/GetEstadosCiviles')
+            .then(res => res.json())
+            .then(res => {
+                if (res.success && res.data) {
+                    const select = document.getElementById('ddlEstadoCivil');
+                    if (select) {
+                        select.innerHTML = '<option value="" disabled selected>Seleccionar estado civil</option>';
+                        res.data.forEach(item => {
+                            const opt = document.createElement('option');
+                            opt.value = item.id;
+                            opt.textContent = item.strValor;
+                            select.appendChild(opt);
+                        });
+                    }
+                }
+            })
+            .catch(err => console.error('[EstadoCivil] ERROR:', err));
+
+        // ── NACIONALIDAD ──
+        const p3 = fetch('/Empleado/GetNacionalidades')
+            .then(res => res.json())
+            .then(res => {
+                if (res.success && res.data) {
+                    const select = document.getElementById('ddlNacionalidad');
+                    if (select) {
+                        select.innerHTML = '<option value="" disabled selected>Seleccionar nacionalidad</option>';
+                        res.data.forEach(item => {
+                            const opt = document.createElement('option');
+                            opt.value = item.id;
+                            opt.textContent = item.strValor;
+                            select.appendChild(opt);
+                        });
+                    }
+                }
+            })
+            .catch(err => console.error('[Nacionalidad] ERROR:', err));
+
+        // ── ÁREA LABORAL ──
+        const p4 = fetch('/EmpCatAreaLaboral/GetAreas')
+            .then(res => res.json())
+            .then(res => {
+                if (res.success && res.data) {
+                    const select = document.getElementById('ddlAreaLaboral');
+                    if (select) {
+                        select.innerHTML = '<option value="" disabled selected>Seleccionar área</option>';
+                        res.data.forEach(item => {
+                            const opt = document.createElement('option');
+                            opt.value = item.id;
+                            opt.textContent = item.strValor;
+                            select.appendChild(opt);
+                        });
+                    }
+                }
+            })
+            .catch(err => console.error('[AreaLaboral] ERROR:', err));
+
+        return Promise.all([p1, p2, p3, p4]);
+    }
+
+    window.existingDocumentUrls = {};
+
+    function loadEmpleadoData(id) {
+        Swal.fire({
+            title: 'Cargando datos del empleado...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        fetch('/Empleado/GetEmpleado?id=' + id)
+            .then(res => res.json())
+            .then(result => {
+                Swal.close();
+                if (result.success && result.data) {
+                    const emp = result.data;
+
+                    // Mapear campos básicos
+                    document.getElementById('txtNombre').value = emp.strNombre;
+                    document.getElementById('txtApellidoPaterno').value = emp.strApellidoPaterno;
+                    document.getElementById('txtApellidoMaterno').value = emp.strApellidoMaterno || '';
+                    
+                    if (emp.dteFechaNacimiento) {
+                        const fechaStr = emp.dteFechaNacimiento.split('T')[0];
+                        document.getElementById('txtFechaNacimiento').value = fechaStr;
+                        document.getElementById('txtFechaNacimiento').dispatchEvent(new Event('change'));
+                    }
+
+                    document.getElementById('txtRFC').value = emp.strRfc;
+                    document.getElementById('txtCURP').value = emp.strCurp;
+                    document.getElementById('txtCorreo').value = emp.strCorreoElectronico;
+                    document.getElementById('txtNSS').value = emp.intNss;
+
+                    document.getElementById('idGenero').value = emp.idEmpCatGenero;
+                    document.getElementById('ddlEstadoCivil').value = emp.idEmpCatEstadoCivil;
+                    document.getElementById('ddlNacionalidad').value = emp.idEmpCatNacionalidad;
+
+                    // Mapear Dirección
+                    if (emp.empDireccion) {
+                        const colId = emp.empDireccion.idEmpCatColonia;
+                        document.getElementById('hdnColoniaId').value = colId;
+                        document.getElementById('txtNumeroExterior').value = emp.empDireccion.intNumExterior || '';
+                        document.getElementById('txtNumeroInterior').value = emp.empDireccion.intNumInterior || '';
+                        
+                        if (colId) {
+                            fetch('/Empleado/GetColonia?id=' + colId)
+                                .then(res => res.json())
+                                .then(res => {
+                                    if (res.success && res.data) {
+                                        document.getElementById('txtColonia').value = res.data.strValor;
+                                        document.getElementById('txtCodigoPostal').value = String(res.data.intCodigoPostal).padStart(5, '0');
+                                    }
+                                });
+                        }
+                    }
+
+                    // Mapear Datos Académicos
+                    if (emp.empDatosAcademicos) {
+                        document.getElementById('txtNivelEstudios').value = emp.empDatosAcademicos.strNivelEstudios;
+                        document.getElementById('txtInstitucion').value = emp.empDatosAcademicos.strInstitucion;
+                        document.getElementById('txtCarrera').value = emp.empDatosAcademicos.strCarrera;
+                        document.getElementById('txtEstatus').value = emp.empDatosAcademicos.strEstatus;
+                        
+                        if (emp.empDatosAcademicos.dteFechaInicio) {
+                            document.getElementById('txtFechaInicioEstudios').value = emp.empDatosAcademicos.dteFechaInicio.split('T')[0];
+                        }
+                        if (emp.empDatosAcademicos.dteFechaFin) {
+                            document.getElementById('txtFechaFinEstudios').value = emp.empDatosAcademicos.dteFechaFin.split('T')[0];
+                        }
+                    }
+
+                    // Mapear Condiciones Laborales
+                    if (emp.empCondicionesLaborales) {
+                        document.getElementById('chkVivienda').checked = emp.empCondicionesLaborales.bitCercaniaVivienda;
+                        document.getElementById('chkViaje').checked = emp.empCondicionesLaborales.bitDisponibilidadDeViaje;
+                        document.getElementById('txtSueldoMensual').value = emp.empCondicionesLaborales.mnySueldoMensual;
+                        document.getElementById('chkExp').checked = emp.empCondicionesLaborales.bitExperienciaEnArea;
+                        document.getElementById('chkExpPuesto').checked = emp.empCondicionesLaborales.bitDisponibilidadCambioResidencia;
+                    }
+
+                    // Mapear Teléfonos
+                    if (emp.empTelefonos && emp.empTelefonos.length > 0) {
+                        const telefono = emp.empTelefonos[0];
+                        document.getElementById('txtTelefonoFijo').value = telefono.strNumeroFijo || '';
+                        document.getElementById('txtTelefonoCelular').value = telefono.strNumeroCelular || '';
+                    }
+
+                    // Mapear Área Laboral
+                    if (emp.empHistorialAreas && emp.empHistorialAreas.length > 0) {
+                        document.getElementById('ddlAreaLaboral').value = emp.empHistorialAreas[0].idEmpCatAreaLaboral;
+                    }
+
+                    // Mapear Experiencias Laborales
+                    if (emp.empExperiencias && emp.empExperiencias.length > 0) {
+                        const container = document.getElementById('experiencias-container');
+                        const template = container.querySelector('.experiencia-item');
+                        if (container && template) {
+                            container.innerHTML = '';
+                            emp.empExperiencias.forEach((exp) => {
+                                const item = template.cloneNode(true);
+                                container.appendChild(item);
+                                if (item) {
+                                    item.querySelector('.txtExpEmpresa').value = exp.strEmpresa;
+                                    item.querySelector('.txtExpPuesto').value = exp.strPuesto;
+                                    item.querySelector('.txtExpArea').value = exp.strArea;
+                                    if (exp.dteFechaIncio) item.querySelector('.txtExpFechaInicio').value = exp.dteFechaIncio.split('T')[0];
+                                    if (exp.dteFechaFin) item.querySelector('.txtExpFechaFin').value = exp.dteFechaFin.split('T')[0];
+                                    item.querySelector('.txtExpSueldo').value = exp.mnySueldo;
+                                    item.querySelector('.txtExpMotivo').value = exp.strMotivoSalida;
+                                }
+                            });
+                            actualizarNombresDinamicos();
+                        }
+                    }
+
+                    // Mapear Referencias Personales
+                    if (emp.empReferenciasPersonales && emp.empReferenciasPersonales.length > 0) {
+                        const container = document.getElementById('referencias-container');
+                        const template = container.querySelector('.referencia-item');
+                        if (container && template) {
+                            container.innerHTML = '';
+                            emp.empReferenciasPersonales.forEach((ref) => {
+                                const item = template.cloneNode(true);
+                                container.appendChild(item);
+                                if (item) {
+                                    item.querySelector('.txtRefNombre').value = ref.strNombreCompleto;
+                                    item.querySelector('.txtRefParentesco').value = ref.strParentezco;
+                                    item.querySelector('.txtRefTelefono').value = ref.intTelefono;
+                                }
+                            });
+                            actualizarNombresDinamicos();
+                        }
+                    }
+
+                    // Mapear Documentos (Pre-visualizar si existen en DB)
+                    if (emp.empDocumentosLaborales) {
+                        const docs = emp.empDocumentosLaborales;
+                        window.existingDocumentUrls = {
+                            identificacion: docs.strUrlIdentificacionOficial,
+                            comprobante: docs.strUrlComprobanteDomicilio,
+                            cv: docs.strUrlCurriculumVitae,
+                            contrato: docs.strUrlContrato,
+                            licencia: docs.strUrlLicencia
+                        };
+
+                        Object.keys(window.existingDocumentUrls).forEach(key => {
+                            const url = window.existingDocumentUrls[key];
+                            if (url) {
+                                const zone = document.getElementById('drop-zone-' + key);
+                                if (zone) {
+                                    const prompt = zone.querySelector('.drop-zone-prompt');
+                                    const preview = zone.querySelector('.file-preview-container');
+                                    const nameText = document.getElementById('name-' + key);
+                                    
+                                    if (prompt) prompt.style.display = 'none';
+                                    if (preview) preview.style.display = 'flex';
+                                    if (nameText) nameText.textContent = url.split('/').pop() || 'Archivo guardado.pdf';
+                                    
+                                    zone.classList.add('has-file');
+                                    const input = document.getElementById('file-' + key);
+                                    if (input) input.removeAttribute('required');
+                                }
+                            }
+                        });
+                    }
+
+                    // Cambiar título e info visual de edición
+                    const titleText = document.querySelector('.form-header-content h1');
+                    if (titleText) titleText.textContent = 'Editar Empleado';
+                    
+                    const subTitleText = document.querySelector('.form-header-content p');
+                    if (subTitleText) subTitleText.textContent = 'Modifica los datos del empleado en el sistema.';
+
+                    maxStepVisited = 7;
+                    actualizarStepperEmpleado();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: result.message || 'No se pudo cargar la información del empleado.'
+                    });
+                }
+            })
+            .catch(err => {
+                Swal.close();
+                console.error("Error al cargar datos del empleado:", err);
+            });
+    }
+
+    loadCatalogs().then(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const empleadoId = urlParams.get('id');
+        if (empleadoId) {
+            loadEmpleadoData(empleadoId);
+        }
+    });
+
+    // Autocompletado de Colonias con Sugerencias y CP Automático
+    const txtColonia = document.getElementById('txtColonia');
+    const hdnColoniaId = document.getElementById('hdnColoniaId');
+    const coloniaSuggestions = document.getElementById('colonia-suggestions');
+
+
+    function normalizarTextoBusqueda(valor) {
+        return String(valor || '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toUpperCase()
+            .trim();
+    }
+
+    function obtenerValorColonia(item) {
+        return item?.strValor || item?.StrValor || item?.nombre || item?.Nombre || item?.valor || item?.Valor || '';
+    }
+
+    function obtenerCodigoPostalColonia(item) {
+        return item?.intCodigoPostal || item?.IntCodigoPostal || item?.codigoPostal || item?.CodigoPostal || item?.cp || item?.CP || '';
+    }
+
+    function obtenerIdColonia(item) {
+        return item?.id || item?.Id || item?.idEmpCatColonia || item?.IdEmpCatColonia || '';
+    }
+
+    function obtenerListaColonias(res) {
+        if (Array.isArray(res?.data)) return res.data;
+        if (Array.isArray(res?.Data)) return res.Data;
+        if (Array.isArray(res?.data?.items)) return res.data.items;
+        if (Array.isArray(res?.Data?.Items)) return res.Data.Items;
+        if (Array.isArray(res?.items)) return res.items;
+        if (Array.isArray(res?.Items)) return res.Items;
+        return [];
+    }
+
+    function coincideConBusquedaColonia(item, query) {
+        const valor = normalizarTextoBusqueda(obtenerValorColonia(item));
+        const busqueda = normalizarTextoBusqueda(query);
+        const palabras = busqueda.split(/\s+/).filter(Boolean);
+
+        return palabras.length > 0 && palabras.every(palabra => valor.includes(palabra));
+    }
+
+    function mostrarMensajeColonia(mensaje, tipo = 'info') {
+        coloniaSuggestions.innerHTML = '';
+        const div = document.createElement('div');
+        div.className = tipo === 'error' ? 'suggestion-no-results suggestion-error' : 'suggestion-no-results';
+        div.textContent = mensaje;
+        coloniaSuggestions.appendChild(div);
+        coloniaSuggestions.style.display = 'block';
+    }
+
+    let debounceTimer;
+    if (txtColonia && hdnColoniaId && coloniaSuggestions) {
+        txtColonia.addEventListener('input', function() {
+            const query = txtColonia.value.trim();
+            hdnColoniaId.value = ''; // Resetear el ID si se modifica el texto
+
+            clearTimeout(debounceTimer);
+            if (query.length < 3) {
+                coloniaSuggestions.innerHTML = '';
+                coloniaSuggestions.style.display = 'none';
+                return;
+            }
+
+            mostrarMensajeColonia('Buscando colonias...');
+
+            debounceTimer = setTimeout(() => {
+                fetch('/Empleado/GetColonias?search=' + encodeURIComponent(query), {
+                    headers: { 'Accept': 'application/json' }
+                })
+                    .then(res => {
+                        if (!res.ok) {
+                            throw new Error('HTTP ' + res.status);
+                        }
+                        return res.json();
+                    })
+                    .then(res => {
+                        coloniaSuggestions.innerHTML = '';
+                        if (res.success === false || res.Success === false) {
+                            throw new Error(res.message || res.Message || 'La API no pudo obtener colonias.');
+                        }
+
+                        const colonias = obtenerListaColonias(res);
+                        const sugerencias = colonias
+                            .filter(item => coincideConBusquedaColonia(item, query))
+                            .slice(0, 15);
+
+                        if ((res.success === true || res.Success === true || colonias.length > 0) && sugerencias.length > 0) {
+                            sugerencias.forEach(item => {
+                                const nombreColonia = obtenerValorColonia(item);
+                                const codigoPostal = String(obtenerCodigoPostalColonia(item)).padStart(5, '0');
+                                const div = document.createElement('div');
+                                div.className = 'suggestion-item';
+                                div.textContent = nombreColonia + ' (CP: ' + codigoPostal + ')';
+                                div.addEventListener('mousedown', (event) => {
+                                    event.preventDefault();
+                                    txtColonia.value = nombreColonia;
+                                    hdnColoniaId.value = obtenerIdColonia(item);
+                                    txtCodigoPostal.value = codigoPostal;
+                                    coloniaSuggestions.innerHTML = '';
+                                    coloniaSuggestions.style.display = 'none';
+
+                                    // Marcar inputs como interactuados y disparar validaciones
+                                    txtColonia.dataset.touched = "true";
+                                    txtCodigoPostal.dataset.touched = "true";
+                                    limpiarError(txtColonia);
+                                    limpiarError(txtCodigoPostal);
+                                    actualizarStepperEmpleado();
+                                });
+                                coloniaSuggestions.appendChild(div);
+                            });
+                            coloniaSuggestions.style.display = 'block';
+                        } else {
+                            mostrarMensajeColonia('No se encontraron colonias');
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Error fetching colonias:', err);
+                        mostrarMensajeColonia('No se pudieron cargar las colonias: ' + err.message, 'error');
+                    });
+            }, 300);
+        });
+
+        // Ocultar sugerencias si se da click fuera del campo
+        document.addEventListener('click', function(e) {
+            if (e.target !== txtColonia && e.target !== coloniaSuggestions && !coloniaSuggestions.contains(e.target)) {
+                coloniaSuggestions.innerHTML = '';
+                coloniaSuggestions.style.display = 'none';
+            }
+        });
+    }
+
     initStepperFloat();
 });
 

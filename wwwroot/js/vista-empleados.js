@@ -1,3 +1,5 @@
+let empleados = [];
+
 // Variables de paginación y filtros
 let currentPage = 1;
 let pageSize = 10;
@@ -6,8 +8,48 @@ let searchQuery = '';
 
 // Al cargar el DOM, renderizamos
 document.addEventListener('DOMContentLoaded', () => {
-    renderEmpleados();
+    loadEmpleadosFromServer();
 });
+
+function loadEmpleadosFromServer() {
+    fetch('/Empleado/GetEmpleados')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("HTTP error " + response.status);
+            }
+            return response.json();
+        })
+        .then(result => {
+            console.log("Respuesta de GetEmpleados:", result);
+            if (result.success) {
+                if (result.data && Array.isArray(result.data)) {
+                    empleados = result.data.map(item => ({
+                        id: item.id,
+                        nombre: item.strNombre + ' ' + item.strApellidoPaterno + (item.strApellidoMaterno ? ' ' + item.strApellidoMaterno : ''),
+                        curp: item.strCurp,
+                        rfc: item.strRfc,
+                        area: item.strEmpCondicionesLaborales || 'Operativo',
+                        puesto: 'Asesor',
+                        correo: item.strCorreoElectronico,
+                        telefono: item.intNss ? item.intNss.toString() : '—',
+                        activo: item.idCatStatus === 1 || item.strCatStatus === "Activo" || item.strCatStatus === "1"
+                    }));
+                } else {
+                    empleados = [];
+                }
+                renderEmpleados();
+            } else {
+                console.error("Error al cargar empleados:", result.message);
+                empleados = [];
+                renderEmpleados();
+            }
+        })
+        .catch(err => {
+            console.error("Error al cargar empleados:", err);
+            empleados = [];
+            renderEmpleados();
+        });
+}
 
 // Renderizar la tabla de empleados
 function renderEmpleados() {

@@ -8,10 +8,122 @@ namespace Cavex.Principal.Controllers
     public class EmpleadoController : Controller
     {
         private readonly IEmpEmpleadoService _service;
+        private readonly Cavex.Principal.ApiClients.EmpCatColonia.IEmpCatColoniaApi _coloniaApi;
+        private readonly Cavex.Principal.ApiClients.ICavexGeneralCatalogApi _catalogApi;
+        private readonly ICatStatusService _statusService;
 
-        public EmpleadoController(IEmpEmpleadoService service)
+        public EmpleadoController(
+            IEmpEmpleadoService service,
+            Cavex.Principal.ApiClients.EmpCatColonia.IEmpCatColoniaApi coloniaApi,
+            Cavex.Principal.ApiClients.ICavexGeneralCatalogApi catalogApi,
+            ICatStatusService statusService)
         {
             _service = service;
+            _coloniaApi = coloniaApi;
+            _catalogApi = catalogApi;
+            _statusService = statusService;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetColonias(string? search, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var pageSize = string.IsNullOrWhiteSpace(search) ? 15 : 100;
+                var response = await _coloniaApi.GetAllAsync(1, pageSize, search, cancellationToken);
+                if (response == null || !response.Success)
+                {
+                    return Json(new { success = false, message = response?.Message ?? "No se pudieron obtener las colonias." });
+                }
+                return Json(new { success = true, data = response.Data?.Items });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetColonia(int id, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var response = await _coloniaApi.GetByIdAsync(id, cancellationToken);
+                if (response == null || !response.Success)
+                {
+                    return Json(new { success = false, message = response?.Message ?? "No se pudo obtener la colonia." });
+                }
+                return Json(new { success = true, data = response.Data });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetGeneros(CancellationToken cancellationToken)
+        {
+            try
+            {
+                var response = await _catalogApi.GetGenerosAsync(1, 100, cancellationToken);
+                if (response == null || !response.Success)
+                {
+                    return Json(new { success = false, message = response?.Message ?? "No se pudieron obtener los géneros." });
+                }
+                return Json(new { success = true, data = response.Data?.Items });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetEstadosCiviles(CancellationToken cancellationToken)
+        {
+            try
+            {
+                var response = await _catalogApi.GetEstadosCivilesAsync(1, 100, cancellationToken);
+                if (response == null || !response.Success)
+                {
+                    return Json(new { success = false, message = response?.Message ?? "No se pudieron obtener los estados civiles." });
+                }
+                return Json(new { success = true, data = response.Data?.Items });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetNacionalidades(CancellationToken cancellationToken)
+        {
+            try
+            {
+                var response = await _catalogApi.GetNacionalidadesAsync(1, 100, cancellationToken);
+                if (response == null || !response.Success)
+                {
+                    return Json(new { success = false, message = response?.Message ?? "No se pudieron obtener las nacionalidades." });
+                }
+                return Json(new { success = true, data = response.Data?.Items });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetStatus(CancellationToken cancellationToken)
+        {
+            var response = await _statusService.ObtenerTodosAsync(cancellationToken);
+            if (!response.Success)
+            {
+                return Json(new { success = false, message = response.Message });
+            }
+            return Json(new { success = true, data = response.Data?.Items });
         }
 
         public IActionResult Index(int pagina = 1)

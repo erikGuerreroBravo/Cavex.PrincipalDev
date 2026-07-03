@@ -389,3 +389,52 @@
     .form-row.cols-3,
     .form-row.cols-2 { grid-template-columns: 1fr; }
 }
+
+/* Autocomplete suggestions */
+.dropdown-group {
+    position: relative;
+}
+
+.suggestions-container {
+    position: static;
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid var(--borde-cavex);
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(6, 27, 58, 0.1);
+    z-index: 1000;
+    max-height: 220px;
+    overflow-y: auto;
+    margin-top: 4px;
+    animation: fadeIn 0.15s ease-in-out;
+}
+
+.suggestion-item {
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--texto-cavex);
+    border-bottom: 1px solid rgba(6, 27, 58, 0.03);
+    transition: all 0.2s ease-in-out;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover {
+    background: #F0F9FA;
+    color: var(--teal-cavex);
+}
+
+.suggestion-no-results {
+    padding: 12px 14px;
+    font-size: 0.88rem;
+    color: var(--gris);
+    font-style: italic;
+    text-align: center;
+}
+
+.suggestion-error {
+    color: var(--error);
+}

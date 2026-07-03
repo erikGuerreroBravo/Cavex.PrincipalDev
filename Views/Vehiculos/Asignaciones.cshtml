@@ -3,7 +3,6 @@
     ViewData["HeaderEyebrow"] = "Control operativo";
     ViewData["HeaderTitle"] = "Asignación de vehículos";
     ViewData["HeaderSubtitle"] = "Asigna unidades a empleados y controla kilometraje inicial, final y recorrido total.";
-    ViewData["HeaderBadgeText"] = "Frontend preparado";
 }
 
 @section Head {
@@ -56,17 +55,15 @@
 
             <!-- Fecha de asignación: conserva el nombre dteFechaAsigncion de la tabla real. -->
             <section class="cavex-card form-section-card vehiculo-section-card asignacion-fecha-card">
-                <h3 class="form-section-title"><span class="form-section-number">3</span>Fecha de asignación</h3>
+                <h3 class="form-section-title"><span class="form-section-number">3</span>Fecha de Registro</h3>
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label" for="asignacion-dteFechaAsigncion">Fecha</label>
                         <input id="asignacion-dteFechaAsigncion" name="dteFechaAsigncion" type="date" class="form-control" required />
-                        <div class="invalid-feedback" id="asignacion-dteFechaAsigncionError">Captura una fecha válida.</div>
                     </div>
                 </div>
             </section>
 
-            <!-- Kilometrajes: inicial NOT NULL; final y total admiten NULL. -->
             <section class="cavex-card form-section-card vehiculo-section-card asignacion-kilometraje-card">
                 <h3 class="form-section-title"><span class="form-section-number">4</span>Kilometraje</h3>
                 <div class="row g-3">
@@ -76,15 +73,13 @@
                             <input id="asignacion-decKilometrajeInicial" name="decKilometrajeInicial" type="number" min="0" max="999999" step="1" class="form-control" placeholder="0" required />
                             <span class="input-group-text">km</span>
                         </div>
-                        <div class="invalid-feedback" id="asignacion-decKilometrajeInicialError">Captura un kilometraje inicial válido.</div>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label" for="asignacion-decKilometrajeFinal">Kilometraje final <span class="vehiculo-optional-label">Opcional</span></label>
+                        <label class="form-label" for="asignacion-decKilometrajeFinal">Kilometraje final</label>
                         <div class="input-group">
                             <input id="asignacion-decKilometrajeFinal" name="decKilometrajeFinal" type="number" min="0" max="999999" step="1" class="form-control" placeholder="Sin cerrar" />
                             <span class="input-group-text">km</span>
                         </div>
-                        <div class="invalid-feedback" id="asignacion-decKilometrajeFinalError">Debe ser igual o mayor al kilometraje inicial.</div>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label" for="asignacion-decKilometrajeTotal">Kilometraje total <span class="vehiculo-optional-label">Calculado</span></label>
@@ -92,7 +87,6 @@
                             <input id="asignacion-decKilometrajeTotal" name="decKilometrajeTotal" type="number" min="0" step="1" class="form-control" placeholder="0" readonly />
                             <span class="input-group-text">km</span>
                         </div>
-                        <div class="form-text">Final menos inicial. No es editable.</div>
                     </div>
                 </div>
             </section>
@@ -102,8 +96,7 @@
         <aside class="vehiculo-side-panel">
             <div class="summary-panel vehiculo-preview-card asignacion-preview-card">
                 <div class="vehiculo-preview-heading">
-                    <div><span class="dashboard-kicker">Vista previa</span><h3>Resumen de asignación</h3></div>
-                    <span class="vehiculo-preview-live">En vivo</span>
+                    <div><span class="dashboard-kicker">Vista previa</span></div>
                 </div>
                 <div class="vehiculo-summary-list asignacion-summary-list">
                     <div class="vehiculo-summary-item"><span>Vehículo</span><strong id="previewAsignacionVehiculo">Sin seleccionar</strong></div>
@@ -115,7 +108,6 @@
                     <div class="vehiculo-summary-item"><span>Km final</span><strong id="previewAsignacionKmFinal">Sin capturar</strong></div>
                     <div class="vehiculo-summary-item asignacion-total-preview"><span>Km total</span><strong id="previewAsignacionKmTotal">0 km</strong></div>
                 </div>
-                <div class="protected-alert mt-3 mb-0">Captura simulada. No se guardará en base de datos.</div>
             </div>
         </aside>
     </div>
@@ -123,31 +115,9 @@
     <!-- Botones de captura; Guardar solo valida hasta disponer del POST real. -->
     <div class="form-action-bar vehiculo-action-bar">
         <a class="btn btn-outline-cavex" asp-controller="Vehiculos" asp-action="Index">Cancelar / Volver</a>
-        <button id="btnLimpiarAsignacion" type="button" class="btn btn-outline-cavex">Limpiar</button>
         <button type="submit" class="btn btn-cavex">Guardar asignación</button>
     </div>
 </form>
-
-<!-- Tabla inferior; Estado es exclusivamente visual y no representa una columna SQL.
-     Cerrar y cancelar son acciones preparadas para una integración posterior. -->
-<section class="cavex-card table-module asignaciones-recientes-card vehiculo-module-table">
-    <div class="servicio-table-heading">
-        <div><span class="dashboard-kicker">Operación</span><h3>Asignaciones recientes</h3><p>Registros simulados con cierre y kilometraje recorrido.</p></div>
-        <span class="records-pill">4 asignaciones</span>
-    </div>
-    <div class="table-responsive">
-        <table class="table table-hover align-middle executive-table table-cavex-compact">
-            <thead>
-                <tr>
-                    <th>Vehículo</th><th>Placa</th><th>Empleado</th><th>Área</th>
-                    <th>Fecha asignación</th><th>Km inicial</th><th>Km final</th><th>Km total</th>
-                    <th>Estado visual</th><th class="text-end">Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="asignacionesRecientesBody"></tbody>
-        </table>
-    </div>
-</section>
 
 @section Scripts {
     <script src="~/js/vista-vehiculos.js" asp-append-version="true"></script>

@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     wireFormInputs();
     await loadStatusOptions();
     await loadServicesFromServer();
+    resetForm();
 });
 
 async function loadStatusOptions() {
@@ -242,12 +243,14 @@ function renderServices() {
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li>
                                 <button class="dropdown-item d-flex align-items-center" type="button" onclick="editService(${service.id})">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 text-primary"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                                     Editar
                                 </button>
                             </li>
                             <li>
                                 <button class="dropdown-item d-flex align-items-center text-danger" type="button" onclick="deleteService(${service.id})">
-                                    Eliminar
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 text-danger"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                                    Dar de baja
                                 </button>
                             </li>
                         </ul>
@@ -272,6 +275,18 @@ function renderServices() {
     if (extraPill) extraPill.textContent = `Pagina ${currentPage} de ${totalPages}`;
 
     renderPagination(totalPages);
+
+    // Inicializar dropdowns de acciones con estrategia 'fixed' para prevenir recortes
+    document.querySelectorAll('#servicesTableBody .btn-action-trigger').forEach(el => {
+        new bootstrap.Dropdown(el, {
+            popperConfig: (defaultConfig) => {
+                return {
+                    ...defaultConfig,
+                    strategy: 'fixed'
+                };
+            }
+        });
+    });
 }
 
 function renderPagination(totalPages) {
@@ -337,7 +352,7 @@ async function handleFormSubmit(e) {
         return;
     }
 
-    if (!statusVal) {
+    if (editingId !== null && !statusVal) {
         statusField.classList.add("is-invalid");
         setText("statusFeedback", "Selecciona un estatus.");
         statusField.focus();
@@ -359,7 +374,7 @@ async function handleFormSubmit(e) {
         id: editingId || 0,
         strValor: nombre,
         strDescripcion: descripcion,
-        idCatStatus: Number.parseInt(statusVal, 10)
+        idCatStatus: editingId === null ? 1 : Number.parseInt(statusVal, 10)
     };
 
     const url = editingId === null
@@ -412,6 +427,9 @@ function editService(id) {
 
     const statusField = document.getElementById("intIdStatus");
     if (statusField) statusField.value = service.idCatStatus || "";
+
+    const statusContainer = document.getElementById("statusContainer");
+    if (statusContainer) statusContainer.style.display = "block";
 
     setText("formTitle", "Editar servicio");
     setText("formSubtitle", "Modifica los detalles del servicio seleccionado.");
@@ -481,6 +499,9 @@ function resetForm() {
 
     const btnCancel = document.getElementById("btnCancel");
     if (btnCancel) btnCancel.style.display = "none";
+
+    const statusContainer = document.getElementById("statusContainer");
+    if (statusContainer) statusContainer.style.display = "none";
 }
 
 function clearValidation() {

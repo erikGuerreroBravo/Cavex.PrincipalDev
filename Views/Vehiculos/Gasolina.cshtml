@@ -3,7 +3,6 @@
     ViewData["HeaderEyebrow"] = "Consumo vehicular";
     ViewData["HeaderTitle"] = "Control de gasolina";
     ViewData["HeaderSubtitle"] = "Registra cargas de combustible, costos, kilometraje, gasolinera y comprobantes por unidad.";
-    ViewData["HeaderBadgeText"] = "Frontend preparado";
 }
 
 @section Head {
@@ -111,7 +110,7 @@
             <!-- Comprobante opcional: el backend futuro asignará la ruta a strUrlComprobantePago. -->
             <section class="cavex-card form-section-card vehiculo-section-card">
                 <h3 class="form-section-title"><span class="form-section-number">3</span>Comprobante de pago</h3>
-                <label class="form-label" for="gasolinaComprobanteArchivo">Archivo <span class="vehiculo-optional-label">Opcional</span></label>
+                <label class="form-label" for="gasolinaComprobanteArchivo">Archivo</label>
                 <div id="gasolinaComprobanteArea" class="gasolina-comprobante-area" role="button" tabindex="0">
                     <input id="gasolinaComprobanteArchivo" type="file" class="vehiculo-file-input" accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp" />
                     <input id="gasolina-strUrlComprobantePago" name="strUrlComprobantePago" type="hidden" value="" />
@@ -131,32 +130,6 @@
             </section>
         </div>
 
-        <!-- Vista previa lateral con labels independientes de sus valores. -->
-        <aside class="vehiculo-side-panel">
-            <div class="summary-panel vehiculo-preview-card gasolina-preview-card">
-                <div class="vehiculo-preview-heading">
-                    <div><span class="dashboard-kicker">Vista previa</span><h3>Resumen de la carga</h3></div>
-                    <span class="vehiculo-preview-live">En vivo</span>
-                </div>
-                <div class="gasolina-preview-litros">
-                    <span>Litros estimados</span>
-                    <strong id="previewGasolinaLitros">0.00 L</strong>
-                </div>
-                <div class="vehiculo-summary-list">
-                    <div class="vehiculo-summary-item"><span>Vehículo</span><strong id="previewGasolinaVehiculo">Sin seleccionar</strong></div>
-                    <div class="vehiculo-summary-item"><span>Placa</span><strong id="previewGasolinaPlaca">—</strong></div>
-                    <div class="vehiculo-summary-item"><span>Fecha</span><strong id="previewGasolinaFecha">—</strong></div>
-                    <div class="vehiculo-summary-item"><span>Kilometraje</span><strong id="previewGasolinaKilometraje">0 km</strong></div>
-                    <div class="vehiculo-summary-item"><span>Gasolinera</span><strong id="previewGasolinaGasolinera">Sin seleccionar</strong></div>
-                    <div class="vehiculo-summary-item"><span>Monto</span><strong id="previewGasolinaMonto">$0.00</strong></div>
-                    <div class="vehiculo-summary-item"><span>Precio litro</span><strong id="previewGasolinaPrecio">$0.00</strong></div>
-                    <div class="vehiculo-summary-item"><span>Forma pago</span><strong id="previewGasolinaFormaPago">Sin seleccionar</strong></div>
-                    <div class="vehiculo-summary-item"><span>Empleado</span><strong id="previewGasolinaEmpleado">Sin seleccionar</strong></div>
-                    <div class="vehiculo-summary-item"><span>Comprobante</span><strong id="previewGasolinaComprobante">Sin archivo</strong></div>
-                </div>
-                <div class="protected-alert mt-3 mb-0">Captura simulada. No se guardará en base de datos.</div>
-            </div>
-        </aside>
     </div>
 
     <!-- Acciones; Guardar solo valida mientras no exista POST /api/vehiculos/gasolina. -->
@@ -189,5 +162,5 @@
 </section>
 
 @section Scripts {
-    <script src="~/js/vista-vehiculos.js" asp-append-version="true"></script>
+    <script src="~/js/vista-gasolina.js" asp-append-version="true"></script>
 }

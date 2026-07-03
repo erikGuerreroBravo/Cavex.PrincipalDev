@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Cavex.Principal.Models
@@ -25,7 +25,7 @@ namespace Cavex.Principal.Models
 
         public string StrCorreoElectronico { get; set; } = string.Empty;
 
-        public int IntNss { get; set; }
+        public long IntNss { get; set; }
 
         [ForeignKey("EmpCatGenero")]
         public int IdEmpCatGenero { get; set; }

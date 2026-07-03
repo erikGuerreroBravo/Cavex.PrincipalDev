@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Cavex.Principal.Models.EmpCatColonia
 {
@@ -13,12 +13,10 @@ namespace Cavex.Principal.Models.EmpCatColonia
         public string? StrDescripcion { get; set; }
 
         [Display(Name = "Codigo Postal")]
-        public string IntCodigoPostal { get; set; }
+        public int IntCodigoPostal { get; set; }
 
         [Display(Name = "Tipo de Asentamiento")]
         public string StrTipoAsentamiento { get; set; }
-
-        public int IntEmpCatMunicipio { get; set; }
 
         [Display(Name = "Municipio")]
         public string StrEmpCatMunicipio { get; set; } = string.Empty;

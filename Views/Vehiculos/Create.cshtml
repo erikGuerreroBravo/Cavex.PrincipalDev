@@ -2,8 +2,7 @@
     ViewData["Title"] = "Registro de vehículo";
     ViewData["HeaderEyebrow"] = "Inventario vehicular";
     ViewData["HeaderTitle"] = "Registro de vehículo";
-    ViewData["HeaderSubtitle"] = "Captura los datos de la unidad con la estructura de VehDatosGenerales.";
-    ViewData["HeaderBadgeText"] = "Frontend preparado";
+    ViewData["HeaderSubtitle"] = "Captura los datos de la unidad ha registrar.";
 }
 
 @section Head {
@@ -23,7 +22,7 @@
                 <h3 class="form-section-title"><span class="form-section-number">1</span>Datos principales</h3>
                 <div class="row g-3">
                     <div class="col-md-6 col-xl-4">
-                        <label class="form-label" for="strNumSerie">Número de serie / VIN</label>
+                        <label class="form-label" for="strNumSerie">Número de serie</label>
                         <input id="strNumSerie" name="strNumSerie" maxlength="20" pattern="[A-Za-z0-9]+" class="form-control" placeholder="Ej. 3N1AB7AP0HY000001" autocomplete="off" required />
                         <div class="invalid-feedback" id="strNumSerieError">El número de serie es obligatorio.</div>
                     </div>
@@ -45,7 +44,7 @@
                         <div class="invalid-feedback" id="intAnioError">Captura un año válido.</div>
                     </div>
                     <div class="col-md-6 col-xl-4">
-                        <label class="form-label" for="strVersion">Versión <span class="vehiculo-optional-label">Opcional</span></label>
+                        <label class="form-label" for="strVersion">Versión</label>
                         <input id="strVersion" name="strVersion" maxlength="250" class="form-control no-uppercase" placeholder="Ej. XLE, Sport, Titanium, LTZ…" />
                         <div class="invalid-feedback" id="strVersionError">La versión no debe superar 250 caracteres.</div>
                     </div>
@@ -55,7 +54,7 @@
                         <div class="invalid-feedback" id="strPlacaError">La placa es obligatoria.</div>
                     </div>
                     <div class="col-md-6 col-xl-4">
-                        <label class="form-label" for="intNumMotor">Número de motor <span class="vehiculo-optional-label">Opcional</span></label>
+                        <label class="form-label" for="intNumMotor">Número de motor</label>
                         <input id="intNumMotor" name="intNumMotor" type="number" min="0" max="2147483647" step="1" class="form-control" placeholder="123456" autocomplete="off" />
                         <div class="invalid-feedback" id="intNumMotorError">Captura un número de motor entero no negativo.</div>
                     </div>
@@ -99,13 +98,7 @@
                         <label class="form-label" for="decKilometrajeActual">Kilometraje actual</label>
                         <input id="decKilometrajeActual" name="decKilometrajeActual" type="number" min="0" max="999999" step="1" value="0" class="form-control" required />
                         <div class="invalid-feedback" id="decKilometrajeActualError">El kilometraje es obligatorio.</div>
-                    </div>
-                    <div class="col-md-6 col-xl-4">
-                        <label class="form-label" for="idVehCatStatus">Estatus</label>
-                        <select id="idVehCatStatus" name="idVehCatStatus" class="form-select" required>
-                            <option value="">Seleccionar...</option>
-                        </select>
-                        <div class="invalid-feedback" id="idVehCatStatusError">Selecciona un estatus.</div>
+                        <input type="hidden" id="idVehCatStatus" name="idVehCatStatus" value="1" />
                     </div>
                 </div>
             </div>
@@ -115,7 +108,7 @@
                 <h3 class="form-section-title"><span class="form-section-number">3</span>Foto y observaciones</h3>
                 <div class="vehiculo-media-grid">
                     <div class="vehiculo-upload-column">
-                        <label class="form-label" for="vehiculoFotoArchivo">Foto del vehículo <span class="vehiculo-optional-label">Opcional</span></label>
+                        <label class="form-label" for="vehiculoFotoArchivo">Foto del vehículo</label>
                         <div class="vehiculo-upload-area" id="vehiculoUploadArea" role="button" tabindex="0">
                             <!-- Este archivo solo genera una vista previa local. El backend futuro subirá el archivo y asignará su URL o ruta a strUrlFoto. -->
                             <input id="vehiculoFotoArchivo" type="file" class="vehiculo-file-input" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
@@ -157,7 +150,7 @@
                     </div>
 
                     <div class="vehiculo-observations">
-                        <label class="form-label" for="strObservaciones">Observaciones <span class="vehiculo-optional-label">Opcional</span></label>
+                        <label class="form-label" for="strObservaciones">Observaciones</label>
                         <textarea id="strObservaciones" name="strObservaciones" maxlength="500" rows="4" class="form-control no-uppercase" placeholder="Comentarios internos sobre la unidad, condiciones o notas de operación."></textarea>
                         <div class="invalid-feedback" id="strObservacionesError">Las observaciones no deben superar 500 caracteres.</div>
                         <div class="vehiculo-character-counter" aria-live="polite"><span id="observacionesCounter">0</span>/500</div>
@@ -170,11 +163,7 @@
         <aside class="vehiculo-side-panel">
             <div class="summary-panel vehiculo-preview-card">
                 <div class="vehiculo-preview-heading">
-                    <div><span class="dashboard-kicker">Vista previa</span><h3>Resumen de la unidad</h3></div>
-                    <span class="vehiculo-preview-live">En vivo</span>
-                </div>
-                <div class="vehicle-photo-preview" id="vehiculoFotoPreview">
-                    <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9L18 10l-2-4H8l-2 4-2.5 1.1C2.7 11.4 2 12.1 2 13v3c0 .6.4 1 1 1h2" /><circle cx="7" cy="17" r="2" /><circle cx="17" cy="17" r="2" /></svg>
+                    <div><span class="dashboard-kicker">Vista previa</span></div>
                 </div>
                 <div class="vehiculo-summary-list">
                     <div class="vehiculo-summary-item"><span>Unidad</span><strong id="previewUnidad">Sin datos</strong></div>
@@ -188,7 +177,6 @@
                     <div class="vehiculo-summary-item"><span>Kilometraje</span><strong id="previewKilometraje">0 km</strong></div>
                     <div class="vehiculo-summary-item vehiculo-summary-status"><span>Estatus</span><strong id="previewEstatus" class="badge-active">Activo</strong></div>
                 </div>
-                <div class="protected-alert mt-3 mb-0">Captura simulada. No se guardará en base de datos.</div>
             </div>
         </aside>
     </div>
@@ -196,7 +184,6 @@
     <!-- Acciones del formulario; el submit solo valida hasta contar con POST /api/vehiculos. -->
     <div class="form-action-bar vehiculo-action-bar">
         <a class="btn btn-outline-cavex" asp-controller="Vehiculos" asp-action="Index">Cancelar / Volver</a>
-        <button type="button" class="btn btn-outline-cavex" id="btnLimpiarVehiculo">Limpiar</button>
         <button type="submit" class="btn btn-cavex">Guardar vehículo</button>
     </div>
 </form>

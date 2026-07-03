@@ -1,6 +1,7 @@
 using Cavex.Principal.ApiClients.CatStatus;
 using Cavex.Principal.ApiClients.EmpCatAreaLaboral;
 using Cavex.Principal.ApiClients.EmpEmpleado;
+using Cavex.Principal.ApiClients.EmpCatColonia;
 using Cavex.Principal.ApiClients.ServicioAClientes;
 using Cavex.Principal.ApiClients.Sucursales;
 using Cavex.Principal.Infrastructure.Policies;
@@ -566,6 +567,30 @@ namespace Cavex.Principal.Infrastructure.Extensions
                     var settings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
                     client.BaseAddress = new Uri(settings.BaseUrl);
                     client.Timeout = TimeSpan.FromSeconds(settings.TimeoutSeconds);
+                })
+                .AddPolicyHandler(PollyPolicies.RetryPolicy())
+                .AddPolicyHandler(PollyPolicies.TimeoutPolicy())
+                .AddPolicyHandler(PollyPolicies.CircuitBreakerPolicy());
+
+            services
+                .AddRefitClient<IEmpCatColoniaApi>(refitSettings)
+                .ConfigureHttpClient((sp, client) =>
+                {
+                   var settings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
+                   client.BaseAddress = new Uri(settings.BaseUrl);
+                   client.Timeout = TimeSpan.FromSeconds(settings.TimeoutSeconds);
+                })
+                .AddPolicyHandler(PollyPolicies.RetryPolicy())
+                .AddPolicyHandler(PollyPolicies.TimeoutPolicy())
+                .AddPolicyHandler(PollyPolicies.CircuitBreakerPolicy());
+
+            services
+                .AddRefitClient<Cavex.Principal.ApiClients.ICavexGeneralCatalogApi>(refitSettings)
+                .ConfigureHttpClient((sp, client) =>
+                {
+                   var settings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
+                   client.BaseAddress = new Uri(settings.BaseUrl);
+                   client.Timeout = TimeSpan.FromSeconds(settings.TimeoutSeconds);
                 })
                 .AddPolicyHandler(PollyPolicies.RetryPolicy())
                 .AddPolicyHandler(PollyPolicies.TimeoutPolicy())

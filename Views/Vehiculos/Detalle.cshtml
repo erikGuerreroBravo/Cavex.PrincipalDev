@@ -1,30 +1,5 @@
+
 @{
-    ViewData["Title"] = "Historial del vehículo";
-    ViewData["HeaderEyebrow"] = "Control vehicular";
-    ViewData["HeaderTitle"] = "Historial del vehículo";
-    ViewData["HeaderSubtitle"] = "Espacio reservado para la adaptación del diseño final.";
-    ViewData["HeaderBadgeText"] = "Pantalla temporal";
-}
-
-<!-- Header estándar conservado para no romper la ruta mientras se adapta el diseño definitivo. -->
-<partial name="_PageHeader" />
-
-<!-- Placeholder temporal sin datos ni JavaScript funcional.
-     Los enlaces mantienen la navegación hacia el listado y la captura de servicios. -->
-<section class="cavex-card text-center">
-    <span class="eyebrow">Próxima actualización</span>
-    <h2 class="filter-title">Historial del vehículo</h2>
-    <p class="cavex-subtitle mb-4">Esta pantalla será reemplazada por el diseño final adaptado.</p>
-
-    <div class="d-flex flex-wrap justify-content-center gap-2">
-        <a class="btn btn-outline-cavex" asp-controller="Vehiculos" asp-action="Index">
-            Volver a vehículos
-        </a>
-        <a class="btn btn-cavex" asp-controller="Vehiculos" asp-action="NuevoServicio">
-            Nuevo servicio
-        </a>
-    </div>
-</section>
     ViewData["Title"] = "Detalle del Vehículo";
 }
 
@@ -32,15 +7,21 @@
     <link rel="stylesheet" href="~/css/vista-detalle-vehiculos.css" asp-append-version="true" />
 }
 
-<!-- Ruta / Breadcrumbs -->
-<div class="breadcrumb-container">
-    <a asp-controller="Home" asp-action="Index">Dashboard</a>
-    <span class="breadcrumb-separator">&gt;</span>
-    <a href="#">Vehículos</a>
-    <span class="breadcrumb-separator">&gt;</span>
-    <span class="breadcrumb-active">Detalle del Vehículo</span>
+<!-- Ruta / Breadcrumbs y Botón Regresar -->
+<div class="d-flex align-items-center justify-content-between mb-4 mt-2">
+    <div class="breadcrumb-container m-0">
+        <a asp-controller="Home" asp-action="Index">Dashboard</a>
+        <span class="breadcrumb-separator">&gt;</span>
+        <a asp-controller="Vehiculos" asp-action="Index">Vehículos</a>
+        <span class="breadcrumb-separator">&gt;</span>
+        <span class="breadcrumb-active">Detalles del Vehículo</span>
+    </div>
+    <a asp-controller="Vehiculos" asp-action="Index" class="btn btn-outline-cavex rounded-pill px-3 py-2 btn-sm d-inline-flex align-items-center" style="font-weight: 750; border: 1px solid rgba(0, 140, 149, 0.18); background: white; color: var(--azul-cavex); transition: all 0.2s ease-in-out;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="me-1" style="vertical-align: -2px;"><polyline points="15 18 9 12 15 6"/></svg>
+        Volver al listado
+    </a>
 </div>
-
+    
 <div id="skeleton-wrapper">
     <!-- 1. CARD PRINCIPAL SKELETON -->
     <div class="vehicle-detail-card">
@@ -158,7 +139,7 @@
     <div class="vehicle-detail-card">
         <!-- Imagen del vehículo -->
         <div class="vehicle-image-wrapper">
-            <img class="vehicle-image" src="~/img/toyota_rav4.png" alt="Toyota RAV4 2021" />
+            <img class="vehicle-image" id="det-foto" src="" alt="Imagen del vehículo" />
         </div>
 
         <!-- Contenido real -->
@@ -166,21 +147,21 @@
             <!-- Cabecera con Título, Estado y Acciones -->
             <div class="vehicle-header-row">
                 <div class="vehicle-title-area">
-                    <h2 class="vehicle-title">Toyota RAV4 2021</h2>
-                    <span class="badge-plate">ABC-123-D</span>
-                    <span class="badge-status-active">Activo</span>
+                    <h2 class="vehicle-title" id="det-nombre">—</h2>
+                    <span class="badge-plate" id="det-placa">—</span>
+                    <span class="badge-status-active" id="det-estatus">—</span>
                 </div>
                 <div class="vehicle-actions">
                     <a href="#" class="btn-action-outline">
-                        <img src="~/svg/vista-detalles-vehiculos/edit.svg" width="14" height="14" class="btn-icon" alt="Editar" />
+                        <img src="/svg/vista-detalles-vehiculos/edit.svg" width="14" height="14" class="btn-icon" alt="Editar" />
                         Editar
                     </a>
                     <a href="#" class="btn-action-outline">
-                        <img src="~/svg/vista-detalles-vehiculos/history.svg" width="14" height="14" class="btn-icon" alt="Historial" />
+                        <img src="/svg/vista-detalles-vehiculos/history.svg" width="14" height="14" class="btn-icon" alt="Historial" />
                         Historial
                     </a>
                     <a href="#" class="btn-action-primary">
-                        <img src="~/svg/vista-detalles-vehiculos/plus.svg" width="14" height="14" class="btn-icon" style="filter: brightness(0) invert(1);" alt="Nuevo" />
+                        <img src="/svg/vista-detalles-vehiculos/plus.svg" width="14" height="14" class="btn-icon" style="filter: brightness(0) invert(1);" alt="Nuevo" />
                         Nuevo Servicio
                     </a>
                 </div>
@@ -192,19 +173,19 @@
                 <div class="info-column">
                     <div class="info-item">
                         <span class="info-label">VIN:</span>
-                        <span class="info-value">JTMWFREV5JJ123456</span>
+                        <span class="info-value" id="det-vin">—</span>
                     </div>
                     <div class="info-item">
-                        <span class="info-label">Cliente:</span>
-                        <span class="info-value">Juan Pérez López</span>
+                        <span class="info-label">Tipo:</span>
+                        <span class="info-value" id="det-tipo">—</span>
                     </div>
                     <div class="info-item">
-                        <span class="info-label">Teléfono:</span>
-                        <span class="info-value">55 1234 5678</span>
+                        <span class="info-label">Combustible:</span>
+                        <span class="info-value" id="det-combustible">—</span>
                     </div>
                     <div class="info-item">
-                        <span class="info-label">Email:</span>
-                        <span class="info-value">juan.perez@email.com</span>
+                        <span class="info-label">Capacidad:</span>
+                        <span class="info-value" id="det-capacidad">—</span>
                     </div>
                 </div>
 
@@ -212,19 +193,19 @@
                 <div class="info-column">
                     <div class="info-item">
                         <span class="info-label">Año:</span>
-                        <span class="info-value">2021</span>
+                        <span class="info-value" id="det-anio">—</span>
                     </div>
                     <div class="info-item">
                         <span class="info-label">Color:</span>
-                        <span class="info-value">Blanco Perlado</span>
+                        <span class="info-value" id="det-color">—</span>
                     </div>
                     <div class="info-item">
                         <span class="info-label">Motor:</span>
-                        <span class="info-value">2.5L 4 Cilindros</span>
+                        <span class="info-value" id="det-motor">—</span>
                     </div>
                     <div class="info-item">
                         <span class="info-label">Transmisión:</span>
-                        <span class="info-value">Automática</span>
+                        <span class="info-value" id="det-transmision">—</span>
                     </div>
                 </div>
 
@@ -232,15 +213,15 @@
                 <div class="info-column">
                     <div class="info-item">
                         <span class="info-label">Kilometraje:</span>
-                        <span class="info-value">45,230 km</span>
+                        <span class="info-value" id="det-kilometraje">—</span>
                     </div>
                     <div class="info-item">
                         <span class="info-label">Fecha de compra:</span>
-                        <span class="info-value">10/03/2021</span>
+                        <span class="info-value" id="det-fechacompra">—</span>
                     </div>
                     <div class="info-item">
                         <span class="info-label">Garantía:</span>
-                        <span class="info-value">Vigente hasta 10/03/2026</span>
+                        <span class="info-value" id="det-garantia">—</span>
                     </div>
                 </div>
             </div>
@@ -287,21 +268,17 @@
     <div id="tab-resumen" class="tab-content">
         <!-- Fila de Métricas Reales -->
         <div class="metrics-row">
+
         <!-- Card 1: Próximo Servicio -->
         <div class="metric-card">
             <div class="metric-card-header">
                 <span class="metric-icon">
-                    <img src="~/svg/vista-detalles-vehiculos/calendar.svg" width="16" height="16" alt="Calendario" />
+                    <img src="/svg/vista-detalles-vehiculos/calendar.svg" width="16" height="16" alt="Calendario" />
                 </span>
                 <h4 class="metric-card-title">Próximo Servicio</h4>
             </div>
-            <div class="metric-card-body">
-                <span class="metric-card-label">Servicio Programado</span>
-                <span class="metric-card-value">15/06/2024</span>
-                <span class="metric-card-subtext">en 2,350 km</span>
-            </div>
-            <div class="metric-card-footer">
-                <a href="#" class="btn-metric-outline">Ver detalle</a>
+            <div class="metric-card-body" id="resumen-proximo-body">
+                <!-- Dinámico -->
             </div>
         </div>
 
@@ -309,17 +286,12 @@
         <div class="metric-card">
             <div class="metric-card-header">
                 <span class="metric-icon">
-                    <img src="~/svg/vista-detalles-vehiculos/wrench.svg" width="16" height="16" alt="Mantenimiento" />
+                    <img src="/svg/vista-detalles-vehiculos/wrench.svg" width="16" height="16" alt="Mantenimiento" />
                 </span>
                 <h4 class="metric-card-title">Último Servicio</h4>
             </div>
-            <div class="metric-card-body">
-                <span class="metric-card-label">Servicio Mayor</span>
-                <span class="metric-card-value">10/03/2024</span>
-                <span class="metric-card-subtext">hace 1,200 km</span>
-            </div>
-            <div class="metric-card-footer">
-                <a href="#" class="btn-metric-outline">Ver historial</a>
+            <div class="metric-card-body" id="resumen-ultimo-body">
+                <!-- Dinámico -->
             </div>
         </div>
 
@@ -327,18 +299,18 @@
         <div class="metric-card">
             <div class="metric-card-header">
                 <span class="metric-icon">
-                    <img src="~/svg/vista-detalles-vehiculos/shield.svg" width="16" height="16" alt="Seguridad" />
+                    <img src="/svg/vista-detalles-vehiculos/shield.svg" width="16" height="16" alt="Seguridad" />
                 </span>
                 <h4 class="metric-card-title">Estado General</h4>
             </div>
             <div class="metric-card-body">
                 <div class="gauge-container">
                     <div class="progress-ring-gauge-68">
-                        <span class="progress-ring-text-68">92%</span>
+                        <span class="progress-ring-text-68" id="resumen-salud-pct">0%</span>
                     </div>
-                    <span class="gauge-status-label" style="color: var(--exito);">Excelente</span>
+                    <span class="gauge-status-label" id="resumen-salud-label" style="color: var(--exito);">—</span>
                 </div>
-                <div class="gauge-footer-text">Todo en óptimas condiciones</div>
+                <div class="gauge-footer-text" id="resumen-salud-footer">—</div>
             </div>
         </div>
 
@@ -346,13 +318,12 @@
         <div class="metric-card">
             <div class="metric-card-header">
                 <span class="metric-icon">
-                    <img src="~/svg/vista-detalles-vehiculos/speedometer.svg" width="16" height="16" alt="Kilometraje" />
+                    <img src="/svg/vista-detalles-vehiculos/speedometer.svg" width="16" height="16" alt="Kilometraje" />
                 </span>
                 <h4 class="metric-card-title">Kilometraje</h4>
             </div>
             <div class="metric-card-body">
-                <span class="metric-card-value" style="font-size: 23px; margin-bottom: 6px;">45,230 km</span>
-                <span class="metric-card-subtext">Promedio: 12,450 km/año</span>
+                <span class="metric-card-value" id="resumen-km-actual" style="font-size: 23px; margin-bottom: 6px;">—</span>
             </div>
             <div class="metric-card-footer">
                 <a href="#" class="btn-metric-outline">Ver tendencias</a>
@@ -363,33 +334,13 @@
         <div class="metric-card">
             <div class="metric-card-header">
                 <span class="metric-icon metric-icon-red">
-                    <img src="~/svg/vista-detalles-vehiculos/bell.svg" width="16" height="16" alt="Alertas" />
+                    <img src="/svg/vista-detalles-vehiculos/bell.svg" width="16" height="16" alt="Alertas" />
                 </span>
                 <h4 class="metric-card-title">Alertas</h4>
             </div>
             <div class="metric-card-body">
-                <div class="alerts-list">
-                    <div class="alert-item">
-                        <div class="alert-left">
-                            <span class="alert-dot alert-dot-warning" title="Próximo"></span>
-                            <span class="alert-msg">Cambio de aceite</span>
-                        </div>
-                        <span class="alert-meta">en 2,350 km</span>
-                    </div>
-                    <div class="alert-item">
-                        <div class="alert-left">
-                            <span class="alert-dot alert-dot-warning" title="Próximo"></span>
-                            <span class="alert-msg">Verificación</span>
-                        </div>
-                        <span class="alert-meta">30/06/24</span>
-                    </div>
-                    <div class="alert-item">
-                        <div class="alert-left">
-                            <span class="alert-dot alert-dot-danger" title="Urgente"></span>
-                            <span class="alert-msg">Seguro vence</span>
-                        </div>
-                        <span class="alert-meta">15/07/24</span>
-                    </div>
+                <div class="alerts-list" id="resumen-alertas-lista">
+                    <!-- Dinámico -->
                 </div>
             </div>
             <div class="metric-card-footer">
@@ -397,91 +348,19 @@
             </div>
         </div>
     </div>
+</div>
 
     <!-- Fila de Secciones Secundarias Reales -->
     <div class="secondary-row">
-        <!-- Mantenimiento Reciente -->
         <div class="secondary-card">
             <div class="secondary-card-header">
                 <span class="metric-icon">
-                    <img src="~/svg/vista-detalles-vehiculos/wrench.svg" width="16" height="16" alt="Herramienta" />
+                    <img src="/svg/vista-detalles-vehiculos/wrench.svg" width="16" height="16" alt="Herramienta" />
                 </span>
                 <h4 class="secondary-card-title">Mantenimiento Reciente</h4>
             </div>
-            <div class="maint-list">
-                <!-- Cabecera de columnas alineada -->
-                <div class="maint-item-header">
-                    <span>Servicio</span>
-                    <span>Fecha</span>
-                    <span>Kilometraje</span>
-                    <span style="text-align: right;">Estado</span>
-                </div>
-
-                <div class="maint-item">
-                    <div class="maint-left">
-                        <span class="maint-icon maint-icon-orange">
-                            <img src="~/svg/vista-detalles-vehiculos/dollar.svg" width="11" height="11" alt="Dinero" />
-                        </span>
-                        <span class="maint-name">Cambio de Aceite y Filtro</span>
-                    </div>
-                    <span class="maint-date">10/03/2024</span>
-                    <span class="maint-km">45,230 km</span>
-                    <div class="maint-status">
-                        <span class="badge-status-completed">Completado</span>
-                    </div>
-                </div>
-                <div class="maint-item">
-                    <div class="maint-left">
-                        <span class="maint-icon maint-icon-yellow">
-                            <img src="~/svg/vista-detalles-vehiculos/wrench.svg" width="11" height="11" alt="Mecánico" />
-                        </span>
-                        <span class="maint-name">Revisión de Frenos (Balatas)</span>
-                    </div>
-                    <span class="maint-date">10/03/2024</span>
-                    <span class="maint-km">45,230 km</span>
-                    <div class="maint-status">
-                        <span class="badge-status-completed">Completado</span>
-                    </div>
-                </div>
-                <div class="maint-item">
-                    <div class="maint-left">
-                        <span class="maint-icon maint-icon-blue">
-                            <img src="~/svg/vista-detalles-vehiculos/speedometer.svg" width="11" height="11" alt="Llantas" />
-                        </span>
-                        <span class="maint-name">Rotación de Llantas</span>
-                    </div>
-                    <span class="maint-date">10/03/2024</span>
-                    <span class="maint-km">45,230 km</span>
-                    <div class="maint-status">
-                        <span class="badge-status-completed">Completado</span>
-                    </div>
-                </div>
-                <div class="maint-item">
-                    <div class="maint-left">
-                        <span class="maint-icon maint-icon-purple">
-                            <img src="~/svg/vista-detalles-vehiculos/shield.svg" width="11" height="11" alt="Alineación" />
-                        </span>
-                        <span class="maint-name">Alineación y Balanceo</span>
-                    </div>
-                    <span class="maint-date">10/03/2024</span>
-                    <span class="maint-km">45,230 km</span>
-                    <div class="maint-status">
-                        <span class="badge-status-completed">Completado</span>
-                    </div>
-                </div>
-                <div class="maint-item">
-                    <div class="maint-left">
-                        <span class="maint-icon maint-icon-blue">
-                            <img src="~/svg/vista-detalles-vehiculos/check.svg" width="11" height="11" alt="Aprobado" />
-                        </span>
-                        <span class="maint-name">Revisión 24 Puntos</span>
-                    </div>
-                    <span class="maint-date">10/03/2024</span>
-                    <span class="maint-km">45,230 km</span>
-                    <div class="maint-status">
-                        <span class="badge-status-completed">Completado</span>
-                    </div>
-                </div>
+            <div class="maint-list" id="resumen-mantenimiento-lista">
+                <!-- Dinámico -->
             </div>
             <div class="metric-card-footer">
                 <a href="#" class="btn-metric-outline">Ver historial completo</a>
@@ -492,50 +371,20 @@
         <div class="secondary-card">
             <div class="secondary-card-header">
                 <span class="metric-icon">
-                    <img src="~/svg/vista-detalles-vehiculos/check.svg" width="16" height="16" alt="Revisado" />
+                    <img src="/svg/vista-detalles-vehiculos/check.svg" width="16" height="16" alt="Revisado" />
                 </span>
                 <h4 class="secondary-card-title">Revisión 24 Puntos (Última)</h4>
             </div>
             <div class="revision-body">
                 <div class="revision-gauge progress-ring-gauge-110">
                     <div class="revision-gauge-text">
-                        <span class="rev-num">24/24</span>
+                        <span class="rev-num" id="resumen-revision-num">0/24</span>
                         <span class="rev-lbl">Aprobados</span>
-                        <span class="rev-status">Excelente</span>
+                        <span class="rev-status" id="resumen-revision-status">—</span>
                     </div>
                 </div>
-                <div class="revision-checklist">
-                    <div class="check-item">
-                        <span class="check-icon">
-                            <img src="~/svg/vista-detalles-vehiculos/check.svg" width="12" height="12" alt="Aprobado" />
-                        </span>
-                        <span>Sistema de Frenos</span>
-                    </div>
-                    <div class="check-item">
-                        <span class="check-icon">
-                            <img src="~/svg/vista-detalles-vehiculos/check.svg" width="12" height="12" alt="Aprobado" />
-                        </span>
-                        <span>Dirección y Suspensión</span>
-                    </div>
-                    <div class="check-item">
-                        <span class="check-icon">
-                            <img src="~/svg/vista-detalles-vehiculos/check.svg" width="12" height="12" alt="Aprobado" />
-                        </span>
-                        <span>Luces y Eléctrico</span>
-                    </div>
-                    <div class="check-item">
-                        <span class="check-icon">
-                            <img src="~/svg/vista-detalles-vehiculos/check.svg" width="12" height="12" alt="Aprobado" />
-                        </span>
-                        <span>Niveles de Fluidos</span>
-                    </div>
-                    <div class="check-item">
-                        <span class="check-icon">
-                            <img src="~/svg/vista-detalles-vehiculos/check.svg" width="12" height="12" alt="Aprobado" />
-                        </span>
-                        <span>Llantas y Rines</span>
-                    </div>
-                    <div class="check-more">... y 19 puntos más</div>
+                <div class="revision-checklist" id="resumen-revision-checklist">
+                    <!-- Dinámico -->
                 </div>
             </div>
             <div class="metric-card-footer">
@@ -548,7 +397,7 @@
             <div class="secondary-card seguro-card">
                 <div class="secondary-card-header">
                     <span class="metric-icon">
-                        <img src="~/svg/vista-detalles-vehiculos/shield.svg" width="16" height="16" alt="Seguridad" />
+                        <img src="/svg/vista-detalles-vehiculos/shield.svg" width="16" height="16" alt="Seguridad" />
                     </span>
                     <h4 class="secondary-card-title">Seguro Vigente</h4>
                 </div>
@@ -557,14 +406,14 @@
                         <span class="qualitas-q-logo">Q</span>
                     </div>
                     <div class="seguro-info">
-                        <span class="seguro-provider">Qualitas</span>
-                        <div class="seguro-detail">Póliza: <span>1234567890</span></div>
-                        <div class="seguro-detail">Cobertura: <span>Amplia</span></div>
-                        <div class="seguro-detail">Vigencia: <span>15/07/23 - 15/07/24</span></div>
+                        <span class="seguro-provider" id="resumen-seguro-provider">—</span>
+                        <div class="seguro-detail" id="resumen-seguro-poliza">Póliza: <span>—</span></div>
+                        <div class="seguro-detail" id="resumen-seguro-cobertura">Cobertura: <span>—</span></div>
+                        <div class="seguro-detail" id="resumen-seguro-vigencia">Vigencia: <span>—</span></div>
                     </div>
                 </div>
                 <div class="seguro-badge-row">
-                    <span class="badge-seguro-vigente">Vigente (45 días restantes)</span>
+                    <span class="badge-seguro-vigente" id="resumen-seguro-restante">—</span>
                 </div>
                 <div class="metric-card-footer">
                     <a href="#" class="btn-metric-outline">Ver detalles</a>
@@ -574,16 +423,16 @@
             <div class="secondary-card infracciones-card">
                 <div class="infracciones-header">
                     <span class="metric-icon metric-icon-red">
-                        <img src="~/svg/vista-detalles-vehiculos/warning.svg" width="16" height="16" alt="Advertencia" />
+                        <img src="/svg/vista-detalles-vehiculos/warning.svg" width="16" height="16" alt="Advertencia" />
                     </span>
                     <h5 class="infracciones-title">Infracciones</h5>
                 </div>
                 <div class="infracciones-body">
                     <div class="infracciones-left">
-                        <span class="infracciones-count">2</span>
+                        <span class="infracciones-count" id="resumen-infracciones-count">0</span>
                         <div style="display: flex; flex-direction: column;">
                             <span class="infracciones-desc">Infracciones activas</span>
-                            <span class="infracciones-amount">Total adeudado: <span>$1,450.00</span></span>
+                            <span class="infracciones-amount" id="resumen-infracciones-monto">Total adeudado: <span>$0.00</span></span>
                         </div>
                     </div>
                     <a href="#" class="btn-infracciones-detail">Ver detalle</a>
@@ -597,70 +446,28 @@
         <div class="secondary-card bottom-card">
             <div class="secondary-card-header">
                 <span class="metric-icon">
-                    <img src="~/svg/vista-detalles-vehiculos/speedometer.svg" width="16" height="16" alt="Gráfico" />
+                    <img src="/svg/vista-detalles-vehiculos/speedometer.svg" width="16" height="16" alt="Gráfico" />
                 </span>
                 <h4 class="secondary-card-title">Historial de Kilometraje</h4>
             </div>
-            <div style="flex-grow: 1; position: relative; height: 220px; width: 100%;">
+            <div style="flex-grow: 1; position: relative; height: 220px; width: 100%; display: flex; align-items: center; justify-content: center;">
                 <canvas id="mileageChart"></canvas>
+                <div id="mileageChartPlaceholder" style="display: none; flex-direction: column; align-items: center; justify-content: center; gap: 8px;" class="text-muted">
+                    <img src="/svg/vista-detalles-vehiculos/speedometer.svg" width="32" height="32" style="opacity: 0.3;" />
+                    <span class="font-weight-bold" style="color: var(--gris-oscuro);">Sin registros aún</span>
+                </div>
             </div>
         </div>
 
         <div class="secondary-card bottom-card">
             <div class="secondary-card-header">
                 <span class="metric-icon">
-                    <img src="~/svg/vista-detalles-vehiculos/folder.svg" width="16" height="16" alt="Documentos" />
+                    <img src="/svg/vista-detalles-vehiculos/folder.svg" width="16" height="16" alt="Documentos" />
                 </span>
                 <h4 class="secondary-card-title">Documentos</h4>
             </div>
-            <div class="doc-list">
-                <div class="doc-item">
-                    <div class="doc-left">
-                        <span class="doc-icon">
-                            <img src="~/svg/vista-detalles-vehiculos/file-pdf.svg" width="16" height="16" alt="PDF" />
-                        </span>
-                        <span>Tarjeta de Circulación</span>
-                    </div>
-                    <div class="doc-meta">
-                        <span class="doc-type">PDF</span>
-                        <span class="doc-date">12/03/2021</span>
-                        <a href="#" class="doc-download-btn" title="Descargar">
-                            <img src="~/svg/vista-detalles-vehiculos/download.svg" width="14" height="14" alt="Descargar" />
-                        </a>
-                    </div>
-                </div>
-
-                <div class="doc-item">
-                    <div class="doc-left">
-                        <span class="doc-icon">
-                            <img src="~/svg/vista-detalles-vehiculos/file-pdf.svg" width="16" height="16" alt="PDF" />
-                        </span>
-                        <span>Factura</span>
-                    </div>
-                    <div class="doc-meta">
-                        <span class="doc-type">PDF</span>
-                        <span class="doc-date">10/03/2021</span>
-                        <a href="#" class="doc-download-btn" title="Descargar">
-                            <img src="~/svg/vista-detalles-vehiculos/download.svg" width="14" height="14" alt="Descargar" />
-                        </a>
-                    </div>
-                </div>
-
-                <div class="doc-item">
-                    <div class="doc-left">
-                        <span class="doc-icon">
-                            <img src="~/svg/vista-detalles-vehiculos/file-pdf.svg" width="16" height="16" alt="PDF" />
-                        </span>
-                        <span>Póliza de Seguro</span>
-                    </div>
-                    <div class="doc-meta">
-                        <span class="doc-type">PDF</span>
-                        <span class="doc-date">15/07/2023</span>
-                        <a href="#" class="doc-download-btn" title="Descargar">
-                            <img src="~/svg/vista-detalles-vehiculos/download.svg" width="14" height="14" alt="Descargar" />
-                        </a>
-                    </div>
-                </div>
+            <div class="doc-list" id="resumen-documentos-lista">
+                <!-- Dinámico -->
             </div>
             <div class="metric-card-footer">
                 <a href="#" class="btn-metric-outline">Ver todos los documentos</a>
@@ -679,21 +486,21 @@
                     <div class="maint-stats-icon currency">$</div>
                     <div>
                         <span class="maint-stats-label">Inversión Total en Servicios</span>
-                        <strong class="maint-stats-value">$5,900.00 MXN</strong>
+                        <strong class="maint-stats-value" id="maint-total-cost">$0.00 MXN</strong>
                     </div>
                 </div>
                 <div class="maint-stats-card">
                     <div class="maint-stats-icon wrench">🛠️</div>
                     <div>
                         <span class="maint-stats-label">Servicios Registrados</span>
-                        <strong class="maint-stats-value">3 Servicios</strong>
+                        <strong class="maint-stats-value" id="maint-total-count">0 Servicios</strong>
                     </div>
                 </div>
                 <div class="maint-stats-card">
                     <div class="maint-stats-icon trend">📈</div>
                     <div>
                         <span class="maint-stats-label">Kilómetros Recorridos</span>
-                        <strong class="maint-stats-value">45,230 km (Total)</strong>
+                        <strong class="maint-stats-value" id="maint-total-km">— km (Total)</strong>
                     </div>
                 </div>
             </div>
@@ -718,87 +525,14 @@
                             <th style="text-align: right;">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- COMENTARIO/TIPS: Iterar dinámicamente según el catálogo de mantenimientos del vehículo (ej: @@Model.Mantenimientos) -->
-                        <!-- Omitir IDs de base de datos para cumplimiento de requerimientos visuales del negocio -->
-                        <tr>
-                            <td>10/03/2024</td>
-                            <td class="cell-folio">SRV-2024-0042</td>
-                            <td>
-                                <strong>Servicio Mayor (45,000 km)</strong>
-                            </td>
-                            <td>
-                                <span class="table-details-list">
-                                    • Cambio de aceite sintético de motor (5W30)<br />
-                                    • Reemplazo de filtros de aceite y aire de motor<br />
-                                    • Cambio de bujías de platino y revisión general de niveles<br />
-                                    • Lavado y ajuste de sistema de frenos
-                                </span>
-                            </td>
-                            <td class="cell-mileage">45,230 km</td>
-                            <td>Taller Centro Cavex</td>
-                            <td>Ing. Carlos Mendoza</td>
-                            <td class="cell-amount">$3,450.00</td>
-                            <td><span class="badge-cavex completed">Completado</span></td>
-                            <td class="cell-actions">
-                                <a href="#" class="doc-download-btn" title="Descargar Factura PDF">
-                                    <img src="~/svg/vista-detalles-vehiculos/folder.svg" width="14" height="14" alt="Ver" />
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>12/11/2023</td>
-                            <td class="cell-folio">SRV-2023-0988</td>
-                            <td>
-                                <strong>Cambio de Balatas Delanteras</strong>
-                            </td>
-                            <td>
-                                <span class="table-details-list">
-                                    • Reemplazo de pastillas de freno delanteras (cerámicas)<br />
-                                    • Rectificado de discos delanteros por computadora<br />
-                                    • Purga de aire e inspección de tuberías hidráulicas de freno
-                                </span>
-                            </td>
-                            <td class="cell-mileage">38,900 km</td>
-                            <td>Frenos Express</td>
-                            <td>Téc. Roberto Gómez</td>
-                            <td class="cell-amount">$1,850.00</td>
-                            <td><span class="badge-cavex completed">Completado</span></td>
-                            <td class="cell-actions">
-                                <a href="#" class="doc-download-btn" title="Descargar Factura PDF">
-                                    <img src="~/svg/vista-detalles-vehiculos/folder.svg" width="14" height="14" alt="Ver" />
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>15/06/2023</td>
-                            <td class="cell-folio">SRV-2023-0412</td>
-                            <td>
-                                <strong>Rotación y Balanceo</strong>
-                            </td>
-                            <td>
-                                <span class="table-details-list">
-                                    • Rotación de las 4 llantas Michelin en cruz<br />
-                                    • Balanceo dinámico y calibración de contrapesos de plomo<br />
-                                    • Alineación del eje delantero (convergencia/divergencia)
-                                </span>
-                            </td>
-                            <td class="cell-mileage">32,100 km</td>
-                            <td>Llantas del Norte</td>
-                            <td>Téc. Mario Estrada</td>
-                            <td class="cell-amount">$600.00</td>
-                            <td><span class="badge-cavex completed">Completado</span></td>
-                            <td class="cell-actions">
-                                <a href="#" class="doc-download-btn" title="Descargar Factura PDF">
-                                    <img src="~/svg/vista-detalles-vehiculos/folder.svg" width="14" height="14" alt="Ver" />
-                                </a>
-                            </td>
-                        </tr>
+                    <tbody id="mantenimiento-tabla-body">
+                        <!-- Dinámico -->
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+
     <!-- CONTENIDO PESTAÑA: Revisión 24 Puntos -->
     <div id="tab-revision" class="tab-content" style="display: none;">
         <div class="table-card">
@@ -806,179 +540,16 @@
                 <div>
                     <h3 class="tab-title" style="margin: 0;">Reporte Detallado de Revisión de 24 Puntos</h3>
                     <p class="tab-desc" style="margin: 4px 0 0 0;">
-                        Última revisión física realizada el <strong>10/03/2024</strong> por el Técnico Certificado: <strong>Ing. Carlos Mendoza</strong>. No se muestran identificadores internos (IDs).
+                        Última revisión física realizada por personal certificado. No se muestran identificadores internos (IDs).
                     </p>
                 </div>
-                <div class="revision-status-badge">
-                    Estatus: 24/24 Aprobados (Excelente)
+                <div class="revision-status-badge" id="revision-status-badge">
+                    Estatus: —
                 </div>
             </div>
 
-            <!-- COMENTARIO/TIPS: Los puntos de revisión se mapearán dinámicamente según el reporte cargado del vehículo -->
-            <div class="checklist-category-grid">
-                <!-- Categoría 1: Sistema de Motor -->
-                <div class="checklist-cat-card">
-                    <h4 class="checklist-cat-title">
-                        <img src="~/svg/vista-detalles-vehiculos/wrench.svg" width="16" height="16" alt="Icono" />
-                        Motor y Transmisión
-                    </h4>
-                    <div class="check-items-list">
-                        <div class="check-item-row">
-                            <span>• Nivel y estado de aceite</span>
-                            <span class="status-approved">✓ Aprobado</span>
-                        </div>
-                        <div class="check-item-row">
-                            <span>• Líquido refrigerante</span>
-                            <span class="status-approved">✓ Aprobado</span>
-                        </div>
-                        <div class="check-item-row">
-                            <span>• Bandas y mangueras</span>
-                            <span class="status-approved">✓ Aprobado</span>
-                        </div>
-                        <div class="check-item-row">
-                            <span>• Batería y sistema eléctrico</span>
-                            <span class="status-approved">✓ Aprobado</span>
-                        </div>
-                        <div class="check-item-row no-border">
-                            <span>• Filtro de aire</span>
-                            <span class="status-approved">✓ Aprobado</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Categoría 2: Sistema de Frenos -->
-                <div class="checklist-cat-card">
-                    <h4 class="checklist-cat-title">
-                        <img src="~/svg/vista-detalles-vehiculos/check.svg" width="16" height="16" alt="Icono" />
-                        Sistema de Frenos
-                    </h4>
-                    <div class="check-items-list">
-                        <div class="check-item-row">
-                            <span>• Pastillas de freno delanteras</span>
-                            <span class="status-approved">✓ Aprobado</span>
-                        </div>
-                        <div class="check-item-row">
-                            <span>• Pastillas de freno traseras</span>
-                            <span class="status-approved">✓ Aprobado</span>
-                        </div>
-                        <div class="check-item-row">
-                            <span>• Nivel de líquido de frenos</span>
-                            <span class="status-approved">✓ Aprobado</span>
-                        </div>
-                        <div class="check-item-row">
-                            <span>• Discos y tambores de freno</span>
-                            <span class="status-approved">✓ Aprobado</span>
-                        </div>
-                        <div class="check-item-row no-border">
-                            <span>• Freno de mano</span>
-                            <span class="status-approved">✓ Aprobado</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Categoría 3: Dirección y Suspensión -->
-                <div class="checklist-cat-card">
-                    <h4 class="checklist-cat-title">
-                        <img src="~/svg/vista-detalles-vehiculos/car.svg" width="16" height="16" alt="Icono" />
-                        Dirección y Suspensión
-                    </h4>
-                    <div class="check-items-list">
-                        <div class="check-item-row">
-                            <span>• Amortiguadores</span>
-                            <span class="status-approved">✓ Aprobado</span>
-                        </div>
-                        <div class="check-item-row">
-                            <span>• Terminales de dirección</span>
-                            <span class="status-approved">✓ Aprobado</span>
-                        </div>
-                        <div class="check-item-row">
-                            <span>• Horquillas y bujes</span>
-                            <span class="status-approved">✓ Aprobado</span>
-                        </div>
-                        <div class="check-item-row no-border">
-                            <span>• Ejes y juntas</span>
-                            <span class="status-approved">✓ Aprobado</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Categoría 4: Llantas y Rines -->
-                <div class="checklist-cat-card">
-                    <h4 class="checklist-cat-title">
-                        <img src="~/svg/vista-detalles-vehiculos/wheel.svg" width="16" height="16" alt="Icono" />
-                        Llantas y Rines
-                    </h4>
-                    <div class="check-items-list">
-                        <div class="check-item-row">
-                            <span>• Presión de aire</span>
-                            <span class="status-approved">✓ Aprobado</span>
-                        </div>
-                        <div class="check-item-row">
-                            <span>• Desgaste de la llanta</span>
-                            <span class="status-approved">✓ Regular</span>
-                        </div>
-                        <div class="check-item-row">
-                            <span>• Estado de los rines</span>
-                            <span class="status-approved">✓ Aprobado</span>
-                        </div>
-                        <div class="check-item-row no-border">
-                            <span>• Llanta de refacción</span>
-                            <span class="status-approved">✓ Aprobado</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Categoría 5: Luces y Eléctrico -->
-                <div class="checklist-cat-card">
-                    <h4 class="checklist-cat-title">
-                        <img src="~/svg/vista-detalles-vehiculos/warning.svg" width="16" height="16" alt="Icono" />
-                        Luces y Eléctrico
-                    </h4>
-                    <div class="check-items-list">
-                        <div class="check-item-row">
-                            <span>• Faros principales y direccionales</span>
-                            <span class="status-approved">✓ Aprobado</span>
-                        </div>
-                        <div class="check-item-row">
-                            <span>• Luces traseras y de reversa</span>
-                            <span class="status-approved">✓ Aprobado</span>
-                        </div>
-                        <div class="check-item-row">
-                            <span>• Luces del tablero</span>
-                            <span class="status-approved">✓ Aprobado</span>
-                        </div>
-                        <div class="check-item-row no-border">
-                            <span>• Alternador</span>
-                            <span class="status-approved">✓ Aprobado</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Categoría 6: Carrocería y otros -->
-                <div class="checklist-cat-card">
-                    <h4 class="checklist-cat-title">
-                        <img src="~/svg/vista-detalles-vehiculos/shield.svg" width="16" height="16" alt="Icono" />
-                        Seguridad y Cristales
-                    </h4>
-                    <div class="check-items-list">
-                        <div class="check-item-row">
-                            <span>• Cinturones de seguridad</span>
-                            <span class="status-approved">✓ Aprobado</span>
-                        </div>
-                        <div class="check-item-row">
-                            <span>• Cristales y parabrisas</span>
-                            <span class="status-approved">✓ Aprobado</span>
-                        </div>
-                        <div class="check-item-row">
-                            <span>• Limpiaparabrisas</span>
-                            <span class="status-approved">✓ Aprobado</span>
-                        </div>
-                        <div class="check-item-row no-border">
-                            <span>• Espejos retrovisores</span>
-                            <span class="status-approved">✓ Aprobado</span>
-                        </div>
-                    </div>
-                </div>
+            <div class="checklist-category-grid" id="revision-cats-grid">
+                <!-- Dinámico -->
             </div>
         </div>
     </div>
@@ -991,62 +562,8 @@
                 Desglose específico de las especificaciones, desgaste y vida útil por cada posición física de rodamiento en el vehículo. No se muestran identificadores internos.
             </p>
 
-            <!-- COMENTARIO/TIPS: Las condiciones de las llantas se cargarán dinámicamente mapeando la estructura de llantas del backend -->
-            <div class="llantas-simplified-grid">
-                <!-- Delantera Izquierda -->
-                <div class="llanta-card">
-                    <div class="llanta-indicator success">DI</div>
-                    <div class="llanta-info">
-                        <span class="llanta-title">Delantera Izquierda</span>
-                        <span><strong>Modelo:</strong> Michelin 225/65 R17</span>
-                        <span><strong>Presión:</strong> 32 PSI (Correcta)</span>
-                        <span><strong>Vida Útil:</strong> 85% (Excelente)</span>
-                    </div>
-                </div>
-
-                <!-- Delantera Derecha -->
-                <div class="llanta-card">
-                    <div class="llanta-indicator success">DD</div>
-                    <div class="llanta-info">
-                        <span class="llanta-title">Delantera Derecha</span>
-                        <span><strong>Modelo:</strong> Michelin 225/65 R17</span>
-                        <span><strong>Presión:</strong> 32 PSI (Correcta)</span>
-                        <span><strong>Vida Útil:</strong> 85% (Excelente)</span>
-                    </div>
-                </div>
-
-                <!-- Trasera Izquierda -->
-                <div class="llanta-card">
-                    <div class="llanta-indicator success">TI</div>
-                    <div class="llanta-info">
-                        <span class="llanta-title">Trasera Izquierda</span>
-                        <span><strong>Modelo:</strong> Michelin 225/65 R17</span>
-                        <span><strong>Presión:</strong> 31 PSI (Correcta)</span>
-                        <span><strong>Vida Útil:</strong> 75% (Bueno)</span>
-                    </div>
-                </div>
-
-                <!-- Trasera Derecha -->
-                <div class="llanta-card">
-                    <div class="llanta-indicator success">TD</div>
-                    <div class="llanta-info">
-                        <span class="llanta-title">Trasera Derecha</span>
-                        <span><strong>Modelo:</strong> Michelin 225/65 R17</span>
-                        <span><strong>Presión:</strong> 31 PSI (Correcta)</span>
-                        <span><strong>Vida Útil:</strong> 75% (Bueno)</span>
-                    </div>
-                </div>
-
-                <!-- Refacción -->
-                <div class="llanta-card refaccion-card">
-                    <div class="llanta-indicator inactive">REF</div>
-                    <div class="llanta-info">
-                        <span class="llanta-title">Repuesto (Refacción)</span>
-                        <span><strong>Modelo:</strong> Goodyear T165/80 D17</span>
-                        <span><strong>Presión:</strong> 60 PSI (Correcta)</span>
-                        <span><strong>Vida Útil:</strong> 100% (Nueva)</span>
-                    </div>
-                </div>
+            <div class="llantas-simplified-grid" id="llantas-grid">
+                <!-- Dinámico -->
             </div>
         </div>
     </div>
@@ -1059,41 +576,34 @@
                 Consulta los detalles de la póliza de seguro activa y el historial de siniestros relacionados. No se muestran identificadores internos (IDs).
             </p>
 
-            <!-- COMENTARIO/TIPS: Datos del seguro cargados dinámicamente desde el modelo (ej: @@Model.SeguroActivo) -->
             <div class="seguro-tab-layout">
                 <div class="seguro-policy-card">
                     <div class="policy-header">
                         <div>
                             <span class="policy-provider">Póliza de Vehículo</span>
-                            <h4 class="policy-title">Qualitas Compañía de Seguros</h4>
+                            <h4 class="policy-title" id="seguro-proveedor">—</h4>
                         </div>
-                        <div class="policy-logo-letter">Q</div>
+                        <div class="policy-logo-letter" id="seguro-logo-letter">—</div>
                     </div>
-                    <div class="policy-details-list">
-                        <div><span>Número de Póliza:</span> <strong>POL-1234567890</strong></div>
-                        <div><span>Cobertura:</span> <strong>Amplia Plus</strong></div>
-                        <div><span>Vigencia:</span> <strong>15/07/2023 - 15/07/2024</strong></div>
-                        <div><span>Inciso/Endoso:</span> <strong>00000</strong></div>
+                    <div class="policy-details-list" id="seguro-detalles-lista">
+                        <!-- Dinámico -->
                     </div>
                     <div class="policy-status-row">
-                        <span class="policy-status-badge">VIGENTE</span>
-                        <span class="policy-status-days">Quedan 45 días</span>
+                        <span class="policy-status-badge" id="seguro-status-badge">—</span>
+                        <span class="policy-status-days" id="seguro-status-days">—</span>
                     </div>
                 </div>
 
                 <div class="seguro-help-card">
                     <div>
                         <h4 class="seguro-help-title">Contactos de Emergencia & Coberturas</h4>
-                        <div class="seguro-help-content-list">
-                            <div><strong>Teléfono Reportes:</strong> <a href="tel:8008008000" class="link-azul-cavex">800 800 8000</a> o <strong class="text-azul-bold">*911</strong></div>
-                            <div><strong>Deducible Daños Materiales:</strong> 5%</div>
-                            <div><strong>Deducible Robo Total:</strong> 10%</div>
-                            <div><strong>Responsabilidad Civil:</strong> Hasta $3,000,000.00</div>
+                        <div class="seguro-help-content-list" id="seguro-help-detalles">
+                            <!-- Dinámico -->
                         </div>
                     </div>
                     <div class="seguro-help-actions">
                         <a href="#" class="btn-action-outline btn-seguro-download">
-                            <img src="~/svg/vista-detalles-vehiculos/folder.svg" width="14" height="14" alt="Icon" /> Descargar Póliza PDF
+                            <img src="/svg/vista-detalles-vehiculos/folder.svg" width="14" height="14" alt="Icon" /> Descargar Póliza PDF
                         </a>
                     </div>
                 </div>
@@ -1113,24 +623,8 @@
                             <th>Estado</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- COMENTARIO/TIPS: Iterar dinámicamente sobre la lista de siniestros desde backend -->
-                        <tr>
-                            <td>14/10/2022</td>
-                            <td>REP-2022-9981</td>
-                            <td>Choque menor (Alcance trasero)</td>
-                            <td>Ing. Ricardo Domínguez</td>
-                            <td>$1,500.00 (Aplicó deducible)</td>
-                            <td><span style="background-color: #f1f5f9; color: var(--gris); font-size: 11.5px; font-weight: 700; padding: 4px 8px; border-radius: 4px;">CERRADO</span></td>
-                        </tr>
-                        <tr>
-                            <td>03/05/2021</td>
-                            <td>REP-2021-0421</td>
-                            <td>Rotura de parabrisas (Piedra en carretera)</td>
-                            <td>Trámite Directo Express</td>
-                            <td>$0.00 (Exento por cobertura cristales)</td>
-                            <td><span style="background-color: #f1f5f9; color: var(--gris); font-size: 11.5px; font-weight: 700; padding: 4px 8px; border-radius: 4px;">CERRADO</span></td>
-                        </tr>
+                    <tbody id="siniestros-tabla-body">
+                        <!-- Dinámico -->
                     </tbody>
                 </table>
             </div>
@@ -1148,13 +642,12 @@
                     </p>
                 </div>
                 <div>
-                    <span class="infracciones-amount-badge">
-                        Pendiente: $1,450.00
+                    <span class="infracciones-amount-badge" id="infracciones-total-badge">
+                        Pendiente: $0.00
                     </span>
                 </div>
             </div>
 
-            <!-- COMENTARIO/TIPS: Carga dinámica de infracciones según la consulta al webservice/DB de infracciones oficiales -->
             <div class="cavex-table-responsive">
                 <table class="cavex-table">
                     <thead>
@@ -1168,50 +661,8 @@
                             <th style="text-align: right;">Acción</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- COMENTARIO/TIPS: Iterar sobre las infracciones activas o históricas sin desplegar llaves primarias -->
-                        <tr>
-                            <td>20/05/2024</td>
-                            <td class="cell-folio">INF-2024-8837</td>
-                            <td>
-                                <strong>Exceso de Velocidad</strong><br>
-                                <span class="desc-text-small">Detectado a 95 km/h en zona de 80 km/h (Fotocívica/Radar).</span>
-                            </td>
-                            <td>Av. Insurgentes Sur Km 15</td>
-                            <td class="cell-amount error">$950.00</td>
-                            <td><span class="badge-cavex pending">Pendiente</span></td>
-                            <td class="cell-actions">
-                                <a href="#" class="btn-action-primary small">Pagar Multa</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>12/04/2024</td>
-                            <td class="cell-folio">INF-2024-3312</td>
-                            <td>
-                                <strong>Estacionarse en Lugar Prohibido</strong><br>
-                                <span class="desc-text-small">Zonas de parquímetros sin comprobante vigente.</span>
-                            </td>
-                            <td>Colonia Roma Norte, Calle Colima</td>
-                            <td class="cell-amount">$500.00</td>
-                            <td><span class="badge-cavex pending">Pendiente</span></td>
-                            <td class="cell-actions">
-                                <a href="#" class="btn-action-primary small">Pagar Multa</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>15/11/2023</td>
-                            <td class="cell-folio">INF-2023-0912</td>
-                            <td>
-                                <strong>Vuelta en U Prohibida</strong><br>
-                                <span class="desc-text-small">Giro prohibido en intersección señalizada.</span>
-                            </td>
-                            <td>Av. Paseo de la Reforma y Niza</td>
-                            <td class="cell-amount">$850.00</td>
-                            <td><span class="badge-cavex completed">Pagado</span></td>
-                            <td class="cell-info-italic">
-                                Pago del 16/11/2023
-                            </td>
-                        </tr>
+                    <tbody id="infracciones-tabla-body">
+                        <!-- Dinámico -->
                     </tbody>
                 </table>
             </div>
@@ -1226,115 +677,8 @@
                 Consulta y gestiona el expediente digital del vehículo. Puedes descargar copias vigentes o cargar documentos faltantes y actualizaciones requeridas.
             </p>
 
-            <!-- Grid Único de Documentos -->
-            <div class="docs-grid">
-                <!-- Documento 1 -->
-                <div class="doc-item">
-                    <div class="doc-left">
-                        <span class="doc-icon">
-                            <img src="~/svg/vista-detalles-vehiculos/file-pdf.svg" width="18" height="18" alt="PDF" />
-                        </span>
-                        <div>
-                            <span class="doc-name">Tarjeta de Circulación</span>
-                            <span class="doc-info">Expira el: 12/03/2026</span>
-                        </div>
-                    </div>
-                    <div class="doc-meta">
-                        <span class="doc-type">PDF</span>
-                        <a href="#" class="doc-download-btn" title="Descargar">
-                            <img src="~/svg/vista-detalles-vehiculos/download.svg" width="14" height="14" alt="Descargar" />
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Documento 2 -->
-                <div class="doc-item">
-                    <div class="doc-left">
-                        <span class="doc-icon">
-                            <img src="~/svg/vista-detalles-vehiculos/file-pdf.svg" width="18" height="18" alt="PDF" />
-                        </span>
-                        <div>
-                            <span class="doc-name">Factura de Origen</span>
-                            <span class="doc-info">Subido el: 10/03/2021</span>
-                        </div>
-                    </div>
-                    <div class="doc-meta">
-                        <span class="doc-type">PDF</span>
-                        <a href="#" class="doc-download-btn" title="Descargar">
-                            <img src="~/svg/vista-detalles-vehiculos/download.svg" width="14" height="14" alt="Descargar" />
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Documento 3 -->
-                <div class="doc-item">
-                    <div class="doc-left">
-                        <span class="doc-icon">
-                            <img src="~/svg/vista-detalles-vehiculos/file-pdf.svg" width="18" height="18" alt="PDF" />
-                        </span>
-                        <div>
-                            <span class="doc-name">Póliza de Seguro 2023-2024</span>
-                            <span class="doc-info">Vence el: 15/07/2024</span>
-                        </div>
-                    </div>
-                    <div class="doc-meta">
-                        <span class="doc-type">PDF</span>
-                        <a href="#" class="doc-download-btn" title="Descargar">
-                            <img src="~/svg/vista-detalles-vehiculos/download.svg" width="14" height="14" alt="Descargar" />
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Documento 4 -->
-                <div class="doc-item">
-                    <div class="doc-left">
-                        <span class="doc-icon">
-                            <img src="~/svg/vista-detalles-vehiculos/file-pdf.svg" width="18" height="18" alt="PDF" />
-                        </span>
-                        <div>
-                            <span class="doc-name">Verificación Holograma 0</span>
-                            <span class="doc-info">Primer Semestre 2024</span>
-                        </div>
-                    </div>
-                    <div class="doc-meta">
-                        <span class="doc-type">PDF</span>
-                        <a href="#" class="doc-download-btn" title="Descargar">
-                            <img src="~/svg/vista-detalles-vehiculos/download.svg" width="14" height="14" alt="Descargar" />
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Documento 5 (Faltante) -->
-                <div class="doc-item">
-                    <div class="doc-left">
-                        <span class="doc-icon">
-                            <img src="~/svg/vista-detalles-vehiculos/file-pdf.svg" width="18" height="18" alt="PDF" style="opacity: 0.5;" />
-                        </span>
-                        <div>
-                            <span class="doc-name">Constancia de Situación Fiscal</span>
-                            <div><span class="badge-status-missing">Faltante</span></div>
-                        </div>
-                    </div>
-                    <div class="doc-meta">
-                        <a href="#" class="btn-doc-action">Subir</a>
-                    </div>
-                </div>
-
-                <!-- Documento 6 (Por Actualizar) -->
-                <div class="doc-item">
-                    <div class="doc-left">
-                        <span class="doc-icon">
-                            <img src="~/svg/vista-detalles-vehiculos/file-pdf.svg" width="18" height="18" alt="PDF" style="opacity: 0.7;" />
-                        </span>
-                        <div>
-                            <span class="doc-name">Dictamen de Emisiones</span>
-                            <div><span class="badge-status-pending">Por Actualizar</span></div>
-                        </div>
-                    </div>
-                    <div class="doc-meta">
-                        <a href="#" class="btn-doc-action warning">Actualizar</a>
-                    </div>
-                </div>
+            <div class="docs-grid" id="documentos-grid">
+                <!-- Dinámico -->
             </div>
         </div>
     </div>
@@ -1347,85 +691,17 @@
                 Línea de tiempo cronológica con todas las actividades, mantenimientos e incidentes del vehículo. No se muestran identificadores internos.
             </p>
 
-            <!-- COMENTARIO/TIPS: Generar cronológicamente iterando sobre el log de eventos del vehículo (ej: @@Model.HistorialActividades) -->
-            <div class="timeline-list">
-                <!-- Evento 1 -->
-                <div class="timeline-item">
-                    <span class="timeline-dot timeline-dot-warning"></span>
-                    <div class="timeline-header">
-                        <span class="timeline-title">Infracción Registrada (Exceso de Velocidad)</span>
-                        <span class="timeline-date">20/05/2024</span>
-                    </div>
-                    <div class="timeline-desc">
-                        Folio: INF-2024-8837. Capturada por radar en Av. Insurgentes Sur Km 15. Estatus: Pendiente de pago.
-                    </div>
-                </div>
-
-                <!-- Evento 2 -->
-                <div class="timeline-item">
-                    <span class="timeline-dot timeline-dot-success"></span>
-                    <div class="timeline-header">
-                        <span class="timeline-title">Servicio Mayor Realizado (45,000 km)</span>
-                        <span class="timeline-date">10/03/2024</span>
-                    </div>
-                    <div class="timeline-desc">
-                        Servicio completo en Taller Centro Cavex. Cambio de fluidos, filtros, bujías y reporte de inspección de 24 puntos limpio (100% aprobado).
-                    </div>
-                </div>
-
-                <!-- Evento 3 -->
-                <div class="timeline-item">
-                    <span class="timeline-dot"></span>
-                    <div class="timeline-header">
-                        <span class="timeline-title">Renovación de Póliza de Seguro</span>
-                        <span class="timeline-date">15/07/2023</span>
-                    </div>
-                    <div class="timeline-desc">
-                        Contratación de póliza anual Qualitas Cobertura Amplia Plus (No. Póliza POL-1234567890).
-                    </div>
-                </div>
-
-                <!-- Evento 4 -->
-                <div class="timeline-item">
-                    <span class="timeline-dot timeline-dot-success"></span>
-                    <div class="timeline-header">
-                        <span class="timeline-title">Cambio de Neumáticos y Rotación</span>
-                        <span class="timeline-date">15/06/2023</span>
-                    </div>
-                    <div class="timeline-desc">
-                        Instalación de 4 llantas Michelin Primacy 4 nuevas en eje delantero y trasero a los 32,100 km.
-                    </div>
-                </div>
-
-                <!-- Evento 5 -->
-                <div class="timeline-item">
-                    <span class="timeline-dot timeline-dot-warning"></span>
-                    <div class="timeline-header">
-                        <span class="timeline-title">Siniestro Reportado (Choque por alcance)</span>
-                        <span class="timeline-date">14/10/2022</span>
-                    </div>
-                    <div class="timeline-desc">
-                        Incidente menor reportado a Qualitas (Folio de siniestro ajustador: REP-2022-9981). Reparado en taller certificado con cambio de fascia trasera.
-                    </div>
-                </div>
-
-                <!-- Evento 6 -->
-                <div class="timeline-item">
-                    <span class="timeline-dot"></span>
-                    <div class="timeline-header">
-                        <span class="timeline-title">Alta del Vehículo en la Plataforma</span>
-                        <span class="timeline-date">10/03/2021</span>
-                    </div>
-                    <div class="timeline-desc">
-                        Registro inicial del vehículo Toyota RAV4 2021 con placas ABC-123-D bajo el propietario Juan Pérez López.
-                    </div>
-                </div>
+            <div class="timeline-list" id="historial-timeline-list">
+                <!-- Dinámico -->
             </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
+    <script>
+        window.vehiculoId = @(ViewData["VehiculoId"] ?? 1);
+    </script>
     <!-- CDN de Chart.js y plugin datalabels estáticos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
