@@ -20,5 +20,9 @@ namespace Cavex.Principal.Models.EmpDocumentosLaborales
 
         [Display(Name = "Licencia")]
         public string StrUrlLicencia { get; set; } = string.Empty;
+
+        [Display(Name = "Foto del Empleado")]
+        public string StrUrlFotoEmp { get; set; } = string.Empty;
     }
 }
+

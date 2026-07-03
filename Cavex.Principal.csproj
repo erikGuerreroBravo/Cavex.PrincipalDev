@@ -41,6 +41,7 @@
 		<Folder Include="Models\EmpDocumentosLaborales\" />
 		<Folder Include="Models\EmpExperiencia\" />
 		<Folder Include="Models\EmpCatPais\" />
+		<Folder Include="Models\Manager\" />
 		<Folder Include="ViewModels\" />
 	</ItemGroup>
 </Project>

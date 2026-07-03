@@ -166,6 +166,11 @@ namespace Cavex.Principal.Models.EmpEmpleado
         [StringLength(2048, ErrorMessage = "El valor no puede superar los 2048 caracteres.")]
         [Display(Name = "Licencia")]
         public string StrUrlLicencia { get; set; } = string.Empty;
+        
+        [Required(ErrorMessage = "La foto es obligatoria.")]
+        [StringLength(2048, ErrorMessage = "El valor no puede superar los 2048 caracteres.")]
+        [Display(Name = "Foto Empleado")]
+        public string StrUrlFotoEmp { get; set; } = string.Empty;
     }
 
     public class EmpCondicionesLaboralesSaveDto
