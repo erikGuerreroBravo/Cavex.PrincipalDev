@@ -15,7 +15,7 @@ namespace Cavex.Principal.Controllers
 
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            var response = await _service.ObtenerTodosAsync(cancellationToken);
+            var response = await _service.ObtenerTodosAsync(cancellationToken: cancellationToken);
 
             if (!response.Success)
             {

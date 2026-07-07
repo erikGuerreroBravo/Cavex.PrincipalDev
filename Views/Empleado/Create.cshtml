@@ -188,7 +188,7 @@
                         </div>
                         <div class="form-group">
                             <label>Sueldo mensual</label>
-                            <input type="number" class="txtExpSueldo" placeholder="$0.00" autocomplete="off" required min="1" />
+                            <input type="text" class="txtExpSueldo" placeholder="$0.00" autocomplete="off" required />
                         </div>
                     </div>
                     <div class="form-row cols-1">
@@ -245,7 +245,7 @@
             <div class="form-row cols-2">
                 <div class="form-group">
                     <label>Sueldo mensual</label>
-                    <input asp-for="SueldoMensual" type="number" id="txtSueldoMensual" placeholder="$0.00" autocomplete="off" required min="1" />
+                    <input asp-for="SueldoMensual" type="text" id="txtSueldoMensual" placeholder="$0.00" autocomplete="off" required />
                 </div>
                 <div class="form-group">
                     <label>Área laboral</label>
@@ -256,25 +256,25 @@
             </div>
 
             <div class="form-row cols-2">
-                <div class="question-group">
+                <label class="question-group" for="chkVivienda" style="cursor: pointer;">
                     <span class="question-text">¿El empleado tiene cercanía a su vivienda?</span>
                     <input asp-for="ViveEnLugarDeTrabajo" type="checkbox" id="chkVivienda" />
-                </div>
-                <div class="question-group">
+                </label>
+                <label class="question-group" for="chkViaje" style="cursor: pointer;">
                     <span class="question-text">¿Tiene disponibilidad para viajar?</span>
                     <input asp-for="DisponibilidadDeViaje" type="checkbox" id="chkViaje" />
-                </div>
+                </label>
             </div>
 
             <div class="form-row cols-2">
-                <div class="question-group">
+                <label class="question-group" for="chkExp" style="cursor: pointer;">
                     <span class="question-text">¿Tiene experiencia en el área?</span>
                     <input asp-for="ExperienciaEnElCampo" type="checkbox" id="chkExp" />
-                </div>
-                <div class="question-group">
+                </label>
+                <label class="question-group" for="chkExpPuesto" style="cursor: pointer;">
                     <span class="question-text">¿Tiene experiencia en el puesto?</span>
                     <input asp-for="ExperienciaEnElPuesto" type="checkbox" id="chkExpPuesto" />
-                </div>
+                </label>
             </div>
         </div>
 
@@ -460,13 +460,13 @@
                         <span class="document-name">Fotografia del Empleado</span>
                     </div>
                     <div class="drop-zone" id="drop-zone-fotoEmpleado" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'fotoEmpleado')">
-                        <input asp-for="fotoEmpleado" type="file" id="file-fotoEmpleado" accept=".pdf" class="file-input-hidden" onchange="handleFileSelect(event, 'fotoEmpleado')" required />
+                        <input asp-for="fotoEmpleado" type="file" id="file-fotoEmpleado" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" class="file-input-hidden" onchange="handleFileSelect(event, 'fotoEmpleado')" required />
                         <div class="drop-zone-prompt" onclick="document.getElementById('file-fotoEmpleado').click()">
                             <span class="upload-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-cavex);"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                             </span>
                             <p>Arrastra tu archivo aquí o <span>haz clic para buscar</span></p>
-                            <small>Solo formato PDF</small>
+                            <small>Imágenes JPG, PNG, WEBP · máximo 5 MB</small>
                         </div>
                         <div class="file-preview-container" style="display:none;">
                             <div class="file-info">

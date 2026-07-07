@@ -115,15 +115,26 @@
     font-size: .9rem;
     color: var(--texto-cavex);
     background: var(--blanco, #ffffff);
+    caret-color: var(--texto-cavex);
+    cursor: default !important;
     transition: all .2s;
     outline: none;
     width: 100%;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus,
+.form-group input[type="tel"]:focus,
+.form-group input[type="date"]:focus,
+.form-group input[type="number"]:focus {
+    cursor: text;
 }
 
 .form-group input:focus, 
 .form-group select:focus {
     border-color: var(--teal-cavex);
     box-shadow: 0 0 0 3px rgba(0, 140, 149, .15);
+    caret-color: var(--teal-cavex);
 }
 
 
@@ -396,7 +407,9 @@
 }
 
 .suggestions-container {
-    position: static;
+    position: absolute;
+    top: 100%;
+    left: 0;
     width: 100%;
     background: #ffffff;
     border: 1px solid var(--borde-cavex);

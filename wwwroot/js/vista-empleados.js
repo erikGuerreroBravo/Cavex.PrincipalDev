@@ -29,7 +29,7 @@ function loadEmpleadosFromServer() {
                         curp: item.strCurp,
                         rfc: item.strRfc,
                         area: item.strEmpCondicionesLaborales || 'Operativo',
-                        puesto: 'Asesor',
+                        puesto: item.strEmpCatTipoContratacion || 'Asesor',
                         correo: item.strCorreoElectronico,
                         telefono: item.intNss ? item.intNss.toString() : '—',
                         activo: item.idCatStatus === 1 || item.strCatStatus === "Activo" || item.strCatStatus === "1"
@@ -292,7 +292,7 @@ function editEmpleado(id) {
     });
 }
 
-// Acción: Dar de baja / Activar empleado (en memoria local)
+// Acción: Dar de baja / Activar empleado
 function toggleBajaEmpleado(id) {
     const emp = empleados.find(e => e.id === id);
     if (!emp) return;
@@ -310,16 +310,43 @@ function toggleBajaEmpleado(id) {
         cancelButtonColor: '#6b7280',
         confirmButtonText: confirmButtonText,
         cancelButtonText: 'Cancelar'
-    }).then((result) => {
+    }).then(async (result) => {
         if (result.isConfirmed) {
-            emp.activo = !emp.activo;
-            Swal.fire({
-                icon: 'success',
-                title: '¡Actualizado!',
-                text: `El empleado ha sido ${emp.activo ? 'activado' : 'dado de baja'} exitosamente (en memoria local).`,
-                confirmButtonColor: 'var(--teal-cavex)'
-            });
-            renderEmpleados();
+            try {
+                const response = await fetch(`/Empleado/DeactivateEmpleado?id=${id}`, {
+                    method: 'POST',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '¡Ups!',
+                        text: data.message || `No fue posible ${actionText} al empleado.`,
+                        confirmButtonColor: 'var(--teal-cavex)'
+                    });
+                    return;
+                }
+
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Actualizado!',
+                    text: `El empleado ha sido ${emp.activo ? 'dado de baja' : 'activado'} exitosamente.`,
+                    confirmButtonColor: 'var(--teal-cavex)'
+                });
+
+                await loadEmpleadosFromServer();
+            } catch (error) {
+                console.error(error);
+                Swal.fire({
+                    icon: 'error',
+                    title: '¡Ups!',
+                    text: `Ocurrió un error al ${actionText} al empleado.`,
+                    confirmButtonColor: 'var(--teal-cavex)'
+                });
+            }
         }
     });
 }

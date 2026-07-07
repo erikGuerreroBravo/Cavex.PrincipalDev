@@ -8,6 +8,8 @@ namespace Cavex.Principal.Controllers
     {
         private readonly ISucursalesService _service;
         private readonly ICatStatusService _catStatusService;
+        private static (List<CatSucursalDto> Items, DateTime Expiration)? _sucursalesCache;
+        private static readonly object _sucursalesLock = new();
 
         public SucursalesController(ISucursalesService service, ICatStatusService catStatusService)
         {
@@ -24,11 +26,27 @@ namespace Cavex.Principal.Controllers
         [HttpGet]
         public async Task<IActionResult> GetSucursales(CancellationToken cancellationToken)
         {
-            var response = await _service.ObtenerTodosAsync(cancellationToken);
+            lock (_sucursalesLock)
+            {
+                if (_sucursalesCache != null && _sucursalesCache.Value.Expiration > DateTime.UtcNow)
+                {
+                    return Json(new { success = true, data = _sucursalesCache.Value.Items });
+                }
+            }
 
-            return Json(response.Success
-                ? new { success = true, data = response.Data?.Items }
-                : new { success = false, message = response.Message });
+            var response = await _service.ObtenerTodosAsync(1, 100, cancellationToken);
+            if (!response.Success)
+            {
+                return Json(new { success = false, message = response.Message });
+            }
+
+            var items = response.Data?.Items?.ToList() ?? new List<CatSucursalDto>();
+            lock (_sucursalesLock)
+            {
+                _sucursalesCache = (items, DateTime.UtcNow.AddSeconds(15));
+            }
+
+            return Json(new { success = true, data = items });
         }
 
         [HttpGet]
@@ -50,10 +68,17 @@ namespace Cavex.Principal.Controllers
             }
 
             var response = await _service.CrearAsync(model, cancellationToken);
+            if (!response.Success)
+            {
+                return Json(new { success = false, message = response.Message });
+            }
 
-            return Json(response.Success
-                ? new { success = true, data = response.Data }
-                : new { success = false, message = response.Message });
+            lock (_sucursalesLock)
+            {
+                _sucursalesCache = null;
+            }
+
+            return Json(new { success = true, data = response.Data });
         }
 
         [HttpPost]
@@ -72,20 +97,34 @@ namespace Cavex.Principal.Controllers
             };
 
             var response = await _service.ActualizarAsync(model.Id, saveModel, cancellationToken);
+            if (!response.Success)
+            {
+                return Json(new { success = false, message = response.Message });
+            }
 
-            return Json(response.Success
-                ? new { success = true, data = response.Data }
-                : new { success = false, message = response.Message });
+            lock (_sucursalesLock)
+            {
+                _sucursalesCache = null;
+            }
+
+            return Json(new { success = true, data = response.Data });
         }
 
         [HttpPost]
         public async Task<IActionResult> DeleteSucursal(int id, CancellationToken cancellationToken)
         {
             var response = await _service.EliminarAsync(id, cancellationToken);
+            if (!response.Success)
+            {
+                return Json(new { success = false, message = response.Message });
+            }
 
-            return Json(response.Success
-                ? new { success = true, data = response.Data }
-                : new { success = false, message = response.Message });
+            lock (_sucursalesLock)
+            {
+                _sucursalesCache = null;
+            }
+
+            return Json(new { success = true, data = response.Data });
         }
 
         private string GetModelStateErrors()

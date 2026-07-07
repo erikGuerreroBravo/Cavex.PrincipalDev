@@ -1,16 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Cavex.Principal.Models.EmpTelefono
 {
     public class EmpTelefonoSaveDto
     {
         [Required(ErrorMessage = "El numero fijo es obligatorio.")]
-        
+        [StringLength(50, ErrorMessage = "El valor no puede superar los 50 caracteres.")]
         [Display(Name = "Numero fijo")]
-        public long LngNumeroFijo { get; set; } 
+        public string StrNumeroFijo { get; set; } = string.Empty;
 
+        [StringLength(50, ErrorMessage = "El valor no puede superar los 50 caracteres.")]
         [Display(Name = "Numero celular")]
-        public long? LngNumeroCelular { get; set; }
+        public string? StrNumeroCelular { get; set; }
 
         [Required(ErrorMessage = "El empleado es obligatorio.")]
         [Display(Name = "Empleado")]

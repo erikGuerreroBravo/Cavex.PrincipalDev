@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Cavex.Principal.Models.EmpTelefono
 {
@@ -7,10 +7,10 @@ namespace Cavex.Principal.Models.EmpTelefono
         public int Id { get; set; }
 
         [Display(Name = "Numero fijo")]
-        public long LngNumeroFijo { get; set; } 
+        public string StrNumeroFijo { get; set; } = string.Empty;
 
         [Display(Name = "Numero celular")]
-        public long? LngNumeroCelular { get; set; }
+        public string? StrNumeroCelular { get; set; }
 
         public int IdEmpEmpleado { get; set; }
 

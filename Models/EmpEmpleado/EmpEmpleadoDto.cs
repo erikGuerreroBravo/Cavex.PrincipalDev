@@ -32,7 +32,7 @@ namespace Cavex.Principal.Models.EmpEmpleado
         public string StrCorreoElectronico { get; set; } = string.Empty;
 
         [Display(Name = "NSS")]
-        public long LngNss { get; set; }
+        public long IntNss { get; set; }
 
         public int IdEmpCatGenero { get; set; }
 

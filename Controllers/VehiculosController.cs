@@ -23,13 +23,6 @@ namespace Cavex.Principal.Controllers
             return View();
         }
 
-        // Centro frontend de documentos; la acción solo entrega la vista simulada.
-        [HttpGet("/Vehiculos/Documentos")]
-        public IActionResult Documentos()
-        {
-            return View();
-        }
-
         // Pantalla frontend de infracciones; no consulta ni guarda información todavía.
         [HttpGet("/Vehiculos/Infracciones")]
         public IActionResult Infracciones()

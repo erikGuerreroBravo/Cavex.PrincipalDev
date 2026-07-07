@@ -1,4 +1,4 @@
-﻿using Cavex.Principal.Common;
+using Cavex.Principal.Common;
 using Cavex.Principal.Models.EmpCatAreaLaboral;
 using Refit;
 
@@ -8,7 +8,8 @@ namespace Cavex.Principal.ApiClients.EmpCatAreaLaboral
     {
         [Get("/api/v1/EmpCatAreaLaboral")]
         Task<ResponseWrapper<PagedResponse<EmpCatAreaLaboralDto>>> GetAllAsync(
-            [Body] RequestWrapper<EmpCatAreaLaboralQueryDto> request,
+            [Query] int? pageIndex = null,
+            [Query] int? pageSize = null,
             CancellationToken cancellationToken = default);
 
         [Get("/api/v1/EmpCatAreaLaboral/{id}")]

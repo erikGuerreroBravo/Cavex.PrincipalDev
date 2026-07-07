@@ -1,4 +1,4 @@
-﻿using Cavex.Principal.ApiClients.EmpCatAreaLaboral;
+using Cavex.Principal.ApiClients.EmpCatAreaLaboral;
 using Cavex.Principal.Common;
 using Cavex.Principal.Models.EmpCatAreaLaboral;
 using Cavex.Principal.Services.Interfaces;
@@ -25,14 +25,8 @@ namespace Cavex.Principal.Services.Implementations
             int pageSize = 10,
             CancellationToken cancellationToken = default)
         {
-            var request = new EmpCatAreaLaboralQueryDto
-            {
-                PageIndex = pageIndex,
-                PageSize = pageSize
-            };
-
             return await ExecuteAsync(
-                () => _api.GetAllAsync(RequestWrapper<EmpCatAreaLaboralQueryDto>.Create(request), cancellationToken),
+                () => _api.GetAllAsync(pageIndex, pageSize, cancellationToken),
                 "No fue posible obtener las areas laborales.");
         }
 

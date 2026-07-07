@@ -1,4 +1,4 @@
-﻿using Cavex.Principal.ApiClients.Sucursales;
+using Cavex.Principal.ApiClients.Sucursales;
 using Cavex.Principal.Common;
 using Cavex.Principal.Models.CatSucursal;
 using Cavex.Principal.Services.Interfaces;
@@ -18,8 +18,11 @@ namespace Cavex.Principal.Services.Implementations
             _logger = logger;
         }
 
-        public Task<ResponseWrapper<PagedResponse<CatSucursalDto>>> ObtenerTodosAsync(CancellationToken cancellationToken = default) =>
-            ExecuteAsync(() => _sucursalesApi.GetAllAsync(cancellationToken), "No fue posible obtener las sucursales.");
+        public Task<ResponseWrapper<PagedResponse<CatSucursalDto>>> ObtenerTodosAsync(
+            int pageIndex = 1,
+            int pageSize = 10,
+            CancellationToken cancellationToken = default) =>
+            ExecuteAsync(() => _sucursalesApi.GetAllAsync(pageIndex, pageSize, cancellationToken), "No fue posible obtener las sucursales.");
 
         public Task<ResponseWrapper<CatSucursalDto>> CrearAsync(CatSucursalSaveDto request, CancellationToken cancellationToken = default) =>
             ExecuteAsync(() => _sucursalesApi.CreateAsync(RequestWrapper<CatSucursalSaveDto>.Create(request), cancellationToken), "No fue posible crear la sucursal.");

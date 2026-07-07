@@ -248,9 +248,15 @@ function renderServices() {
                                 </button>
                             </li>
                             <li>
+                                <button class="dropdown-item d-flex align-items-center ${service.idCatStatus !== '2' ? 'text-danger' : 'text-success'}" type="button" onclick="toggleStatusService(${service.id})">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 ${service.idCatStatus !== '2' ? 'text-danger' : 'text-success'}"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                                    ${service.idCatStatus !== '2' ? 'Dar de baja' : 'Activar'}
+                                </button>
+                            </li>
+                            <li>
                                 <button class="dropdown-item d-flex align-items-center text-danger" type="button" onclick="deleteService(${service.id})">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 text-danger"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                                    Dar de baja
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 text-danger"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                    <span>Eliminar</span>
                                 </button>
                             </li>
                         </ul>
@@ -308,7 +314,18 @@ function renderPagination(totalPages) {
 function createPageItem(text, page, disabled, active) {
     const li = document.createElement("li");
     li.className = `page-item ${disabled ? "disabled" : ""} ${active ? "active" : ""}`;
-    li.innerHTML = `<a class="page-link" href="#" onclick="changePage(event, ${page})">${text}</a>`;
+    
+    let innerContent = text;
+    let ariaLabel = "";
+    if (text === "Anterior") {
+        innerContent = `<span aria-hidden="true">&laquo;</span>`;
+        ariaLabel = `aria-label="Anterior"`;
+    } else if (text === "Siguiente") {
+        innerContent = `<span aria-hidden="true">&raquo;</span>`;
+        ariaLabel = `aria-label="Siguiente"`;
+    }
+    
+    li.innerHTML = `<a class="page-link" href="#" onclick="changePage(event, ${page})" ${ariaLabel}>${innerContent}</a>`;
     return li;
 }
 
@@ -444,15 +461,76 @@ function editService(id) {
     document.getElementById("strNombre").focus();
 }
 
+function toggleStatusService(id) {
+    const service = services.find(s => s.id === id);
+    if (!service) return;
+
+    const isActive = service.idCatStatus !== '2';
+    const actionText = isActive ? 'dar de baja' : 'activar';
+    const confirmButtonText = isActive ? 'Sí, dar de baja' : 'Sí, activar';
+    const confirmButtonColor = isActive ? '#ef4444' : '#10b981';
+
+    Swal.fire({
+        title: "¿Estás seguro?",
+        text: `El estado del servicio cambiará a ${isActive ? 'Inactivo' : 'Activo'}.`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: confirmButtonColor,
+        cancelButtonColor: "#6b7280",
+        confirmButtonText: confirmButtonText,
+        cancelButtonText: "Cancelar"
+    }).then(async result => {
+        if (!result.isConfirmed) return;
+
+        const payload = {
+            id: service.id,
+            strValor: service.nombre,
+            strDescripcion: service.descripcion,
+            idCatStatus: isActive ? 2 : 1
+        };
+
+        try {
+            const response = await fetch("/Servicios/UpdateService", {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (!data.success) {
+                showError(data.message || `No fue posible ${actionText} el servicio.`);
+                return;
+            }
+
+            Swal.fire({
+                icon: "success",
+                title: isActive ? "Dado de baja" : "Activado",
+                text: `El servicio ha sido ${isActive ? 'dado de baja' : 'activado'} exitosamente.`,
+                confirmButtonColor: "var(--teal-cavex)"
+            });
+
+            if (editingId === id) resetForm();
+            await loadServicesFromServer();
+        } catch (error) {
+            console.error(error);
+            showError(`Ocurrio un error al ${actionText} el servicio.`);
+        }
+    });
+}
+
 function deleteService(id) {
     Swal.fire({
-        title: "Estas seguro?",
-        text: "No podras revertir esta accion.",
+        title: "¿Estás seguro?",
+        text: "¡No podrás revertir esta acción!",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#ef4444",
         cancelButtonColor: "#6b7280",
-        confirmButtonText: "Si, eliminar",
+        confirmButtonText: "Sí, eliminar",
         cancelButtonText: "Cancelar"
     }).then(async result => {
         if (!result.isConfirmed) return;

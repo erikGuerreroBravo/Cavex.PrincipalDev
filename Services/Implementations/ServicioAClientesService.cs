@@ -20,10 +20,13 @@ namespace Cavex.Principal.Services.Implementations
             _logger = logger;
         }
 
-        public async Task<ResponseWrapper<PagedResponse<CatServicioSaveDto>>> ObtenerTodosAsync(CancellationToken cancellationToken = default)
+        public async Task<ResponseWrapper<PagedResponse<CatServicioSaveDto>>> ObtenerTodosAsync(
+            int pageIndex = 1,
+            int pageSize = 10,
+            CancellationToken cancellationToken = default)
         {
             return await ExecuteAsync(
-                () => _servicioAClientesApi.GetAllAsync(cancellationToken),
+                () => _servicioAClientesApi.GetAllAsync(pageIndex, pageSize, cancellationToken),
                 "No fue posible obtener los servicios a clientes.");
         }
 

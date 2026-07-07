@@ -1,4 +1,4 @@
-﻿using Cavex.Principal.ApiClients.EmpEmpleado;
+using Cavex.Principal.ApiClients.EmpEmpleado;
 using Cavex.Principal.Common;
 using Cavex.Principal.Models.EmpEmpleado;
 using Cavex.Principal.Services.Interfaces;
@@ -21,10 +21,13 @@ namespace Cavex.Principal.Services.Implementations
                 _logger = logger;
             }
 
-            public async Task<ResponseWrapper<PagedResponse<EmpEmpleadoDto>>> ObtenerTodosAsync(CancellationToken cancellationToken = default)
+            public async Task<ResponseWrapper<PagedResponse<EmpEmpleadoDto>>> ObtenerTodosAsync(
+                int pageIndex = 1,
+                int pageSize = 10,
+                CancellationToken cancellationToken = default)
             {
                 return await ExecuteAsync(
-                    () => _empEmpleadoApi.GetAllAsync(cancellationToken),
+                    () => _empEmpleadoApi.GetAllAsync(pageIndex, pageSize, cancellationToken),
                     "No fue posible obtener los empleados.");
             }
 

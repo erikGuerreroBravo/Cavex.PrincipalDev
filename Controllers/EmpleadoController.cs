@@ -141,7 +141,7 @@ namespace Cavex.Principal.Controllers
         [HttpGet]
         public async Task<IActionResult> GetEmpleados(CancellationToken cancellationToken)
         {
-            var response = await _service.ObtenerTodosAsync(cancellationToken);
+            var response = await _service.ObtenerTodosAsync(1, 100, cancellationToken);
             if (!response.Success)
             {
                 return Json(new { success = false, message = response.Message });
@@ -209,6 +209,108 @@ namespace Cavex.Principal.Controllers
                 return Json(new { success = false, message = response.Message });
             }
             return Json(new { success = true, data = response.Data });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeactivateEmpleado(int id, CancellationToken cancellationToken)
+        {
+            var responseGet = await _service.ObtenerPorIdAsync(id, cancellationToken);
+            if (!responseGet.Success || responseGet.Data == null)
+            {
+                return Json(new { success = false, message = responseGet.Message ?? "Empleado no encontrado." });
+            }
+
+            var emp = responseGet.Data;
+
+            var saveModel = new EmpEmpleadoSaveDto
+            {
+                StrNombre = emp.StrNombre,
+                StrApellidoPaterno = emp.StrApellidoPaterno,
+                StrApellidoMaterno = emp.StrApellidoMaterno,
+                DteFechaNacimiento = emp.DteFechaNacimiento,
+                StrRfc = emp.StrRfc,
+                StrCurp = emp.StrCurp,
+                IntEdad = emp.IntEdad,
+                StrCorreoElectronico = emp.StrCorreoElectronico,
+                IntNss = emp.IntNss,
+                IdEmpCatGenero = emp.IdEmpCatGenero,
+                IdEmpCatEstadoCivil = emp.IdEmpCatEstadoCivil,
+                IdEmpCatNacionalidad = emp.IdEmpCatNacionalidad,
+                IdEmpCatTipoContratacion = emp.IdEmpCatTipoContratacion,
+                IdCatStatus = emp.IdCatStatus == 1 ? 2 : 1,
+
+                Direccion = new EmpDireccionSaveDto
+                {
+                    IdEmpCatColonia = emp.EmpDireccion?.IdEmpCatColonia ?? 1,
+                    IntNumExterior = emp.EmpDireccion?.IntNumExterior,
+                    IntNumInterior = emp.EmpDireccion?.IntNumInterior
+                },
+
+                DatosAcademicos = new EmpDatosAcademicosSaveDto
+                {
+                    StrNivelEstudios = string.IsNullOrEmpty(emp.EmpDatosAcademicos?.StrNivelEstudios) ? "N/D" : emp.EmpDatosAcademicos.StrNivelEstudios,
+                    StrInstitucion = string.IsNullOrEmpty(emp.EmpDatosAcademicos?.StrInstitucion) ? "N/D" : emp.EmpDatosAcademicos.StrInstitucion,
+                    StrCarrera = emp.EmpDatosAcademicos?.StrCarrera,
+                    StrEstatus = string.IsNullOrEmpty(emp.EmpDatosAcademicos?.StrEstatus) ? "N/D" : emp.EmpDatosAcademicos.StrEstatus,
+                    DteFechaInicio = emp.EmpDatosAcademicos != null ? emp.EmpDatosAcademicos.DteFechaInicio : DateOnly.FromDateTime(DateTime.Today),
+                    DteFechaFin = emp.EmpDatosAcademicos != null ? emp.EmpDatosAcademicos.DteFechaFin : DateOnly.FromDateTime(DateTime.Today)
+                },
+
+                DocumentosLaborales = new EmpDocumentosLaboralesSaveDto
+                {
+                    StrUrlIdentificacionOficial = string.IsNullOrEmpty(emp.EmpDocumentosLaborales?.StrUrlIdentificacionOficial) ? "N/D" : emp.EmpDocumentosLaborales.StrUrlIdentificacionOficial,
+                    StrUrlComprobanteDomicilio = string.IsNullOrEmpty(emp.EmpDocumentosLaborales?.StrUrlComprobanteDomicilio) ? "N/D" : emp.EmpDocumentosLaborales.StrUrlComprobanteDomicilio,
+                    StrUrlCurriculumVitae = string.IsNullOrEmpty(emp.EmpDocumentosLaborales?.StrUrlCurriculumVitae) ? "N/D" : emp.EmpDocumentosLaborales.StrUrlCurriculumVitae,
+                    StrUrlContrato = string.IsNullOrEmpty(emp.EmpDocumentosLaborales?.StrUrlContrato) ? "N/D" : emp.EmpDocumentosLaborales.StrUrlContrato,
+                    StrUrlLicencia = string.IsNullOrEmpty(emp.EmpDocumentosLaborales?.StrUrlLicencia) ? "N/D" : emp.EmpDocumentosLaborales.StrUrlLicencia,
+                    StrUrlFotoEmp = emp.EmpDocumentosLaborales?.StrUrlFotoEmp ?? string.Empty
+                },
+
+                CondicionesLaborales = new EmpCondicionesLaboralesSaveDto
+                {
+                    BitCercaniaVivienda = emp.EmpCondicionesLaborales?.BitCercaniaVivienda ?? false,
+                    BitDisponibilidadDeViaje = emp.EmpCondicionesLaborales?.BitDisponibilidadDeViaje ?? false,
+                    MnySueldoMensual = emp.EmpCondicionesLaborales?.MnySueldoMensual ?? 0m,
+                    BitExperienciaEnArea = emp.EmpCondicionesLaborales?.BitExperienciaEnArea ?? false,
+                    BitDisponibilidadCambioResidencia = emp.EmpCondicionesLaborales?.BitDisponibilidadCambioResidencia ?? false,
+                    DteFechaIngreso = emp.EmpCondicionesLaborales != null ? DateOnly.FromDateTime(emp.EmpCondicionesLaborales.DteFechaIngreso) : DateOnly.FromDateTime(DateTime.Today)
+                },
+
+                Referencias = emp.EmpReferenciasPersonales?.Select(rf => new EmpReferenciaSaveDto
+                {
+                    StrNombreCompleto = rf.StrNombreCompleto,
+                    StrParentezco = rf.StrParentezco,
+                    IntTelefono = rf.IntTelefono
+                }).ToList() ?? new List<EmpReferenciaSaveDto>(),
+
+                ExperienciaLaboral = emp.EmpExperiencias?.Select(exp => new EmpExperienciaLaboralSaveDto
+                {
+                    StrEmpresa = exp.StrEmpresa,
+                    StrPuesto = exp.StrPuesto,
+                    StrArea = exp.StrArea,
+                    DteFechaIncio = DateOnly.FromDateTime(exp.DteFechaIncio),
+                    DteFechaFin = DateOnly.FromDateTime(exp.DteFechaFin),
+                    MnySueldo = exp.MnySueldo,
+                    StrMotivoSalida = exp.StrMotivoSalida
+                }).ToList() ?? new List<EmpExperienciaLaboralSaveDto>(),
+
+                IdEmpCatAreaLaboral = emp.EmpHistorialAreas?.OrderByDescending(x => x.Id).FirstOrDefault()?.IdEmpCatAreaLaboral ?? 1,
+
+                Telefonos = emp.EmpTelefonos?.Select(t => new Cavex.Principal.Models.EmpTelefono.EmpTelefonoSaveDto
+                {
+                    StrNumeroFijo = t.StrNumeroFijo,
+                    StrNumeroCelular = t.StrNumeroCelular,
+                    IdEmpEmpleado = id
+                }).ToList() ?? new List<Cavex.Principal.Models.EmpTelefono.EmpTelefonoSaveDto>()
+            };
+
+            var responseUpdate = await _service.ActualizarAsync(id, saveModel, cancellationToken);
+            if (!responseUpdate.Success)
+            {
+                return Json(new { success = false, message = responseUpdate.Message ?? "No fue posible actualizar el estado del empleado." });
+            }
+
+            return Json(new { success = true, message = saveModel.IdCatStatus == 2 ? "Empleado dado de baja exitosamente." : "Empleado activado exitosamente." });
         }
     }
 }

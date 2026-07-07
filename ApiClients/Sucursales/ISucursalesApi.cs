@@ -1,4 +1,4 @@
-﻿using Cavex.Principal.Common;
+using Cavex.Principal.Common;
 using Cavex.Principal.Models.CatSucursal;
 using Refit;
 
@@ -7,7 +7,10 @@ namespace Cavex.Principal.ApiClients.Sucursales
     public interface ISucursalesApi
     {
         [Get("/api/v1/CatSucursales")]
-        Task<ResponseWrapper<PagedResponse<CatSucursalDto>>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<ResponseWrapper<PagedResponse<CatSucursalDto>>> GetAllAsync(
+            [Query] int? pageIndex = null,
+            [Query] int? pageSize = null,
+            CancellationToken cancellationToken = default);
 
         [Post("/api/v1/CatSucursales")]
         Task<ResponseWrapper<CatSucursalDto>> CreateAsync([Body] RequestWrapper<CatSucursalSaveDto> request, CancellationToken cancellationToken = default);

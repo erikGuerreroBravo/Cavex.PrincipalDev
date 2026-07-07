@@ -8,6 +8,8 @@ namespace Cavex.Principal.Controllers
     {
         private readonly IServicioAClientesService _service;
         private readonly ICatStatusService _catStatusService;
+        private static (List<CatServicioSaveDto> Items, DateTime Expiration)? _servicesCache;
+        private static readonly object _servicesLock = new();
 
         public ServiciosController(IServicioAClientesService service, ICatStatusService catStatusService)
         {
@@ -24,11 +26,27 @@ namespace Cavex.Principal.Controllers
         [HttpGet]
         public async Task<IActionResult> GetServices(CancellationToken cancellationToken)
         {
-            var response = await _service.ObtenerTodosAsync(cancellationToken);
+            lock (_servicesLock)
+            {
+                if (_servicesCache != null && _servicesCache.Value.Expiration > DateTime.UtcNow)
+                {
+                    return Json(new { success = true, data = _servicesCache.Value.Items });
+                }
+            }
 
-            return Json(response.Success
-                ? new { success = true, data = response.Data?.Items }
-                : new { success = false, message = response.Message });
+            var response = await _service.ObtenerTodosAsync(1, 100, cancellationToken);
+            if (!response.Success)
+            {
+                return Json(new { success = false, message = response.Message });
+            }
+
+            var items = response.Data?.Items?.ToList() ?? new List<CatServicioSaveDto>();
+            lock (_servicesLock)
+            {
+                _servicesCache = (items, DateTime.UtcNow.AddSeconds(15));
+            }
+
+            return Json(new { success = true, data = items });
         }
 
         [HttpGet]
@@ -50,10 +68,17 @@ namespace Cavex.Principal.Controllers
             }
 
             var response = await _service.CrearAsync(model, cancellationToken);
+            if (!response.Success)
+            {
+                return Json(new { success = false, message = response.Message });
+            }
 
-            return Json(response.Success
-                ? new { success = true, data = response.Data }
-                : new { success = false, message = response.Message });
+            lock (_servicesLock)
+            {
+                _servicesCache = null;
+            }
+
+            return Json(new { success = true, data = response.Data });
         }
 
         [HttpPost]
@@ -65,20 +90,34 @@ namespace Cavex.Principal.Controllers
             }
 
             var response = await _service.ActualizarAsync(model.Id, model, cancellationToken);
+            if (!response.Success)
+            {
+                return Json(new { success = false, message = response.Message });
+            }
 
-            return Json(response.Success
-                ? new { success = true, data = response.Data }
-                : new { success = false, message = response.Message });
+            lock (_servicesLock)
+            {
+                _servicesCache = null;
+            }
+
+            return Json(new { success = true, data = response.Data });
         }
 
         [HttpPost]
         public async Task<IActionResult> DeleteService(int id, CancellationToken cancellationToken)
         {
             var response = await _service.EliminarAsync(id, cancellationToken);
+            if (!response.Success)
+            {
+                return Json(new { success = false, message = response.Message });
+            }
 
-            return Json(response.Success
-                ? new { success = true, data = response.Data }
-                : new { success = false, message = response.Message });
+            lock (_servicesLock)
+            {
+                _servicesCache = null;
+            }
+
+            return Json(new { success = true, data = response.Data });
         }
 
         private string GetModelStateErrors()

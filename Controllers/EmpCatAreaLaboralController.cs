@@ -7,6 +7,8 @@ namespace Cavex.Principal.Controllers
     public class EmpCatAreaLaboralController : Controller
     {
         private readonly IEmpCatAreaLaboralService _service;
+        private static (List<EmpCatAreaLaboralDto> Items, DateTime Expiration)? _areasCache;
+        private static readonly object _areasLock = new();
 
         public EmpCatAreaLaboralController(IEmpCatAreaLaboralService service)
         {
@@ -21,12 +23,27 @@ namespace Cavex.Principal.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAreas(CancellationToken cancellationToken)
         {
-            var response = await _service.ObtenerTodosAsync(1, 1000, cancellationToken);
+            lock (_areasLock)
+            {
+                if (_areasCache != null && _areasCache.Value.Expiration > DateTime.UtcNow)
+                {
+                    return Json(new { success = true, data = _areasCache.Value.Items });
+                }
+            }
+
+            var response = await _service.ObtenerTodosAsync(1, 100, cancellationToken);
             if (!response.Success)
             {
                 return Json(new { success = false, message = response.Message });
             }
-            return Json(new { success = true, data = response.Data?.Items });
+
+            var items = response.Data?.Items?.ToList() ?? new List<EmpCatAreaLaboralDto>();
+            lock (_areasLock)
+            {
+                _areasCache = (items, DateTime.UtcNow.AddSeconds(15));
+            }
+
+            return Json(new { success = true, data = items });
         }
 
         [HttpPost]
@@ -43,6 +60,12 @@ namespace Cavex.Principal.Controllers
             {
                 return Json(new { success = false, message = response.Message });
             }
+
+            lock (_areasLock)
+            {
+                _areasCache = null;
+            }
+
             return Json(new { success = true, data = response.Data });
         }
 
@@ -66,6 +89,12 @@ namespace Cavex.Principal.Controllers
             {
                 return Json(new { success = false, message = response.Message });
             }
+
+            lock (_areasLock)
+            {
+                _areasCache = null;
+            }
+
             return Json(new { success = true, data = response.Data });
         }
 
@@ -77,6 +106,12 @@ namespace Cavex.Principal.Controllers
             {
                 return Json(new { success = false, message = response.Message });
             }
+
+            lock (_areasLock)
+            {
+                _areasCache = null;
+            }
+
             return Json(new { success = true, data = response.Data });
         }
     }

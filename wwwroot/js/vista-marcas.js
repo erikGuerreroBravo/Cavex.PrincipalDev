@@ -1,4 +1,4 @@
-let areas = [];
+let marcas = [];
 let editingId = null;
 
 // Variables de paginación y filtros
@@ -8,16 +8,19 @@ let searchQuery = '';
 
 // Renderizado inicial de la tabla cargando datos del servidor
 document.addEventListener('DOMContentLoaded', () => {
-    loadAreasFromServer();
+    loadMarcasFromServer();
     
-    // Aplicacion en tiempo real utilizando las funciones globales de site.js
+    // Aplicación en tiempo real utilizando las funciones globales de site.js
     const nombreInput = document.getElementById('strNombre');
     const descInput = document.getElementById('strDescripcion');
     
     if (nombreInput) {
         nombreInput.addEventListener('input', () => {
             const originalVal = nombreInput.value;
-            const cleanedVal = sanitizeLettersOnly(originalVal);
+            const cleanedVal = typeof sanitizeGeneralText === 'function' 
+                ? sanitizeGeneralText(originalVal) 
+                : originalVal.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ#.\-\s]/g, "");
+
             if (originalVal !== cleanedVal) {
                 const start = nombreInput.selectionStart;
                 const end = nombreInput.selectionEnd;
@@ -37,7 +40,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (descInput) {
         descInput.addEventListener('input', () => {
             const originalVal = descInput.value;
-            const cleanedVal = sanitizeGeneralText(originalVal);
+            const cleanedVal = typeof sanitizeGeneralText === 'function'
+                ? sanitizeGeneralText(originalVal)
+                : originalVal.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ#.,_()\/\-\s]/g, "");
+
             if (originalVal !== cleanedVal) {
                 const start = descInput.selectionStart;
                 const end = descInput.selectionEnd;
@@ -55,8 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-function loadAreasFromServer() {
-    fetch('/EmpCatAreaLaboral/GetAreas')
+function loadMarcasFromServer() {
+    fetch('/Marcas/GetMarcas')
         .then(response => {
             if (!response.ok) {
                 throw new Error("HTTP error " + response.status);
@@ -64,28 +70,28 @@ function loadAreasFromServer() {
             return response.json();
         })
         .then(result => {
-            console.log("Respuesta de GetAreas:", result);
+            console.log("Respuesta de GetMarcas:", result);
             if (result.success) {
                 if (result.data && Array.isArray(result.data)) {
-                    areas = result.data.map(item => ({
-                        id: item.id,
-                        nombre: item.strValor,
-                        descripcion: item.strDescripcion
+                    marcas = result.data.map(item => ({
+                        id: item.id ?? item.Id,
+                        nombre: item.strValor ?? item.StrValor ?? '',
+                        descripcion: item.strDescripcion ?? item.StrDescripcion ?? ''
                     }));
                 } else {
-                    areas = [];
+                    marcas = [];
                 }
-                renderAreas();
+                renderMarcas();
             } else {
-                console.error("Error al cargar areas desde base de datos:", result.message);
+                console.error("Error al cargar marcas desde base de datos:", result.message);
                 Swal.fire({
                     icon: 'error',
                     title: '¡Ups!',
-                    text: 'No se pudieron obtener los datos de las áreas laborales. ¡Intenta de nuevo!',
+                    text: 'No se pudieron obtener los datos de las marcas. ¡Intenta de nuevo!',
                     confirmButtonColor: 'var(--teal-cavex)'
                 });
-                areas = [];
-                renderAreas();
+                marcas = [];
+                renderMarcas();
             }
         })
         .catch(err => {
@@ -96,24 +102,23 @@ function loadAreasFromServer() {
                 text: 'No se pudieron obtener los datos. ¡Intenta de nuevo!',
                 confirmButtonColor: 'var(--teal-cavex)'
             });
-            areas = [];
-            renderAreas();
+            marcas = [];
+            renderMarcas();
         });
 }
 
-// Función para renderizar las áreas
-function renderAreas() {
-    const tbody = document.getElementById('areasTableBody');
+// Función para renderizar las marcas
+function renderMarcas() {
+    const tbody = document.getElementById('marcasTableBody');
     if (!tbody) return;
     tbody.innerHTML = '';
 
-    // Filtrar áreas
-    let filtered = areas.filter(a => {
-        // Filtro por Búsqueda (Nombre o Descripción)
+    // Filtrar marcas
+    let filtered = marcas.filter(m => {
         if (searchQuery) {
             const query = searchQuery.toLowerCase();
-            const nombreMatch = a.nombre.toLowerCase().includes(query);
-            const descMatch = (a.descripcion || '').toLowerCase().includes(query);
+            const nombreMatch = m.nombre.toLowerCase().includes(query);
+            const descMatch = (m.descripcion || '').toLowerCase().includes(query);
             return nombreMatch || descMatch;
         }
         return true;
@@ -123,7 +128,6 @@ function renderAreas() {
     const totalRecords = filtered.length;
     const totalPages = Math.ceil(totalRecords / pageSize) || 1;
     
-    // Ajustar página actual si queda fuera del rango
     if (currentPage > totalPages) {
         currentPage = totalPages;
     }
@@ -135,32 +139,31 @@ function renderAreas() {
     const endIndex = Math.min(startIndex + pageSize, totalRecords);
     const pagedList = filtered.slice(startIndex, endIndex);
 
-    // Mostrar vacío si no hay registros en tabla de area laboral
     if (pagedList.length === 0) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="3" class="text-center py-5">
                     <div class="text-muted">
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-2 opacity-50"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                        <p class="m-0 font-weight-700">No se encontraron áreas laborales</p>
+                        <p class="m-0 font-weight-700">No se encontraron marcas</p>
                         <small>Prueba ajustando los filtros o la búsqueda</small>
                     </div>
                 </td>
             </tr>
         `;
     } else {
-        pagedList.forEach(a => {
+        pagedList.forEach(m => {
             const tr = document.createElement('tr');
             
-            const descText = a.descripcion || 'Sin descripción';
-            const truncatedDesc = a.descripcion && a.descripcion.length > 50 
-                ? a.descripcion.substring(0, 50) + '...' 
+            const descText = m.descripcion || 'Sin descripción';
+            const truncatedDesc = m.descripcion && m.descripcion.length > 50 
+                ? m.descripcion.substring(0, 50) + '...' 
                 : descText;
-            const descTitle = a.descripcion ? `title="${escapeHtml(a.descripcion)}"` : '';
-            // Inyeccion de la tabla con campos de nombre, descripcion y acciones de editar y eliminar
+            const descTitle = m.descripcion ? `title="${escapeHtml(m.descripcion)}"` : '';
+
             tr.innerHTML = `
                 <td>
-                    <div class="cotizacion-main-text">${escapeHtml(a.nombre)}</div>
+                    <div class="cotizacion-main-text">${escapeHtml(m.nombre)}</div>
                 </td>
                 <td>
                     <div class="description-text" ${descTitle}>${escapeHtml(truncatedDesc)}</div>
@@ -173,13 +176,13 @@ function renderAreas() {
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li>
-                                <button class="dropdown-item d-flex align-items-center" type="button" onclick="editArea(${a.id})">
+                                <button class="dropdown-item d-flex align-items-center" type="button" onclick="editMarca(${m.id})">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 text-primary"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                                     Editar
                                 </button>
                             </li>
                             <li>
-                                <button class="dropdown-item d-flex align-items-center text-danger" type="button" onclick="deleteArea(${a.id})">
+                                <button class="dropdown-item d-flex align-items-center text-danger" type="button" onclick="deleteMarca(${m.id})">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 text-danger"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                                     <span>Eliminar</span>
                                 </button>
@@ -205,7 +208,7 @@ function renderAreas() {
     // Actualizar contadores en la cabecera de la tabla
     const countPill = document.querySelector('.table-module .records-pill');
     if (countPill) {
-        countPill.textContent = `${totalRecords} áreas`;
+        countPill.textContent = `${totalRecords} marcas`;
     }
 
     const extraPill = document.querySelector('.table-module .records-pill-soft');
@@ -214,7 +217,7 @@ function renderAreas() {
     }
 
     // Inicializar dropdowns de acciones con estrategia 'fixed' para prevenir recortes
-    document.querySelectorAll('#areasTableBody .btn-action-trigger').forEach(el => {
+    document.querySelectorAll('#marcasTableBody .btn-action-trigger').forEach(el => {
         new bootstrap.Dropdown(el, {
             popperConfig: (defaultConfig) => {
                 return {
@@ -232,51 +235,62 @@ function renderPagination(totalPages) {
     if (!paginationList) return;
     paginationList.innerHTML = '';
 
-    if (totalPages <= 1) return; // No mostrar paginación si solo hay una página
+    if (totalPages <= 1) return;
 
-    // Botón de Anterior
-    const prevLi = document.createElement('li');
-    prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-    prevLi.innerHTML = `
-        <a class="page-link" href="#" onclick="changePage(event, ${currentPage - 1})" aria-label="Anterior">
-            <span aria-hidden="true">&laquo;</span>
-        </a>
-    `;
-    paginationList.appendChild(prevLi);
+    paginationList.appendChild(createPageItem("Anterior", currentPage - 1, currentPage === 1));
 
-    // Números de páginas
     for (let i = 1; i <= totalPages; i++) {
-        const li = document.createElement('li');
-        li.className = `page-item ${currentPage === i ? 'active' : ''}`;
-        li.innerHTML = `
-            <a class="page-link" href="#" onclick="changePage(event, ${i})">${i}</a>
-        `;
-        paginationList.appendChild(li);
+        paginationList.appendChild(createPageItem(String(i), i, false, currentPage === i));
     }
 
-    // Botón de Siguiente
-    const nextLi = document.createElement('li');
-    nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
-    nextLi.innerHTML = `
-        <a class="page-link" href="#" onclick="changePage(event, ${currentPage + 1})" aria-label="Siguiente">
-            <span aria-hidden="true">&raquo;</span>
-        </a>
-    `;
-    paginationList.appendChild(nextLi);
+    paginationList.appendChild(createPageItem("Siguiente", currentPage + 1, currentPage === totalPages));
+}
+
+function createPageItem(text, page, disabled, active) {
+    const li = document.createElement("li");
+    li.className = `page-item ${disabled ? "disabled" : ""} ${active ? "active" : ""}`;
+    
+    let innerContent = text;
+    let ariaLabel = "";
+    if (text === "Anterior") {
+        innerContent = `<span aria-hidden="true">&laquo;</span>`;
+        ariaLabel = `aria-label="Anterior"`;
+    } else if (text === "Siguiente") {
+        innerContent = `<span aria-hidden="true">&raquo;</span>`;
+        ariaLabel = `aria-label="Siguiente"`;
+    }
+    
+    li.innerHTML = `<a class="page-link" href="#" onclick="changePage(event, ${page})" ${ariaLabel}>${innerContent}</a>`;
+    return li;
 }
 
 // Cambiar página
 function changePage(event, page) {
     if (event) event.preventDefault();
+    
+    // Calcular total de páginas en base a los registros filtrados
+    const filteredCount = marcas.filter(m => {
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            const nombreMatch = m.nombre.toLowerCase().includes(query);
+            const descMatch = (m.descripcion || '').toLowerCase().includes(query);
+            return nombreMatch || descMatch;
+        }
+        return true;
+    }).length;
+    
+    const computedTotalPages = Math.ceil(filteredCount / pageSize) || 1;
+    if (page < 1 || page > computedTotalPages) return;
+
     currentPage = page;
-    renderAreas();
+    renderMarcas();
 }
 
 // Manejar búsqueda de texto
 function handleSearch(query) {
     searchQuery = query;
-    currentPage = 1; // Reiniciar a primera página al buscar
-    renderAreas();
+    currentPage = 1;
+    renderMarcas();
 }
 
 // Limpiar errores de validación
@@ -305,52 +319,68 @@ function handleFormSubmit(e) {
         nombreInput.classList.remove('is-valid');
         const feedback = document.getElementById('nombreFeedback');
         if (feedback) {
-            feedback.textContent = 'El nombre del área es obligatorio.';
+            feedback.textContent = 'El nombre de la marca es obligatorio.';
         }
+        Swal.fire({ icon: "warning", title: "Campo requerido", text: "El nombre de la marca es obligatorio.", confirmButtonColor: "var(--teal-cavex)" });
         nombreInput.focus();
         return;
     }
 
-    // Validar expresión regular: nada de números, emojis o símbolos raros
-    const regexLettersOnly = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/;
-    if (!regexLettersOnly.test(nombre)) {
+    if (nombre.length < 3) {
         nombreInput.classList.add('is-invalid');
         nombreInput.classList.remove('is-valid');
         const feedback = document.getElementById('nombreFeedback');
         if (feedback) {
-            feedback.textContent = 'El nombre solo debe contener letras y espacios (sin números, símbolos ni emojis).';
+            feedback.textContent = 'El nombre de la marca debe tener al menos 3 caracteres.';
         }
+        Swal.fire({ icon: "warning", title: "Longitud insuficiente", text: "El nombre de la marca debe tener al menos 3 caracteres.", confirmButtonColor: "var(--teal-cavex)" });
         nombreInput.focus();
         return;
     }
 
-    // Validar si ya existe otra área con el mismo nombre (ignora mayúsculas/minúsculas)
+    // Validar expresión regular que permite letras, números y caracteres generales
+    const regexAlphanumeric = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ#.,_()\/\-\s]+$/;
+    const regexHasLetter = /[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]/;
+    if (!regexAlphanumeric.test(nombre) || !regexHasLetter.test(nombre)) {
+        nombreInput.classList.add('is-invalid');
+        nombreInput.classList.remove('is-valid');
+        const feedback = document.getElementById('nombreFeedback');
+        if (feedback) {
+            feedback.textContent = 'El nombre contiene caracteres no válidos o no contiene letras.';
+        }
+        Swal.fire({ icon: "warning", title: "Caracteres no válidos", text: "El nombre contiene caracteres no válidos o no contiene letras.", confirmButtonColor: "var(--teal-cavex)" });
+        nombreInput.focus();
+        return;
+    }
+
+    // Validar si ya existe otra marca con el mismo nombre (ignora mayúsculas/minúsculas)
     const nombreLower = nombre.toLowerCase().trim();
-    const existeDuplicado = areas.some(a => a.nombre.toLowerCase().trim() === nombreLower && a.id !== editingId);
+    const existeDuplicado = marcas.some(m => m.nombre.toLowerCase().trim() === nombreLower && m.id !== editingId);
     
     if (existeDuplicado) {
         nombreInput.classList.add('is-invalid');
         nombreInput.classList.remove('is-valid');
         const feedback = document.getElementById('nombreFeedback');
         if (feedback) {
-            feedback.textContent = 'El nombre del área laboral ya existe.';
+            feedback.textContent = 'El nombre de la marca ya existe.';
         }
+        Swal.fire({ icon: "error", title: "Registro duplicado", text: "El nombre de la marca ya existe.", confirmButtonColor: "var(--teal-cavex)" });
         nombreInput.focus();
         return;
     }
 
-    // Si todo es válido, aplicar clases de éxito
+    // Si todo es válido
     nombreInput.classList.add('is-valid');
     if (descripcion) {
         descInput.classList.add('is-valid');
     }
 
-    const url = editingId === null ? '/EmpCatAreaLaboral/SaveArea' : '/EmpCatAreaLaboral/UpdateArea';
+    const url = editingId === null ? '/Marcas/SaveMarca' : '/Marcas/UpdateMarca';
 
     const payload = {
-        id: editingId || 0,
-        strValor: nombre,
-        strDescripcion: descripcion
+        Id: editingId || 0,
+        StrValor: nombre,
+        StrDescripcion: descripcion
     };
 
     fetch(url, {
@@ -366,17 +396,17 @@ function handleFormSubmit(e) {
             Swal.fire({
                 icon: 'success',
                 title: editingId === null ? '¡Registro exitoso!' : '¡Actualización exitosa!',
-                text: editingId === null ? 'Área laboral agregada exitosamente.' : 'Área laboral actualizada exitosamente.',
+                text: editingId === null ? 'Marca agregada exitosamente.' : 'Marca actualizada exitosamente.',
                 confirmButtonColor: 'var(--teal-cavex)'
             });
             resetForm();
-            loadAreasFromServer();
+            loadMarcasFromServer();
         } else {
             nombreInput.classList.add('is-invalid');
             nombreInput.classList.remove('is-valid');
             const feedback = document.getElementById('nombreFeedback');
             if (feedback) {
-                feedback.textContent = result.message || 'Error al guardar el área laboral.';
+                feedback.textContent = result.message || 'Error al guardar la marca.';
             }
 
             let errorText = result.message || "";
@@ -388,8 +418,8 @@ function handleFormSubmit(e) {
 
             if (!errorText || isTechnicalError) {
                 errorText = editingId === null 
-                    ? 'El área laboral no se pudo agregar exitosamente.' 
-                    : 'El área laboral no se pudo actualizar exitosamente.';
+                    ? 'La marca no se pudo agregar exitosamente.' 
+                    : 'La marca no se pudo actualizar exitosamente.';
             }
 
             Swal.fire({
@@ -401,31 +431,31 @@ function handleFormSubmit(e) {
         }
     })
     .catch(err => {
-        console.error("Error al guardar el área:", err);
+        console.error("Error al guardar la marca:", err);
         Swal.fire({
             icon: 'error',
             title: 'Error de conexión',
             text: editingId === null 
-                ? 'El área laboral no se pudo agregar exitosamente. ¡Intenta de nuevo!' 
-                : 'El área laboral no se pudo actualizar exitosamente. ¡Intenta de nuevo!',
+                ? 'La marca no se pudo agregar exitosamente. ¡Intenta de nuevo!' 
+                : 'La marca no se pudo actualizar exitosamente. ¡Intenta de nuevo!',
             confirmButtonColor: 'var(--teal-cavex)'
         });
     });
 }
 
 // Cargar datos en el formulario para edición
-function editArea(id) {
-    const area = areas.find(a => a.id === id);
-    if (!area) return;
+function editMarca(id) {
+    const marca = marcas.find(m => m.id === id);
+    if (!marca) return;
 
     clearValidation();
     editingId = id;
-    document.getElementById('strNombre').value = area.nombre;
-    document.getElementById('strDescripcion').value = area.descripcion || '';
+    document.getElementById('strNombre').value = marca.nombre;
+    document.getElementById('strDescripcion').value = marca.descripcion || '';
 
     // Cambiar estados del formulario
-    document.getElementById('formTitle').textContent = 'Editar área laboral';
-    document.getElementById('formSubtitle').textContent = 'Modifica los detalles del área laboral seleccionada.';
+    document.getElementById('formTitle').textContent = 'Editar marca';
+    document.getElementById('formSubtitle').textContent = 'Modifica los detalles de la marca seleccionada.';
     document.getElementById('btnSubmit').textContent = 'Guardar cambios';
     document.getElementById('btnCancel').style.display = 'inline-block';
 
@@ -434,8 +464,8 @@ function editArea(id) {
     document.getElementById('strNombre').focus();
 }
 
-// Eliminar área
-function deleteArea(id) {
+// Eliminar marca
+function deleteMarca(id) {
     Swal.fire({
         title: '¿Estás seguro?',
         text: "¡No podrás revertir esta acción!",
@@ -447,7 +477,7 @@ function deleteArea(id) {
         cancelButtonText: 'Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            fetch('/EmpCatAreaLaboral/DeleteArea?id=' + id, {
+            fetch('/Marcas/DeleteMarca?id=' + id, {
                 method: 'POST'
             })
             .then(response => response.json())
@@ -456,25 +486,15 @@ function deleteArea(id) {
                     Swal.fire({
                         icon: 'success',
                         title: '¡Eliminado!',
-                        text: 'El área laboral ha sido eliminada exitosamente.',
+                        text: 'La marca ha sido eliminada exitosamente.',
                         confirmButtonColor: 'var(--teal-cavex)'
                     });
                     if (editingId === id) {
                         resetForm();
                     }
-                    loadAreasFromServer();
+                    loadMarcasFromServer();
                 } else {
                     let errorText = result.message || 'Inténtalo de nuevo más tarde.';
-                    const isReferenceError = errorText.toLowerCase().includes("reference") || 
-                                             errorText.toLowerCase().includes("relacion") || 
-                                             errorText.toLowerCase().includes("fk") || 
-                                             errorText.toLowerCase().includes("foreign key") || 
-                                             errorText.toLowerCase().includes("empleado");
-
-                    if (isReferenceError) {
-                        errorText = 'No se puede eliminar el área laboral porque está asociada a uno o más empleados activos.';
-                    }
-
                     Swal.fire({
                         icon: 'error',
                         title: 'No se pudo eliminar',
@@ -484,7 +504,7 @@ function deleteArea(id) {
                 }
             })
             .catch(err => {
-                console.error("Error al eliminar el área:", err);
+                console.error("Error al eliminar la marca:", err);
                 Swal.fire({
                     icon: 'error',
                     title: 'Error de conexión',
@@ -500,12 +520,12 @@ function deleteArea(id) {
 function resetForm() {
     editingId = null;
     clearValidation();
-    document.getElementById('formArea').reset();
+    document.getElementById('formMarca').reset();
 
     // Restaurar textos originales
-    document.getElementById('formTitle').textContent = 'Registrar área laboral';
-    document.getElementById('formSubtitle').textContent = 'Ingresa el nombre y la descripción para registrar el área laboral.';
-    document.getElementById('btnSubmit').textContent = 'Guardar área laboral';
+    document.getElementById('formTitle').textContent = 'Registrar marca';
+    document.getElementById('formSubtitle').textContent = 'Ingresa el nombre y la descripción de la marca.';
+    document.getElementById('btnSubmit').textContent = 'Guardar marca';
     document.getElementById('btnCancel').style.display = 'none';
 }
 

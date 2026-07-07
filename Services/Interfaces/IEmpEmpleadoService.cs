@@ -1,11 +1,14 @@
-﻿using Cavex.Principal.Common;
+using Cavex.Principal.Common;
 using Cavex.Principal.Models.EmpEmpleado;
 
 namespace Cavex.Principal.Services.Interfaces
 {
     public interface IEmpEmpleadoService
     {
-        Task<ResponseWrapper<PagedResponse<EmpEmpleadoDto>>> ObtenerTodosAsync(CancellationToken cancellationToken = default);
+        Task<ResponseWrapper<PagedResponse<EmpEmpleadoDto>>> ObtenerTodosAsync(
+            int pageIndex = 1,
+            int pageSize = 10,
+            CancellationToken cancellationToken = default);
 
         Task<ResponseWrapper<EmpEmpleadoDto>> ObtenerPorIdAsync(int id, CancellationToken cancellationToken = default);
 

@@ -27,10 +27,33 @@
                     Panel interno
                 </a>
 
-                <a asp-controller="Vehiculos" asp-action="Index">
-                    <svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 1 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
-                    Vehículos
-                </a>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn">
+                        <svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 1 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
+                        Vehículos
+                        <span class="dropdown-arrow">▾</span>
+                    </button>
+                    <div class="nav-dropdown-menu">
+                        <a asp-controller="Vehiculos" asp-action="Index" class="mega-menu-item">
+                            <div class="item-icon-box item-icon-blue">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 1 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
+                            </div>
+                            <div class="item-details">
+                                <span class="item-title">Listado de Vehículos</span>
+                                <span class="item-desc">Consulta e inventario general de la flota.</span>
+                            </div>
+                        </a>
+                        <a asp-controller="Marcas" asp-action="Index" class="mega-menu-item">
+                            <div class="item-icon-box item-icon-purple">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                            </div>
+                            <div class="item-details">
+                                <span class="item-title">Nueva Marca</span>
+                                <span class="item-desc">Gestión de marcas de vehículos.</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
 
                 <div class="nav-dropdown">
                     <button class="nav-dropdown-btn">
@@ -63,6 +86,34 @@
 
                 <div class="nav-dropdown">
                     <button class="nav-dropdown-btn">
+                        <svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        Empleados 
+                        <span class="dropdown-arrow">▾</span>
+                    </button>
+                    <div class="nav-dropdown-menu">
+                        <a asp-controller="Empleado" asp-action="Create" class="mega-menu-item">
+                            <div class="item-icon-box item-icon-green">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                            </div>
+                            <div class="item-details">
+                                <span class="item-title">Nuevo Empleado</span>
+                                <span class="item-desc">Alta de empleados y configuración de roles.</span>
+                            </div>
+                        </a>
+                        <a asp-controller="Empleado" asp-action="Index" class="mega-menu-item">
+                            <div class="item-icon-box item-icon-blue">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                            </div>
+                            <div class="item-details">
+                                <span class="item-title">Lista de Empleados</span>
+                                <span class="item-desc">Consulta de empleados registrados y su estado.</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn">
                         <svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                         Administración 
                         <span class="dropdown-arrow">▾</span>
@@ -86,24 +137,6 @@
                                 <span class="item-desc">Alta de nuevos servicios.</span>
                             </div>
                         </a>
-                        <a asp-controller="Empleado" asp-action="Create" class="mega-menu-item">
-                            <div class="item-icon-box item-icon-green">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-                            </div>
-                            <div class="item-details">
-                                <span class="item-title">Nuevo Empleado</span>
-                                <span class="item-desc">Alta de empleados y configuración de roles.</span>
-                            </div>
-                        </a>
-                        <a asp-controller="Empleado" asp-action="Index" class="mega-menu-item">
-                            <div class="item-icon-box item-icon-blue">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                            </div>
-                            <div class="item-details">
-                                <span class="item-title">Lista de Empleados</span>
-                                <span class="item-desc">Consulta de empleados registrados y su estado.</span>
-                            </div>
-                        </a>
                         <a asp-controller="EmpCatAreaLaboral" asp-action="Index" class="mega-menu-item">
                             <div class="item-icon-box item-icon-purple">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
@@ -113,6 +146,16 @@
                                 <span class="item-desc">Gestión de departamentos interno.</span>
                             </div>
                         </a>
+                        <a asp-controller="Talleres" asp-action="Index" class="mega-menu-item">
+                            <div class="item-icon-box item-icon-teal">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                            </div>
+                            <div class="item-details">
+                                <span class="item-title">Nuevo Taller</span>
+                                <span class="item-desc">Alta de talleres y ubicaciones.</span>
+                            </div>
+                        </a>
+
                     </div>
                 </div>
 

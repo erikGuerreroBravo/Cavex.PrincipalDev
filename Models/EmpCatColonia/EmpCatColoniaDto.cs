@@ -21,6 +21,7 @@ namespace Cavex.Principal.Models.EmpCatColonia
         [Display(Name = "Municipio")]
         public string StrEmpCatMunicipio { get; set; } = string.Empty;
 
-
+        public string? StrMunicipio { get; set; }
+        public string? StrEstado { get; set; }
     }
 }
