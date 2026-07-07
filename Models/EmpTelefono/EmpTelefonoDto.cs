@@ -7,10 +7,10 @@ namespace Cavex.Principal.Models.EmpTelefono
         public int Id { get; set; }
 
         [Display(Name = "Numero fijo")]
-        public string StrNumeroFijo { get; set; } = string.Empty;
+        public long LngNumeroFijo { get; set; } 
 
         [Display(Name = "Numero celular")]
-        public string? StrNumeroCelular { get; set; }
+        public long? LngNumeroCelular { get; set; }
 
         public int IdEmpEmpleado { get; set; }
 

@@ -2,7 +2,7 @@
 
 namespace Cavex.Principal.Models.VehCatGasolineras
 {
-    public class VehCatGasolineraSaveDto
+    public class VehCatGasolinerasSaveDto
     {
         [Required(ErrorMessage = "El nombre es obligatorio.")]
         [StringLength(100, ErrorMessage = "El valor no puede superar los 100 caracteres.")]

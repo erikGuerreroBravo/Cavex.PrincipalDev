@@ -17,7 +17,7 @@ namespace Cavex.Principal.Models.EmpEmpleado
         public string? StrApellidoMaterno { get; set; }
 
         [Display(Name = "Fecha de nacimiento")]
-        public DateTime DteFechaNacimiento { get; set; }
+        public DateOnly DteFechaNacimiento { get; set; }
 
         [Display(Name = "RFC")]
         public string StrRfc { get; set; } = string.Empty;
@@ -32,7 +32,7 @@ namespace Cavex.Principal.Models.EmpEmpleado
         public string StrCorreoElectronico { get; set; } = string.Empty;
 
         [Display(Name = "NSS")]
-        public long IntNss { get; set; }
+        public long LngNss { get; set; }
 
         public int IdEmpCatGenero { get; set; }
 

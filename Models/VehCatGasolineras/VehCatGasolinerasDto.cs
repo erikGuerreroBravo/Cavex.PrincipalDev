@@ -2,7 +2,7 @@
 
 namespace Cavex.Principal.Models.VehCatGasolineras
 {
-    public class VehCatGasolineraDto
+    public class VehCatGasolinerasDto
     {
         public int Id { get; set; }
 

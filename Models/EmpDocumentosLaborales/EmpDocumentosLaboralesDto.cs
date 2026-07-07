@@ -25,3 +25,4 @@ namespace Cavex.Principal.Models.EmpDocumentosLaborales
         public string? StrUrlFotoEmp { get; set; }
     }
 }
+

@@ -32,7 +32,7 @@ namespace Cavex.Principal.Models.VehDatosGenerales
         public string StrPlaca { get; set; } = string.Empty;
 
         [Display(Name = "Numero de motor")]
-        public int? IntNumMotor { get; set; }
+        public string? strNumMotor { get; set; }
 
         public int IdVehCatTipoVehiculo { get; set; }
 
@@ -61,7 +61,7 @@ namespace Cavex.Principal.Models.VehDatosGenerales
         public string? StrUrlFoto { get; set; }
 
         [Display(Name = "Fecha de registro")]
-        public DateTime DteFechaRegistro { get; set; }
+        public DateOnly DteFechaRegistro { get; set; }
 
         [Display(Name = "Observaciones")]
         public string? StrObservaciones { get; set; }
@@ -70,7 +70,7 @@ namespace Cavex.Principal.Models.VehDatosGenerales
         public string? StrMotor { get; set; }
         public int IdVehCatTransmision { get; set; }
 
-        [Display(Name = "Tipo de tRansmision")]
+        [Display(Name = "Tipo de transmision")]
         public string StrVehCatTransmision { get; set; } = string.Empty;
 
     }

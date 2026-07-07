@@ -35,8 +35,10 @@ namespace Cavex.Principal.Models.VehDatosGenerales
         [Display(Name = "Placa")]
         public string StrPlaca { get; set; } = string.Empty;
 
+
+        [StringLength(50, ErrorMessage = "El valor no puede superar los 50 caracteres.")]
         [Display(Name = "Numero de motor")]
-        public int? IntNumMotor { get; set; }
+        public string? StrNumMotor { get; set; }
 
         [Required(ErrorMessage = "El tipo de vehiculo es obligatorio.")]
         [Display(Name = "Tipo de vehiculo")]
@@ -63,7 +65,7 @@ namespace Cavex.Principal.Models.VehDatosGenerales
 
         [Required(ErrorMessage = "La fecha de registro es obligatoria.")]
         [Display(Name = "Fecha de registro")]
-        public DateTime DteFechaRegistro { get; set; } = DateTime.Now;
+        public DateOnly DteFechaRegistro { get; set; } 
 
         [StringLength(500, ErrorMessage = "El valor no puede superar los 500 caracteres.")]
         [Display(Name = "Observaciones")]
