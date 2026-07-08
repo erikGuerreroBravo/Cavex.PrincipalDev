@@ -10,6 +10,9 @@ namespace Cavex.Principal.Models.VehCatMarcaVehiculo
         public string StrValor { get; set; }
 
         [Display(Name = "Descripcion")]
-        public string StrDescripcion { get; set; }
+        public string? StrDescripcion { get; set; }
+
+       
     }
+
 }

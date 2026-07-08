@@ -12,6 +12,10 @@ namespace Cavex.Principal.Models.VehCatResponsableServicio
 
         [StringLength(500, ErrorMessage = "El valor no puede superar los 500 caracteres.")]
         [Display(Name = "Descripcion")]
-        public string StrDescripcion { get; set; } = string.Empty;
+        public string? StrDescripcion { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "El estatus es obligatorio.")]
+        public int IdCatStatus { get; set; } = 1;
     }
 }
+

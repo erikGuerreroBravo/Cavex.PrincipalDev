@@ -12,6 +12,6 @@ namespace Cavex.Principal.Models.VehCatCapacidad
 
         [StringLength(450, ErrorMessage = "El valor no puede superar los 450 caracteres.")]
         [Display(Name = "Descripcion")]
-        public string StrDescripcion { get; set; } = string.Empty;
+        public string? StrDescripcion { get; set; } = string.Empty;
     }
 }

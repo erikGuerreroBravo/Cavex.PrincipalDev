@@ -12,6 +12,6 @@ namespace Cavex.Principal.Models.VehCatGasolineras
 
         [StringLength(500, ErrorMessage = "El valor no puede superar los 500 caracteres.")]
         [Display(Name = "Descripcion")]
-        public string StrDescripcion { get; set; } = string.Empty;
+        public string? StrDescripcion { get; set; } = string.Empty;
     }
 }

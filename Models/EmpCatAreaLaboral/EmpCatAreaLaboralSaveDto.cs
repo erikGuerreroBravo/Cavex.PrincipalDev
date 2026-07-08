@@ -12,7 +12,11 @@ namespace Cavex.Principal.Models.EmpCatAreaLaboral
        
         [StringLength(450, ErrorMessage = "El valor no puede superar los 450 caracteres.")]
         [Display(Name = "Descripcionn")]
-        public string StrDescripcion { get; set; } = string.Empty;
+        public string? StrDescripcion { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "El estatus es obligatorio.")]
+        [Display(Name = "Estatus")]
+        public int? IdCatStatus { get; set; }
 
 
     }
