@@ -12,6 +12,10 @@ namespace Cavex.Principal.Models.EmpCatTipoContratacion
         [Required(ErrorMessage = "La descripcion es obligatoria.")]
         [StringLength(450, ErrorMessage = "El valor no puede superar los 450 caracteres.")]
         [Display(Name = "Descripcion")]
-        public string StrDescripcion { get; set; } = string.Empty;
+        public string? StrDescripcion { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "El estatus es obligatorio.")]
+        [Display(Name = "Estatus")]
+        public int? IdCatStatus { get; set; }
     }
 }
