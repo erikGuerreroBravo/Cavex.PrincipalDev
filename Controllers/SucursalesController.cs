@@ -1,6 +1,7 @@
 using Cavex.Principal.Models.CatSucursal;
 using Cavex.Principal.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Cavex.Principal.Controllers
 {
@@ -8,13 +9,14 @@ namespace Cavex.Principal.Controllers
     {
         private readonly ISucursalesService _service;
         private readonly ICatStatusService _catStatusService;
-        private static (List<CatSucursalDto> Items, DateTime Expiration)? _sucursalesCache;
-        private static readonly object _sucursalesLock = new();
+        private readonly IMemoryCache _cache;
+        private const string StatusCacheKey = "status_list";
 
-        public SucursalesController(ISucursalesService service, ICatStatusService catStatusService)
+        public SucursalesController(ISucursalesService service, ICatStatusService catStatusService, IMemoryCache cache)
         {
             _service = service;
             _catStatusService = catStatusService;
+            _cache = cache;
         }
 
         public IActionResult Index(int pagina = 1)
@@ -24,47 +26,104 @@ namespace Cavex.Principal.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetSucursales(CancellationToken cancellationToken)
+        public async Task<JsonResult> GetSucursales(int pagina, string? search, string? status, CancellationToken cancellationToken)
         {
-            lock (_sucursalesLock)
+            if (pagina < 1) pagina = 1;
+            int? statusVal = null;
+            if (int.TryParse(status, out var parsedStatus))
             {
-                if (_sucursalesCache != null && _sucursalesCache.Value.Expiration > DateTime.UtcNow)
-                {
-                    return Json(new { success = true, data = _sucursalesCache.Value.Items });
-                }
+                statusVal = parsedStatus;
             }
 
-            var response = await _service.ObtenerTodosAsync(1, 100, cancellationToken);
+            var countsCacheKey = $"sucursales_counts_{search}";
+            if (!_cache.TryGetValue(countsCacheKey, out Dictionary<string, int>? statusCounts))
+            {
+                var allCountResponse = await _service.ObtenerTodosAsync(1, 1, search, null, cancellationToken);
+                int totalAllCount = allCountResponse.Success ? (allCountResponse.Data?.TotalCount ?? 0) : 0;
+
+                var activeCountResponse = await _service.ObtenerTodosAsync(1, 1, search, 1, cancellationToken);
+                int activeCount = activeCountResponse.Success ? (activeCountResponse.Data?.TotalCount ?? 0) : 0;
+
+                var inactiveCountResponse = await _service.ObtenerTodosAsync(1, 1, search, 2, cancellationToken);
+                int inactiveCount = inactiveCountResponse.Success ? (inactiveCountResponse.Data?.TotalCount ?? 0) : 0;
+
+                statusCounts = new Dictionary<string, int>
+                {
+                    { "1", activeCount },
+                    { "2", inactiveCount },
+                    { "total", totalAllCount }
+                };
+
+                _cache.Set(countsCacheKey, statusCounts, TimeSpan.FromSeconds(10));
+            }
+
+            int totalAllCountVal = statusCounts["total"];
+
+            var response = await _service.ObtenerTodosAsync(pagina, 10, search, statusVal, cancellationToken);
             if (!response.Success)
             {
                 return Json(new { success = false, message = response.Message });
             }
 
             var items = response.Data?.Items?.ToList() ?? new List<CatSucursalDto>();
-            lock (_sucursalesLock)
-            {
-                _sucursalesCache = (items, DateTime.UtcNow.AddSeconds(15));
-            }
+            int totalCount = response.Data?.TotalCount ?? 0;
 
-            return Json(new { success = true, data = items });
+            return Json(new { 
+                success = true, 
+                data = items, 
+                totalCount = totalCount,
+                pageIndex = pagina,
+                pageSize = 10,
+                statusCounts = statusCounts,
+                totalAllCount = totalAllCountVal
+            });
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetStatus(CancellationToken cancellationToken)
+        public async Task<JsonResult> GetStatus(CancellationToken cancellationToken)
         {
-            var response = await _catStatusService.ObtenerTodosAsync(cancellationToken);
+            var statusItems = _cache.Get<object>(StatusCacheKey);
+            if (statusItems != null)
+            {
+                return Json(new { success = true, data = statusItems });
+            }
 
-            return Json(response.Success
-                ? new { success = true, data = response.Data?.Items }
-                : new { success = false, message = response.Message });
+            var response = await _catStatusService.ObtenerTodosAsync(cancellationToken);
+            if (!response.Success || response.Data?.Items == null || !response.Data.Items.Any())
+            {
+                statusItems = GetDefaultStatusItems();
+                _cache.Set(StatusCacheKey, statusItems, TimeSpan.FromSeconds(30));
+                return Json(new { success = true, data = statusItems });
+            }
+
+            statusItems = response.Data.Items;
+            _cache.Set(StatusCacheKey, statusItems, TimeSpan.FromMinutes(10));
+
+            return Json(new { success = true, data = statusItems });
         }
 
+        private static object[] GetDefaultStatusItems() =>
+        [
+            new { id = 1, strValor = "Activo", strDescripcion = "Activo" },
+            new { id = 2, strValor = "Inactivo", strDescripcion = "Inactivo" }
+        ];
+
         [HttpPost]
-        public async Task<IActionResult> SaveSucursal([FromBody] CatSucursalSaveDto model, CancellationToken cancellationToken)
+        public async Task<JsonResult> SaveSucursal([FromBody] CatSucursalSaveDto model, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
                 return Json(new { success = false, message = GetModelStateErrors() });
+            }
+
+            var exists = await _service.ExistePorNombreAsync(
+                model.StrValor.Trim(),
+                null,
+                cancellationToken);
+
+            if (exists)
+            {
+                return Json(new { success = false, message = "El nombre de la sucursal ya existe." });
             }
 
             var response = await _service.CrearAsync(model, cancellationToken);
@@ -73,20 +132,25 @@ namespace Cavex.Principal.Controllers
                 return Json(new { success = false, message = response.Message });
             }
 
-            lock (_sucursalesLock)
-            {
-                _sucursalesCache = null;
-            }
-
             return Json(new { success = true, data = response.Data });
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateSucursal([FromBody] CatSucursalEditDto model, CancellationToken cancellationToken)
+        public async Task<JsonResult> UpdateSucursal([FromBody] CatSucursalEditDto model, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
                 return Json(new { success = false, message = GetModelStateErrors() });
+            }
+
+            var exists = await _service.ExistePorNombreAsync(
+                model.StrValor.Trim(),
+                model.Id,
+                cancellationToken);
+
+            if (exists)
+            {
+                return Json(new { success = false, message = "El nombre de la sucursal ya existe." });
             }
 
             var saveModel = new CatSucursalSaveDto
@@ -102,26 +166,16 @@ namespace Cavex.Principal.Controllers
                 return Json(new { success = false, message = response.Message });
             }
 
-            lock (_sucursalesLock)
-            {
-                _sucursalesCache = null;
-            }
-
             return Json(new { success = true, data = response.Data });
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteSucursal(int id, CancellationToken cancellationToken)
+        public async Task<JsonResult> DeleteSucursal(int id, CancellationToken cancellationToken)
         {
             var response = await _service.EliminarAsync(id, cancellationToken);
             if (!response.Success)
             {
                 return Json(new { success = false, message = response.Message });
-            }
-
-            lock (_sucursalesLock)
-            {
-                _sucursalesCache = null;
             }
 
             return Json(new { success = true, data = response.Data });

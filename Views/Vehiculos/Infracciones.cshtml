@@ -14,7 +14,7 @@
 
 <!-- Formulario de VehInfracciones.
      La sección de pago cambia su obligatoriedad según el estatus, sin alterar los names SQL. -->
-<form id="infraccionVehiculoForm" class="vehiculo-create-form infraccion-vehiculo-form vehiculo-module-form" novalidate>
+<form id="infraccionVehiculoForm" class="vehiculo-create-form infraccion-vehiculo-form vehiculo-module-form">
     <div class="infraccion-form-grid">
         <div class="infraccion-main-column">
             <!-- Datos principales: columnas NOT NULL de dbo.VehInfracciones. -->
@@ -88,19 +88,25 @@
                 <!-- Comprobante auxiliar; la ruta futura se almacenará en strUrlComprobantePago. -->
                 <div class="infraccion-comprobante-block">
                     <label class="form-label" for="infraccionComprobanteArchivo">Comprobante de pago</label>
-                    <div id="infraccionComprobanteArea" class="infraccion-comprobante-area" role="button" tabindex="0">
+                    <div id="infraccionComprobanteArea" class="vehiculo-upload-area infraccion-comprobante-area" role="button" tabindex="0">
                         <input id="infraccionComprobanteArchivo" type="file" class="vehiculo-file-input" accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp" />
                         <input id="infraccion-strUrlComprobantePago" name="strUrlComprobantePago" type="hidden" value="" />
-                        <div id="infraccionComprobantePrompt" class="infraccion-comprobante-prompt">
+                        <div id="infraccionComprobantePrompt" class="vehiculo-upload-prompt infraccion-comprobante-prompt">
+                            <span class="vehiculo-upload-icon" aria-hidden="true">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
+                            </span>
                             <strong>Arrastra el comprobante aquí</strong>
-                            <span>PDF, JPG, JPEG, PNG o WEBP · máximo 5 MB</span>
+                            <span>o haz clic para seleccionar</span>
+                            <small>PDF, JPG, JPEG, PNG o WEBP · máximo 5 MB</small>
                         </div>
-                        <div id="infraccionComprobanteSeleccionado" class="infraccion-comprobante-file" hidden>
-                            <div>
-                                <span id="infraccionComprobanteTipo">Archivo</span>
-                                <strong id="infraccionComprobanteNombre">Comprobante seleccionado</strong>
+                        <div class="vehiculo-file-preview" id="infraccionFilePreview" hidden>
+                            <div class="vehiculo-file-meta">
+                                <strong id="infraccionFileName">Comprobante seleccionado</strong>
+                                <small>Vista previa local; aún no se genera strUrlFoto</small>
                             </div>
-                            <button id="btnQuitarComprobanteInfraccion" type="button" class="btn btn-outline-cavex btn-sm">Quitar</button>
+                            <div class="vehiculo-file-actions infraccion-file-actions">
+                                <button id="btnQuitarComprobanteInfraccion" type="button" class="btn btn-outline-cavex btn-sm">Quitar</button>
+                            </div>
                         </div>
                     </div>
                     <div id="infraccionComprobanteArchivoError" class="invalid-feedback infraccion-upload-error"></div>

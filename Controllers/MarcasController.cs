@@ -1,18 +1,20 @@
 using Cavex.Principal.Models.VehCatMarcaVehiculo;
 using Cavex.Principal.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Cavex.Principal.Controllers
 {
     public class MarcasController : Controller
     {
         private readonly IVehCatMarcaVehiculoService _service;
-        private static (List<VehCatMarcaVehiculoDto> Items, DateTime Expiration)? _cache;
-        private static readonly object _lock = new();
+        private readonly IMemoryCache _cache;
+        private const string CacheKey = "marcas_list";
 
-        public MarcasController(IVehCatMarcaVehiculoService service)
+        public MarcasController(IVehCatMarcaVehiculoService service, IMemoryCache cache)
         {
             _service = service;
+            _cache = cache;
         }
 
         public IActionResult Index()
@@ -21,33 +23,24 @@ namespace Cavex.Principal.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetMarcas(CancellationToken cancellationToken)
+        public async Task<JsonResult> GetMarcas(int pagina, string? search, CancellationToken cancellationToken)
         {
-            lock (_lock)
-            {
-                if (_cache != null && _cache.Value.Expiration > DateTime.UtcNow)
-                {
-                    return Json(new { success = true, data = _cache.Value.Items });
-                }
-            }
+            if (pagina < 1) pagina = 1;
 
-            var response = await _service.ObtenerTodosAsync(1, 9999, cancellationToken);
+            var response = await _service.ObtenerTodosAsync(pagina, 10, search, cancellationToken);
             if (!response.Success)
             {
                 return Json(new { success = false, message = response.Message });
             }
 
             var items = response.Data?.Items?.ToList() ?? new List<VehCatMarcaVehiculoDto>();
-            lock (_lock)
-            {
-                _cache = (items, DateTime.UtcNow.AddSeconds(15));
-            }
+            var totalCount = response.Data?.TotalCount ?? 0;
 
-            return Json(new { success = true, data = items });
+            return Json(new { success = true, data = items, totalCount = totalCount });
         }
 
         [HttpPost]
-        public async Task<IActionResult> SaveMarca([FromBody] VehCatMarcaVehiculoSaveDto model, CancellationToken cancellationToken)
+        public async Task<JsonResult> SaveMarca([FromBody] VehCatMarcaVehiculoSaveDto model, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
@@ -55,16 +48,14 @@ namespace Cavex.Principal.Controllers
                 return Json(new { success = false, message = string.Join(" ", errors) });
             }
 
-            // Check duplicate
-            var existing = await _service.ObtenerTodosAsync(1, 9999, cancellationToken);
-            if (existing.Success && existing.Data?.Items != null)
+            var exists = await _service.ExistePorNombreAsync(
+                model.StrValor.Trim(),
+                null,
+                cancellationToken);
+
+            if (exists)
             {
-                var exists = existing.Data.Items.Any(x => 
-                    x.StrValor.Trim().Equals(model.StrValor.Trim(), StringComparison.OrdinalIgnoreCase));
-                if (exists)
-                {
-                    return Json(new { success = false, message = "El nombre de la marca ya existe." });
-                }
+                return Json(new { success = false, message = "El nombre de la marca ya existe." });
             }
 
             var response = await _service.CrearAsync(model, cancellationToken);
@@ -73,16 +64,11 @@ namespace Cavex.Principal.Controllers
                 return Json(new { success = false, message = response.Message });
             }
 
-            lock (_lock)
-            {
-                _cache = null;
-            }
-
             return Json(new { success = true, data = response.Data });
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateMarca([FromBody] VehCatMarcaVehiculoEditDto model, CancellationToken cancellationToken)
+        public async Task<JsonResult> UpdateMarca([FromBody] VehCatMarcaVehiculoEditDto model, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
@@ -90,17 +76,14 @@ namespace Cavex.Principal.Controllers
                 return Json(new { success = false, message = string.Join(" ", errors) });
             }
 
-            // Check duplicate
-            var existing = await _service.ObtenerTodosAsync(1, 9999, cancellationToken);
-            if (existing.Success && existing.Data?.Items != null)
+            var exists = await _service.ExistePorNombreAsync(
+                model.StrValor.Trim(),
+                model.Id,
+                cancellationToken);
+
+            if (exists)
             {
-                var exists = existing.Data.Items.Any(x => 
-                    x.StrValor.Trim().Equals(model.StrValor.Trim(), StringComparison.OrdinalIgnoreCase) && 
-                    x.Id != model.Id);
-                if (exists)
-                {
-                    return Json(new { success = false, message = "El nombre de la marca ya existe." });
-                }
+                return Json(new { success = false, message = "El nombre de la marca ya existe." });
             }
 
             var response = await _service.EditarAsync(model, cancellationToken);
@@ -109,16 +92,11 @@ namespace Cavex.Principal.Controllers
                 return Json(new { success = false, message = response.Message });
             }
 
-            lock (_lock)
-            {
-                _cache = null;
-            }
-
             return Json(new { success = true, data = response.Data });
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteMarca(int id, CancellationToken cancellationToken)
+        public async Task<JsonResult> DeleteMarca(int id, CancellationToken cancellationToken)
         {
             var response = await _service.EliminarAsync(id, cancellationToken);
             if (!response.Success)
@@ -126,10 +104,7 @@ namespace Cavex.Principal.Controllers
                 return Json(new { success = false, message = response.Message });
             }
 
-            lock (_lock)
-            {
-                _cache = null;
-            }
+            _cache.Remove(CacheKey);
 
             return Json(new { success = true, data = response.Data });
         }

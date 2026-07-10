@@ -62,7 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function loadMarcasFromServer() {
-    fetch('/Marcas/GetMarcas')
+    const url = `/Marcas/GetMarcas?pagina=${currentPage}&search=${encodeURIComponent(searchQuery)}`;
+    fetch(url)
         .then(response => {
             if (!response.ok) {
                 throw new Error("HTTP error " + response.status);
@@ -81,7 +82,8 @@ function loadMarcasFromServer() {
                 } else {
                     marcas = [];
                 }
-                renderMarcas();
+                const totalCount = result.totalCount ?? 0;
+                renderMarcas(totalCount);
             } else {
                 console.error("Error al cargar marcas desde base de datos:", result.message);
                 Swal.fire({
@@ -91,7 +93,7 @@ function loadMarcasFromServer() {
                     confirmButtonColor: 'var(--teal-cavex)'
                 });
                 marcas = [];
-                renderMarcas();
+                renderMarcas(0);
             }
         })
         .catch(err => {
@@ -103,30 +105,17 @@ function loadMarcasFromServer() {
                 confirmButtonColor: 'var(--teal-cavex)'
             });
             marcas = [];
-            renderMarcas();
+            renderMarcas(0);
         });
 }
 
 // Función para renderizar las marcas
-function renderMarcas() {
+function renderMarcas(totalCount) {
     const tbody = document.getElementById('marcasTableBody');
     if (!tbody) return;
     tbody.innerHTML = '';
 
-    // Filtrar marcas
-    let filtered = marcas.filter(m => {
-        if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-            const nombreMatch = m.nombre.toLowerCase().includes(query);
-            const descMatch = (m.descripcion || '').toLowerCase().includes(query);
-            return nombreMatch || descMatch;
-        }
-        return true;
-    });
-
-    // Paginación
-    const totalRecords = filtered.length;
-    const totalPages = Math.ceil(totalRecords / pageSize) || 1;
+    const totalPages = Math.ceil(totalCount / pageSize) || 1;
     
     if (currentPage > totalPages) {
         currentPage = totalPages;
@@ -135,11 +124,7 @@ function renderMarcas() {
         currentPage = 1;
     }
 
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = Math.min(startIndex + pageSize, totalRecords);
-    const pagedList = filtered.slice(startIndex, endIndex);
-
-    if (pagedList.length === 0) {
+    if (marcas.length === 0) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="3" class="text-center py-5">
@@ -152,7 +137,7 @@ function renderMarcas() {
             </tr>
         `;
     } else {
-        pagedList.forEach(m => {
+        marcas.forEach(m => {
             const tr = document.createElement('tr');
             
             const descText = m.descripcion || 'Sin descripción';
@@ -196,8 +181,10 @@ function renderMarcas() {
     }
 
     // Actualizar contadores e información en barra inferior
-    const infoText = totalRecords > 0 
-        ? `Mostrando ${startIndex + 1}-${endIndex} de ${totalRecords} registros`
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = Math.min(startIndex + marcas.length, totalCount);
+    const infoText = totalCount > 0 
+        ? `Mostrando ${startIndex + 1}-${endIndex} de ${totalCount} registros`
         : `Mostrando 0-0 de 0 registros`;
     const infoEl = document.getElementById('paginationInfo');
     if (infoEl) infoEl.textContent = infoText;
@@ -208,7 +195,7 @@ function renderMarcas() {
     // Actualizar contadores en la cabecera de la tabla
     const countPill = document.querySelector('.table-module .records-pill');
     if (countPill) {
-        countPill.textContent = `${totalRecords} marcas`;
+        countPill.textContent = `${totalCount} marcas`;
     }
 
     const extraPill = document.querySelector('.table-module .records-pill-soft');
@@ -239,8 +226,47 @@ function renderPagination(totalPages) {
 
     paginationList.appendChild(createPageItem("Anterior", currentPage - 1, currentPage === 1));
 
-    for (let i = 1; i <= totalPages; i++) {
-        paginationList.appendChild(createPageItem(String(i), i, false, currentPage === i));
+    if (totalPages <= 10) {
+        for (let i = 1; i <= totalPages; i++) {
+            paginationList.appendChild(createPageItem(String(i), i, false, currentPage === i));
+        }
+    } else {
+        // dynamic sliding window for pages 11 to N
+        let startPage = 1;
+        let endPage = 10;
+
+        if (currentPage > 10) {
+            startPage = currentPage - 5;
+            endPage = currentPage + 4;
+            if (endPage > totalPages) {
+                endPage = totalPages;
+                startPage = totalPages - 9;
+            }
+        }
+
+        if (startPage > 1) {
+            paginationList.appendChild(createPageItem("1", 1, false, currentPage === 1));
+            if (startPage > 2) {
+                const li = document.createElement("li");
+                li.className = "page-item disabled";
+                li.innerHTML = '<span class="page-link">...</span>';
+                paginationList.appendChild(li);
+            }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            paginationList.appendChild(createPageItem(String(i), i, false, currentPage === i));
+        }
+
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                const li = document.createElement("li");
+                li.className = "page-item disabled";
+                li.innerHTML = '<span class="page-link">...</span>';
+                paginationList.appendChild(li);
+            }
+            paginationList.appendChild(createPageItem(String(totalPages), totalPages, false, currentPage === totalPages));
+        }
     }
 
     paginationList.appendChild(createPageItem("Siguiente", currentPage + 1, currentPage === totalPages));
@@ -267,30 +293,16 @@ function createPageItem(text, page, disabled, active) {
 // Cambiar página
 function changePage(event, page) {
     if (event) event.preventDefault();
-    
-    // Calcular total de páginas en base a los registros filtrados
-    const filteredCount = marcas.filter(m => {
-        if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-            const nombreMatch = m.nombre.toLowerCase().includes(query);
-            const descMatch = (m.descripcion || '').toLowerCase().includes(query);
-            return nombreMatch || descMatch;
-        }
-        return true;
-    }).length;
-    
-    const computedTotalPages = Math.ceil(filteredCount / pageSize) || 1;
-    if (page < 1 || page > computedTotalPages) return;
-
+    if (page < 1) return;
     currentPage = page;
-    renderMarcas();
+    loadMarcasFromServer();
 }
 
 // Manejar búsqueda de texto
 function handleSearch(query) {
     searchQuery = query;
     currentPage = 1;
-    renderMarcas();
+    loadMarcasFromServer();
 }
 
 // Limpiar errores de validación

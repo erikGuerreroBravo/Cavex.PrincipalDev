@@ -1,9 +1,11 @@
+"use strict";
+
 document.addEventListener("DOMContentLoaded", () => {
     inicializarVistaLlantas();
 });
 
 function inicializarVistaLlantas() {
-    const form = document.getElementById("llantaForm");
+    const form = document.getElementById("llantaVehiculoForm");
     if (!form) return;
 
     cargarCatalogosLlantas();
@@ -109,6 +111,10 @@ function inicializarCargaEvidencia() {
 
     area.addEventListener("click", event => {
         if (!event.target.closest(".llanta-file-actions button")) input.click();
+    });
+    document.getElementById("btnQuitarEvidenciaLlanta")?.addEventListener("click", event => {
+        event.stopPropagation();
+        limpiarEvidencia();
     });
     area.addEventListener("keydown", event => {
         if (event.key === "Enter" || event.key === " ") {

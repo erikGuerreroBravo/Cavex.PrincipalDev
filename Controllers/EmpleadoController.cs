@@ -2,6 +2,7 @@ using Cavex.Principal.Models.EmpEmpleado;
 using Cavex.Principal.Services.Interfaces;
 using Cavex.Principal.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Cavex.Principal.Controllers
 {
@@ -11,17 +12,20 @@ namespace Cavex.Principal.Controllers
         private readonly Cavex.Principal.ApiClients.EmpCatColonia.IEmpCatColoniaApi _coloniaApi;
         private readonly Cavex.Principal.ApiClients.ICavexGeneralCatalogApi _catalogApi;
         private readonly ICatStatusService _statusService;
+        private readonly IMemoryCache _cache;
 
         public EmpleadoController(
             IEmpEmpleadoService service,
             Cavex.Principal.ApiClients.EmpCatColonia.IEmpCatColoniaApi coloniaApi,
             Cavex.Principal.ApiClients.ICavexGeneralCatalogApi catalogApi,
-            ICatStatusService statusService)
+            ICatStatusService statusService,
+            IMemoryCache cache)
         {
             _service = service;
             _coloniaApi = coloniaApi;
             _catalogApi = catalogApi;
             _statusService = statusService;
+            _cache = cache;
         }
 
         [HttpGet]
@@ -133,20 +137,67 @@ namespace Cavex.Principal.Controllers
         }
 
         [HttpGet]
+        public IActionResult Details(int id)
+        {
+            ViewBag.EmpleadoId = id;
+            return View();
+        }
+
+        [HttpGet]
         public IActionResult Create()
         {
             return View(new CreateViewModel());
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetEmpleados(CancellationToken cancellationToken)
+        public async Task<IActionResult> GetEmpleados(int pagina, string? search, string? status, CancellationToken cancellationToken)
         {
-            var response = await _service.ObtenerTodosAsync(1, 100, cancellationToken);
+            if (pagina < 1) pagina = 1;
+            int? statusVal = null;
+            if (status == "activos") statusVal = 1;
+            else if (status == "baja") statusVal = 2;
+
+            var countsCacheKey = $"empleados_counts_{search}";
+            if (!_cache.TryGetValue(countsCacheKey, out Dictionary<string, int>? statusCounts))
+            {
+                var allCountResponse = await _service.ObtenerTodosAsync(1, 1, search, null, cancellationToken);
+                int totalAllCount = allCountResponse.Success ? (allCountResponse.Data?.TotalCount ?? 0) : 0;
+
+                var activeCountResponse = await _service.ObtenerTodosAsync(1, 1, search, 1, cancellationToken);
+                int activeCount = activeCountResponse.Success ? (activeCountResponse.Data?.TotalCount ?? 0) : 0;
+
+                var inactiveCountResponse = await _service.ObtenerTodosAsync(1, 1, search, 2, cancellationToken);
+                int inactiveCount = inactiveCountResponse.Success ? (inactiveCountResponse.Data?.TotalCount ?? 0) : 0;
+
+                statusCounts = new Dictionary<string, int>
+                {
+                    { "total", totalAllCount },
+                    { "active", activeCount },
+                    { "inactive", inactiveCount }
+                };
+
+                _cache.Set(countsCacheKey, statusCounts, TimeSpan.FromSeconds(10));
+            }
+
+            int totalAllCountVal = statusCounts["total"];
+            int activeCountVal = statusCounts["active"];
+            int inactiveCountVal = statusCounts["inactive"];
+
+            var response = await _service.ObtenerTodosAsync(pagina, 10, search, statusVal, cancellationToken);
             if (!response.Success)
             {
                 return Json(new { success = false, message = response.Message });
             }
-            return Json(new { success = true, data = response.Data?.Items });
+            return Json(new { 
+                success = true, 
+                data = response.Data?.Items, 
+                totalCount = response.Data?.TotalCount ?? 0,
+                pageIndex = pagina,
+                pageSize = 10,
+                totalAllCount = totalAllCountVal,
+                activeCount = activeCountVal,
+                inactiveCount = inactiveCountVal
+            });
         }
 
         [HttpGet]

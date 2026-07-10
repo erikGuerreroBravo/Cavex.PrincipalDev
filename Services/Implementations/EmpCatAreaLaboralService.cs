@@ -23,11 +23,25 @@ namespace Cavex.Principal.Services.Implementations
         public async Task<ResponseWrapper<PagedResponse<EmpCatAreaLaboralDto>>> ObtenerTodosAsync(
             int pageIndex = 1,
             int pageSize = 10,
+            string? search = null,
             CancellationToken cancellationToken = default)
         {
             return await ExecuteAsync(
-                () => _api.GetAllAsync(pageIndex, pageSize, cancellationToken),
+                () => _api.GetAllAsync(pageIndex, pageSize, search, cancellationToken),
                 "No fue posible obtener las areas laborales.");
+        }
+
+        public async Task<bool> ExistePorNombreAsync(string nombre, int? excludeId = null, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(nombre)) return false;
+            var response = await ObtenerTodosAsync(1, 10, nombre, cancellationToken);
+            if (response.Success && response.Data?.Items != null)
+            {
+                return response.Data.Items.Any(x => 
+                    x.StrValor.Trim().Equals(nombre.Trim(), StringComparison.OrdinalIgnoreCase) 
+                    && (!excludeId.HasValue || x.Id != excludeId.Value));
+            }
+            return false;
         }
 
         public async Task<ResponseWrapper<EmpCatAreaLaboralDto>> ObtenerPorIdAsync(

@@ -21,8 +21,23 @@ namespace Cavex.Principal.Services.Implementations
         public Task<ResponseWrapper<PagedResponse<CatSucursalDto>>> ObtenerTodosAsync(
             int pageIndex = 1,
             int pageSize = 10,
+            string? search = null,
+            int? status = null,
             CancellationToken cancellationToken = default) =>
-            ExecuteAsync(() => _sucursalesApi.GetAllAsync(pageIndex, pageSize, cancellationToken), "No fue posible obtener las sucursales.");
+            ExecuteAsync(() => _sucursalesApi.GetAllAsync(pageIndex, pageSize, search, status, cancellationToken), "No fue posible obtener las sucursales.");
+
+        public async Task<bool> ExistePorNombreAsync(string nombre, int? excludeId = null, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(nombre)) return false;
+            var response = await ObtenerTodosAsync(1, 10, nombre, null, cancellationToken);
+            if (response.Success && response.Data?.Items != null)
+            {
+                return response.Data.Items.Any(x => 
+                    x.StrValor.Trim().Equals(nombre.Trim(), StringComparison.OrdinalIgnoreCase) 
+                    && (!excludeId.HasValue || x.Id != excludeId.Value));
+            }
+            return false;
+        }
 
         public Task<ResponseWrapper<CatSucursalDto>> CrearAsync(CatSucursalSaveDto request, CancellationToken cancellationToken = default) =>
             ExecuteAsync(() => _sucursalesApi.CreateAsync(RequestWrapper<CatSucursalSaveDto>.Create(request), cancellationToken), "No fue posible crear la sucursal.");

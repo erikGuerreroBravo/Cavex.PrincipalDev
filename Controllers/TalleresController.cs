@@ -1,18 +1,20 @@
 using Cavex.Principal.Models.VehCatTaller;
 using Cavex.Principal.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Cavex.Principal.Controllers
 {
     public class TalleresController : Controller
     {
         private readonly IVehCatTallerService _service;
-        private static (List<VehCatTallerDto> Items, DateTime Expiration)? _cache;
-        private static readonly object _lock = new();
+        private readonly IMemoryCache _cache;
+        private const string CacheKey = "talleres_list";
 
-        public TalleresController(IVehCatTallerService service)
+        public TalleresController(IVehCatTallerService service, IMemoryCache cache)
         {
             _service = service;
+            _cache = cache;
         }
 
         public IActionResult Index()
@@ -21,86 +23,100 @@ namespace Cavex.Principal.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetTalleres(CancellationToken cancellationToken)
+        public async Task<JsonResult> GetTalleres(int pagina, string? search, CancellationToken cancellationToken)
         {
-            lock (_lock)
-            {
-                if (_cache != null && _cache.Value.Expiration > DateTime.UtcNow)
-                {
-                    return Json(new { success = true, data = _cache.Value.Items });
-                }
-            }
+            if (pagina < 1) pagina = 1;
 
-            var response = await _service.ObtenerTodosAsync(1, 9999, cancellationToken);
+            var response = await _service.ObtenerTodosAsync(pagina, 10, search, cancellationToken);
             if (!response.Success)
             {
                 return Json(new { success = false, message = response.Message });
             }
 
             var items = response.Data?.Items?.ToList() ?? new List<VehCatTallerDto>();
-            lock (_lock)
-            {
-                _cache = (items, DateTime.UtcNow.AddSeconds(15));
-            }
+            var totalCount = response.Data?.TotalCount ?? 0;
 
-            return Json(new { success = true, data = items });
+            return Json(new { success = true, data = items, totalCount = totalCount });
         }
 
+
         [HttpPost]
-        public async Task<IActionResult> SaveTaller([FromBody] VehCatTallerSaveDto model, CancellationToken cancellationToken)
+        public async Task<JsonResult> SaveTaller([FromBody] VehCatTallerSaveDto model, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-                return Json(new { success = false, message = string.Join(" ", errors) });
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                return Json(new
+                {
+                    success = false,
+                    message = string.Join(" ", errors)
+                });
             }
 
-            // Check duplicate
-            var existing = await _service.ObtenerTodosAsync(1, 9999, cancellationToken);
-            if (existing.Success && existing.Data?.Items != null)
+            var exists = await _service.ExistePorNombreAsync(
+                model.StrValor.Trim(),
+                null,
+                cancellationToken);
+
+            if (exists)
             {
-                var exists = existing.Data.Items.Any(x => 
-                    x.StrValor.Trim().Equals(model.StrValor.Trim(), StringComparison.OrdinalIgnoreCase));
-                if (exists)
+                return Json(new
                 {
-                    return Json(new { success = false, message = "El nombre del taller ya existe." });
-                }
+                    success = false,
+                    message = "El nombre del taller ya existe."
+                });
             }
 
             var response = await _service.CrearAsync(model, cancellationToken);
+
             if (!response.Success)
             {
-                return Json(new { success = false, message = response.Message });
+                return Json(new
+                {
+                    success = false,
+                    message = response.Message
+                });
             }
 
-            lock (_lock)
+            return Json(new
             {
-                _cache = null;
-            }
-
-            return Json(new { success = true, data = response.Data });
+                success = true,
+                data = response.Data
+            });
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateTaller([FromBody] VehCatTallerEditDto model, CancellationToken cancellationToken)
+        public async Task<JsonResult> UpdateTaller([FromBody] VehCatTallerEditDto model, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-                return Json(new { success = false, message = string.Join(" ", errors) });
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                return Json(new
+                {
+                    success = false,
+                    message = string.Join(" ", errors)
+                });
             }
 
-            // Check duplicate
-            var existing = await _service.ObtenerTodosAsync(1, 9999, cancellationToken);
-            if (existing.Success && existing.Data?.Items != null)
-            {
-                var exists = existing.Data.Items.Any(x => 
-                    x.StrValor.Trim().Equals(model.StrValor.Trim(), StringComparison.OrdinalIgnoreCase) && 
-                    x.Id != model.Id);
-                if (exists)
+            var exists = await _service.ExistePorNombreAsync(
+                model.StrValor.Trim(),
+                model.Id,
+                cancellationToken);
+
+            if (exists) {
+                return Json(new
                 {
-                    return Json(new { success = false, message = "El nombre del taller ya existe." });
-                }
+                    success = false,
+                    message = "El nombre del taller ya existe."
+                });
             }
 
             var response = await _service.EditarAsync(model, cancellationToken);
@@ -109,16 +125,12 @@ namespace Cavex.Principal.Controllers
                 return Json(new { success = false, message = response.Message });
             }
 
-            lock (_lock)
-            {
-                _cache = null;
-            }
-
             return Json(new { success = true, data = response.Data });
+
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteTaller(int id, CancellationToken cancellationToken)
+        public async Task<JsonResult> DeleteTaller(int id, CancellationToken cancellationToken)
         {
             var response = await _service.EliminarAsync(id, cancellationToken);
             if (!response.Success)
@@ -126,10 +138,7 @@ namespace Cavex.Principal.Controllers
                 return Json(new { success = false, message = response.Message });
             }
 
-            lock (_lock)
-            {
-                _cache = null;
-            }
+            _cache.Remove(CacheKey);
 
             return Json(new { success = true, data = response.Data });
         }

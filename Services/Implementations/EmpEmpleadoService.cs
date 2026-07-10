@@ -24,10 +24,12 @@ namespace Cavex.Principal.Services.Implementations
             public async Task<ResponseWrapper<PagedResponse<EmpEmpleadoDto>>> ObtenerTodosAsync(
                 int pageIndex = 1,
                 int pageSize = 10,
+                string? search = null,
+                int? status = null,
                 CancellationToken cancellationToken = default)
             {
                 return await ExecuteAsync(
-                    () => _empEmpleadoApi.GetAllAsync(pageIndex, pageSize, cancellationToken),
+                    () => _empEmpleadoApi.GetAllAsync(pageIndex, pageSize, search, status, cancellationToken),
                     "No fue posible obtener los empleados.");
             }
 

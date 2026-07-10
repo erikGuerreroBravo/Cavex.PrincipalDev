@@ -1,18 +1,20 @@
 using Cavex.Principal.Models.EmpCatAreaLaboral;
 using Cavex.Principal.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Cavex.Principal.Controllers
 {
     public class EmpCatAreaLaboralController : Controller
     {
         private readonly IEmpCatAreaLaboralService _service;
-        private static (List<EmpCatAreaLaboralDto> Items, DateTime Expiration)? _areasCache;
-        private static readonly object _areasLock = new();
+        private readonly IMemoryCache _cache;
+        private const string CacheKey = "areas_list";
 
-        public EmpCatAreaLaboralController(IEmpCatAreaLaboralService service)
+        public EmpCatAreaLaboralController(IEmpCatAreaLaboralService service, IMemoryCache cache)
         {
             _service = service;
+            _cache = cache;
         }
 
         public IActionResult Index()
@@ -21,38 +23,39 @@ namespace Cavex.Principal.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAreas(CancellationToken cancellationToken)
+        public async Task<JsonResult> GetAreas(int pagina, string? search, CancellationToken cancellationToken)
         {
-            lock (_areasLock)
-            {
-                if (_areasCache != null && _areasCache.Value.Expiration > DateTime.UtcNow)
-                {
-                    return Json(new { success = true, data = _areasCache.Value.Items });
-                }
-            }
+            if (pagina < 1) pagina = 1;
 
-            var response = await _service.ObtenerTodosAsync(1, 100, cancellationToken);
+            var response = await _service.ObtenerTodosAsync(pagina, 10, search, cancellationToken);
             if (!response.Success)
             {
                 return Json(new { success = false, message = response.Message });
             }
 
             var items = response.Data?.Items?.ToList() ?? new List<EmpCatAreaLaboralDto>();
-            lock (_areasLock)
-            {
-                _areasCache = (items, DateTime.UtcNow.AddSeconds(15));
-            }
+            var totalCount = response.Data?.TotalCount ?? 0;
 
-            return Json(new { success = true, data = items });
+            return Json(new { success = true, data = items, totalCount = totalCount });
         }
 
         [HttpPost]
-        public async Task<IActionResult> SaveArea([FromBody] EmpCatAreaLaboralSaveDto model, CancellationToken cancellationToken)
+        public async Task<JsonResult> SaveArea([FromBody] EmpCatAreaLaboralSaveDto model, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
                 return Json(new { success = false, message = string.Join(" ", errors) });
+            }
+
+            var exists = await _service.ExistePorNombreAsync(
+                model.StrValor.Trim(),
+                null,
+                cancellationToken);
+
+            if (exists)
+            {
+                return Json(new { success = false, message = "El nombre del área laboral ya existe." });
             }
 
             var response = await _service.CrearAsync(model, cancellationToken);
@@ -61,21 +64,26 @@ namespace Cavex.Principal.Controllers
                 return Json(new { success = false, message = response.Message });
             }
 
-            lock (_areasLock)
-            {
-                _areasCache = null;
-            }
-
             return Json(new { success = true, data = response.Data });
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateArea([FromBody] EmpCatAreaLaboralEditDto model, CancellationToken cancellationToken)
+        public async Task<JsonResult> UpdateArea([FromBody] EmpCatAreaLaboralEditDto model, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
                 return Json(new { success = false, message = string.Join(" ", errors) });
+            }
+
+            var exists = await _service.ExistePorNombreAsync(
+                model.StrValor.Trim(),
+                model.Id,
+                cancellationToken);
+
+            if (exists)
+            {
+                return Json(new { success = false, message = "El nombre del área laboral ya existe." });
             }
 
             var saveModel = new EmpCatAreaLaboralSaveDto
@@ -90,16 +98,11 @@ namespace Cavex.Principal.Controllers
                 return Json(new { success = false, message = response.Message });
             }
 
-            lock (_areasLock)
-            {
-                _areasCache = null;
-            }
-
             return Json(new { success = true, data = response.Data });
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteArea(int id, CancellationToken cancellationToken)
+        public async Task<JsonResult> DeleteArea(int id, CancellationToken cancellationToken)
         {
             var response = await _service.EliminarAsync(id, cancellationToken);
             if (!response.Success)
@@ -107,10 +110,7 @@ namespace Cavex.Principal.Controllers
                 return Json(new { success = false, message = response.Message });
             }
 
-            lock (_areasLock)
-            {
-                _areasCache = null;
-            }
+            _cache.Remove(CacheKey);
 
             return Json(new { success = true, data = response.Data });
         }

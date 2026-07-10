@@ -700,7 +700,7 @@
 
 @section Scripts {
     <script>
-        window.vehiculoId = @(ViewData["VehiculoId"] ?? 1);
+        window.vehiculoId = @(ViewBag.VehiculoId ?? 1);
     </script>
     <!-- CDN de Chart.js y plugin datalabels estáticos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

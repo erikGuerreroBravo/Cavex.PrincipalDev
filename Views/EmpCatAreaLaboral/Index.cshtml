@@ -1,15 +1,15 @@
 @model Cavex.Principal.Models.EmpCatAreaLaboral.EmpCatAreaLaboralSaveDto;
 @{
-    ViewData["Title"] = "Áreas Laborales";
-    ViewData["HeaderEyebrow"] = "Configuración";
-    ViewData["HeaderTitle"] = "Áreas Laborales";
-    ViewData["HeaderSubtitle"] = "Administra el catálogo de departamentos y divisiones de la empresa.";
+    ViewBag.Title = "Áreas Laborales";
+    ViewBag.HeaderEyebrow = "Configuración";
+    ViewBag.HeaderTitle = "Áreas Laborales";
+    ViewBag.HeaderSubtitle = "Administra el catálogo de departamentos y divisiones de la empresa.";
 
-    ViewData["TableTitle"] = "Listado de áreas laborales";
-    ViewData["TableSubtitle"] = "Catálogo de áreas de trabajo y sus descripciones.";
-    ViewData["TableCount"] = 0;
-    ViewData["TableCountLabel"] = "áreas";
-    ViewData["TableExtraPill"] = "Catálogo General";
+    ViewBag.TableTitle = "Listado de áreas laborales";
+    ViewBag.TableSubtitle = "Catálogo de áreas de trabajo y sus descripciones.";
+    ViewBag.TableCount = 0;
+    ViewBag.TableCountLabel = "áreas";
+    ViewBag.TableExtraPill = "Catálogo General";
 }
 
 @section Head {
@@ -27,7 +27,7 @@
         </div>
     </div>
 
-    <form id="formArea" class="filter-form-compact" novalidate onsubmit="handleFormSubmit(event)">
+    <form id="formArea" class="filter-form-compact" onsubmit="handleFormSubmit(event)">
         <div class="row g-3">
             <div class="col-md-12">
                 <label class="form-label" for="strNombre">Nombre del área</label>
@@ -49,26 +49,16 @@
 </div>
 
 <div class="cavex-card table-module">
-    <!-- Cabecera de Tarjeta con Buscador Integrado -->
-    <div class="table-toolbar">
-        <div>
-            <h4 class="m-0 text-dark">Listado de áreas laborales</h4>
-            <small class="text-muted">Catálogo de áreas de trabajo y sus descripciones.</small>
-        </div>
-        <div class="d-flex align-items-center gap-3 flex-wrap">
-            <!-- Buscador integrado -->
-            <div class="table-search-box position-relative" style="max-width: 260px;">
-                <input type="text" id="tableSearch" class="form-control" placeholder="Buscar área..." oninput="handleSearch(this.value)" />
-                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-            </div>
-            <!-- Indicadores -->
-            <div class="d-flex align-items-center gap-2">
-                <span class="records-pill">0 áreas</span>
-                <span class="records-pill records-pill-soft">Catálogo General</span>
-            </div>
+    <partial name="_TableCardHeader" />
+
+    <div class="table-filter-bar d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div></div>
+        <div class="table-search-box position-relative" style="max-width: 260px;">
+            <input type="text" id="tableSearch" class="form-control" placeholder="Buscar área..." oninput="handleSearch(this.value)" />
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
         </div>
     </div>
 

@@ -10,6 +10,8 @@ namespace Cavex.Principal.ApiClients.EmpEmpleado
         Task<ResponseWrapper<PagedResponse<EmpEmpleadoDto>>> GetAllAsync(
             [Query] int? pageIndex = null,
             [Query] int? pageSize = null,
+            [Query] string? search = null,
+            [Query] int? status = null,
             CancellationToken cancellationToken = default);
 
         [Get("/api/v1/EmpEmpleado/{id}")]

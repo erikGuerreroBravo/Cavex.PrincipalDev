@@ -14,7 +14,7 @@
 
 <!-- Formulario de daños y accidentes.
      La póliza solo se habilita cuando el evento se marca como cubierto por seguro. -->
-<form id="danioAccidenteForm" class="vehiculo-create-form danio-accidente-form vehiculo-module-form" novalidate>
+<form id="danioAccidenteForm" class="vehiculo-create-form danio-accidente-form vehiculo-module-form">
     <div class="danio-form-grid">
         <div class="danio-main-column">
             <!-- Datos del vehículo: representa la FK obligatoria idVehDatosGenerales. -->
@@ -82,7 +82,7 @@
             <!-- Reparación y seguro: idVehSeguro se vuelve obligatorio solo cuando aplica cobertura. -->
             <section class="cavex-card form-section-card vehiculo-section-card danio-seguro-card">
                 <h3 class="form-section-title"><span class="form-section-number">3</span>Reparación y seguro</h3>
-                <div class="row g-3 align-items-end">
+                <div class="row g-3 align-items-center">
                     <div class="col-md-5">
                         <label class="form-label" for="danio-mnyMontoReparacion">Monto de reparación</label>
                         <div class="input-group">
@@ -91,18 +91,18 @@
                         </div>
                         <div class="invalid-feedback" id="danio-mnyMontoReparacionError">Captura un monto entre $0.00 y $999,999.00.</div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="danio-switch-block">
-                            <span class="form-label">Cubierto por seguro</span>
-                            <div class="form-check form-switch">
+                    <div class="col-md-4">
+                        <label class="form-label">Cubierto por seguro</label>
+                        <label class="danio-switch-card" for="danioSeguroSwitch">
+                            <span class="danio-switch-card__text" id="danioSeguroSwitchLabel">No</span>
+                            <div class="form-check form-switch m-0">
                                 <input id="danioSeguroSwitch" class="form-check-input" type="checkbox" role="switch" />
-                                <label id="danioSeguroSwitchLabel" class="form-check-label" for="danioSeguroSwitch">No</label>
                             </div>
-                        </div>
+                        </label>
                         <!-- El hidden conserva siempre el valor booleano NOT NULL para el backend futuro. -->
                         <input id="danio-bitCubiertoPorSeguro" name="bitCubiertoPorSeguro" type="hidden" value="false" />
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label" for="danio-idVehSeguro">Póliza</label>
                         <select id="danio-idVehSeguro" name="idVehSeguro" class="form-select" disabled>
                             <option value="">No aplica</option>
@@ -116,19 +116,25 @@
             <section class="cavex-card form-section-card vehiculo-section-card">
                 <h3 class="form-section-title"><span class="form-section-number">4</span>Evidencia</h3>
                 <label class="form-label" for="danioEvidenciaArchivo">Archivo</label>
-                <div id="danioEvidenciaArea" class="danio-evidencia-area" role="button" tabindex="0">
+                <div id="danioEvidenciaArea" class="vehiculo-upload-area danio-evidencia-area" role="button" tabindex="0">
                     <input id="danioEvidenciaArchivo" type="file" class="vehiculo-file-input" accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp" />
                     <input id="danio-strUrlEvidencia" name="strUrlEvidencia" type="hidden" value="" />
-                    <div id="danioEvidenciaPrompt" class="danio-evidencia-prompt">
+                    <div id="danioEvidenciaPrompt" class="vehiculo-upload-prompt danio-evidencia-prompt">
+                        <span class="vehiculo-upload-icon" aria-hidden="true">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
+                        </span>
                         <strong>Arrastra la evidencia aquí</strong>
-                        <span>PDF, JPG, JPEG, PNG o WEBP · máximo 5 MB</span>
+                        <span>o haz clic para seleccionar</span>
+                        <small>PDF, JPG, JPEG, PNG o WEBP · máximo 5 MB</small>
                     </div>
-                    <div id="danioEvidenciaSeleccionada" class="danio-evidencia-file" hidden>
-                        <div>
-                            <span id="danioEvidenciaTipo">Archivo</span>
-                            <strong id="danioEvidenciaNombre">Evidencia seleccionada</strong>
+                    <div class="vehiculo-file-preview" id="danioFilePreview" hidden>
+                        <div class="vehiculo-file-meta">
+                            <strong id="danioFileName">Evidencia seleccionada</strong>
+                            <small>Vista previa local; aún no se genera strUrlEvidencia</small>
                         </div>
-                        <button id="btnQuitarEvidenciaDanio" type="button" class="btn btn-outline-cavex btn-sm">Quitar</button>
+                        <div class="vehiculo-file-actions danio-file-actions">
+                            <button id="btnQuitarEvidenciaDanio" type="button" class="btn btn-outline-cavex btn-sm">Quitar</button>
+                        </div>
                     </div>
                 </div>
                 <div id="danioEvidenciaArchivoError" class="invalid-feedback danio-upload-error"></div>

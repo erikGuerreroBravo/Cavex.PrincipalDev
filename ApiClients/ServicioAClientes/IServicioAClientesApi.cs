@@ -11,6 +11,8 @@ namespace Cavex.Principal.ApiClients.ServicioAClientes
         Task<ResponseWrapper<PagedResponse<CatServicioSaveDto>>> GetAllAsync(
             [Query] int? pageIndex = null,
             [Query] int? pageSize = null,
+            [Query] string? search = null,
+            [Query] int? status = null,
             CancellationToken cancellationToken = default);
 
         // Recordar

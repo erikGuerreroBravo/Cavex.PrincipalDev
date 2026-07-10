@@ -831,3 +831,50 @@
         width: 100%;
     }
 }
+
+/* Nuevo diseño para "Cubierto por seguro" */
+.danio-switch-card {
+    background: #f8fafc;
+    border: 1px solid var(--borde-cavex);
+    border-radius: 11px;
+    padding: 10px 16px;
+    min-height: 46px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.danio-switch-card:hover {
+    background-color: #eef8f8;
+    border-color: rgba(0, 140, 149, .5);
+    box-shadow: 0 0 0 3px rgba(0, 140, 149, .08);
+}
+
+.danio-switch-card:active {
+    background-color: #e0f2f2;
+}
+
+.danio-switch-card__text {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--azul-cavex);
+    pointer-events: none;
+}
+
+.danio-switch-card .form-check-input {
+    width: 2.6rem;
+    height: 1.4rem;
+    cursor: pointer;
+    margin-top: 0;
+    pointer-events: none;
+}
+
+.danio-switch-card .form-check-input:checked {
+    background-color: var(--teal-cavex);
+    border-color: var(--teal-cavex);
+}

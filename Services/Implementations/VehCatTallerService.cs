@@ -21,8 +21,22 @@ namespace Cavex.Principal.Services.Implementations
         public Task<ResponseWrapper<PagedResponse<VehCatTallerDto>>> ObtenerTodosAsync(
             int pageIndex = 1,
             int pageSize = 10,
+            string? search = null,
             CancellationToken cancellationToken = default) =>
-            ExecuteAsync(() => _vehCatTallerApi.GetAllAsync(pageIndex, pageSize, cancellationToken), "No fue posible obtener los registros de VehCatTaller.");
+            ExecuteAsync(() => _vehCatTallerApi.GetAllAsync(pageIndex, pageSize, search, cancellationToken), "No fue posible obtener los registros de VehCatTaller.");
+
+        public async Task<bool> ExistePorNombreAsync(string nombre, int? excludeId = null, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(nombre)) return false;
+            var response = await ObtenerTodosAsync(1, 10, nombre, cancellationToken);
+            if (response.Success && response.Data?.Items != null)
+            {
+                return response.Data.Items.Any(x => 
+                    x.StrValor.Trim().Equals(nombre.Trim(), StringComparison.OrdinalIgnoreCase) 
+                    && (!excludeId.HasValue || x.Id != excludeId.Value));
+            }
+            return false;
+        }
 
         public Task<ResponseWrapper<VehCatTallerDto>> ObtenerPorIdAsync(int id, CancellationToken cancellationToken = default) =>
             ExecuteAsync(() => _vehCatTallerApi.GetByIdAsync(id, cancellationToken), "No fue posible obtener el registro de VehCatTaller.");
@@ -31,7 +45,7 @@ namespace Cavex.Principal.Services.Implementations
             ExecuteAsync(() => _vehCatTallerApi.CreateAsync(RequestWrapper<VehCatTallerSaveDto>.Create(dto), cancellationToken), "No fue posible crear el registro de VehCatTaller.");
 
         public Task<ResponseWrapper<VehCatTallerDto>> EditarAsync(VehCatTallerEditDto dto, CancellationToken cancellationToken = default) =>
-            ExecuteAsync(() => _vehCatTallerApi.UpdateAsync(RequestWrapper<VehCatTallerEditDto>.Create(dto), cancellationToken), "No fue posible editar el registro de VehCatTaller.");
+            ExecuteAsync(() => _vehCatTallerApi.UpdateAsync(dto.Id, RequestWrapper<VehCatTallerEditDto>.Create(dto), cancellationToken), "No fue posible editar el registro de VehCatTaller.");
 
         public Task<ResponseWrapper<bool>> EliminarAsync(int id, CancellationToken cancellationToken = default) =>
             ExecuteAsync(() => _vehCatTallerApi.DeleteAsync(id, cancellationToken), "No fue posible eliminar el registro de VehCatTaller.");

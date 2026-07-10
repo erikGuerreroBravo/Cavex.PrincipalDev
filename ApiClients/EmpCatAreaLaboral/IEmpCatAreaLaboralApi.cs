@@ -10,6 +10,7 @@ namespace Cavex.Principal.ApiClients.EmpCatAreaLaboral
         Task<ResponseWrapper<PagedResponse<EmpCatAreaLaboralDto>>> GetAllAsync(
             [Query] int? pageIndex = null,
             [Query] int? pageSize = null,
+            [Query] string? search = null,
             CancellationToken cancellationToken = default);
 
         [Get("/api/v1/EmpCatAreaLaboral/{id}")]

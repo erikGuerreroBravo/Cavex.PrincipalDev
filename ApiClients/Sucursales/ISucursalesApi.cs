@@ -10,6 +10,8 @@ namespace Cavex.Principal.ApiClients.Sucursales
         Task<ResponseWrapper<PagedResponse<CatSucursalDto>>> GetAllAsync(
             [Query] int? pageIndex = null,
             [Query] int? pageSize = null,
+            [Query] string? search = null,
+            [Query] int? status = null,
             CancellationToken cancellationToken = default);
 
         [Post("/api/v1/CatSucursales")]

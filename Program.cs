@@ -19,6 +19,7 @@ builder.Services.Configure<FormOptions>(options =>
 
 // Add services to the container.
 builder.Services.AddApplicationServices();
+builder.Services.AddMemoryCache();
 builder.Services.AddApiClients(builder.Configuration);
 
 builder.Services.AddControllersWithViews()
@@ -49,4 +50,4 @@ app.MapControllerRoute(
     pattern: "{controller=Account}/{action=Login}/{id?}");
 
 
-        app.Run();
+app.Run();
