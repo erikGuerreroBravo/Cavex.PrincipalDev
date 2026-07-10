@@ -16,13 +16,6 @@ namespace Cavex.Principal.Controllers
             return View();
         }
 
-        // Pantalla frontend de captura; no consulta ni persiste servicios todavía.
-        [HttpGet("/Vehiculos/NuevoServicio")]
-        public IActionResult NuevoServicio()
-        {
-            return View();
-        }
-
         // Pantalla frontend de infracciones; no consulta ni guarda información todavía.
         [HttpGet("/Vehiculos/Infracciones")]
         public IActionResult Infracciones()
@@ -62,7 +55,7 @@ namespace Cavex.Principal.Controllers
         [HttpGet("/Vehiculos/Detalle/{id:int?}")]
         public IActionResult Detalle(int? id)
         {
-            ViewData["VehiculoId"] = id ?? 1;
+            ViewBag.VehiculoId = id ?? 1;
             return View();
         }
     }

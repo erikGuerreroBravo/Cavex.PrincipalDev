@@ -42,7 +42,7 @@ async function loadStatusOptions() {
         if (statusField) {
             statusCatalog.forEach(status => {
                 const option = document.createElement("option");
-                option.value = status.id;
+                option.value = String(status.id);
                 option.textContent = status.nombre;
                 statusField.appendChild(option);
             });
@@ -77,7 +77,7 @@ async function loadSucursalesFromServer() {
                 id: item.id,
                 nombre: item.strValor || item.StrValor || "",
                 descripcion: item.strDescripcion || item.StrDescripcion || "",
-                idCatStatus: idCatStatus === null || idCatStatus === undefined ? "" : String(idCatStatus),
+                idCatStatus: (idCatStatus === null || idCatStatus === undefined || idCatStatus === 0 || idCatStatus === "0") ? "1" : String(idCatStatus),
                 strCatStatus: item.strCatStatus || item.StrCatStatus || ""
             };
         });
@@ -430,6 +430,24 @@ async function handleFormSubmit(e) {
     }
 }
 
+function getDefaultStatusName(idCatStatus) {
+    if (String(idCatStatus) === "2") return "Inactivo";
+    return "Activo";
+}
+
+function ensureStatusOption(select, idCatStatus, statusName) {
+    if (!select || !idCatStatus) return;
+
+    const value = String(idCatStatus);
+    const exists = Array.from(select.options).some(option => option.value === value);
+    if (exists) return;
+
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = statusName || getDefaultStatusName(value);
+    select.appendChild(option);
+}
+
 function editSucursal(id) {
     const sucursal = sucursales.find(s => s.id === id);
     if (!sucursal) return;
@@ -442,11 +460,15 @@ function editSucursal(id) {
     const descInput = document.getElementById("strDescripcionSucursal");
     if (descInput) descInput.value = sucursal.descripcion || "";
 
-    const statusField = document.getElementById("intIdStatusSucursal");
-    if (statusField) statusField.value = sucursal.idCatStatus || "";
-
     const statusContainer = document.getElementById("statusContainer");
     if (statusContainer) statusContainer.style.display = "block";
+
+    const statusField = document.getElementById("intIdStatusSucursal");
+    if (statusField) {
+        ensureStatusOption(statusField, sucursal.idCatStatus, getStatusName(sucursal));
+        statusField.value = sucursal.idCatStatus || "1";
+        statusField.dispatchEvent(new Event("change"));
+    }
 
     setText("formTitle", "Editar sucursal");
     setText("formSubtitle", "Modifica los detalles de la sucursal seleccionada.");
@@ -592,7 +614,10 @@ function getStatusName(sucursal) {
     if (sucursal.strCatStatus) return sucursal.strCatStatus;
 
     const status = statusCatalog.find(item => String(item.id) === sucursal.idCatStatus);
-    return status ? status.nombre : "Sin estatus";
+    if (status) return status.nombre;
+
+    if (sucursal.idCatStatus === "2") return "Inactivo";
+    return "Activo";
 }
 
 function getStatusBadgeClass(statusName) {

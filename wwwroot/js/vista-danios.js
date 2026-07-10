@@ -1,3 +1,5 @@
+"use strict";
+
 document.addEventListener("DOMContentLoaded", () => {
     inicializarVistaDanios();
 });
@@ -157,6 +159,10 @@ function inicializarCargaEvidencia() {
 
     area.addEventListener("click", event => {
         if (!event.target.closest(".danio-file-actions button")) input.click();
+    });
+    document.getElementById("btnQuitarEvidenciaDanio")?.addEventListener("click", event => {
+        event.stopPropagation();
+        limpiarEvidencia();
     });
     area.addEventListener("keydown", event => {
         if (event.key === "Enter" || event.key === " ") {

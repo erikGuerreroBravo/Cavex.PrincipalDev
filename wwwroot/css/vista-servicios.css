@@ -242,4 +242,5 @@
 /* Corrección de recortes de menús dropdown cuando hay pocos registros */
 .table-module .table-responsive {
     min-height: 220px; /* Asegura altura suficiente para desplegar el dropdown de acciones sin recortarse */
+    overflow: visible !important;
 }

@@ -1,9 +1,11 @@
+"use strict";
+
 document.addEventListener("DOMContentLoaded", () => {
     inicializarVistaGasolina();
 });
 
 function inicializarVistaGasolina() {
-    const form = document.getElementById("gasolinaForm");
+    const form = document.getElementById("gasolinaVehiculoForm");
     if (!form) return;
 
     cargarCatalogosGasolina();
@@ -26,14 +28,6 @@ function inicializarVistaGasolina() {
                 validarCampoGasolina(campo);
             }
         });
-    });
-
-    document.getElementById("btnLimpiarGasolina")?.addEventListener("click", () => {
-        form.reset();
-        limpiarComprobante();
-        form.querySelectorAll(".is-valid, .is-invalid").forEach(el => el.classList.remove("is-valid", "is-invalid"));
-        const lit = document.getElementById("gasolina-decLitrosCargados");
-        if (lit) lit.value = "0.00";
     });
 
     form.addEventListener("submit", event => {
@@ -158,6 +152,10 @@ function inicializarCargaComprobante() {
 
     area.addEventListener("click", event => {
         if (!event.target.closest(".gasolina-file-actions button")) input.click();
+    });
+    document.getElementById("btnQuitarComprobanteGasolina")?.addEventListener("click", event => {
+        event.stopPropagation();
+        limpiarComprobante();
     });
     area.addEventListener("keydown", event => {
         if (event.key === "Enter" || event.key === " ") {

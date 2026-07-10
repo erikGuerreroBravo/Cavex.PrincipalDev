@@ -14,7 +14,7 @@
 
 <!-- Formulario de VehControlGasolina.
      El cálculo de litros es exclusivamente visual y no agrega una columna al modelo SQL. -->
-<form id="gasolinaVehiculoForm" class="vehiculo-create-form gasolina-vehiculo-form vehiculo-module-form" novalidate>
+<form id="gasolinaVehiculoForm" class="vehiculo-create-form gasolina-vehiculo-form vehiculo-module-form">
     <div class="gasolina-form-grid">
         <div class="gasolina-main-column">
             <!-- Datos del vehículo: FK y kilometraje NOT NULL de VehControlGasolina. -->
@@ -111,19 +111,25 @@
             <section class="cavex-card form-section-card vehiculo-section-card">
                 <h3 class="form-section-title"><span class="form-section-number">3</span>Comprobante de pago</h3>
                 <label class="form-label" for="gasolinaComprobanteArchivo">Archivo</label>
-                <div id="gasolinaComprobanteArea" class="gasolina-comprobante-area" role="button" tabindex="0">
+                <div id="gasolinaComprobanteArea" class="vehiculo-upload-area gasolina-comprobante-area" role="button" tabindex="0">
                     <input id="gasolinaComprobanteArchivo" type="file" class="vehiculo-file-input" accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp" />
                     <input id="gasolina-strUrlComprobantePago" name="strUrlComprobantePago" type="hidden" value="" />
-                    <div id="gasolinaComprobantePrompt" class="gasolina-comprobante-prompt">
+                    <div id="gasolinaComprobantePrompt" class="vehiculo-upload-prompt gasolina-comprobante-prompt">
+                        <span class="vehiculo-upload-icon" aria-hidden="true">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
+                        </span>
                         <strong>Arrastra el comprobante aquí</strong>
-                        <span>PDF, JPG, JPEG, PNG o WEBP · máximo 5 MB</span>
+                        <span>o haz clic para seleccionar</span>
+                        <small>PDF, JPG, JPEG, PNG o WEBP · máximo 5 MB</small>
                     </div>
-                    <div id="gasolinaComprobanteSeleccionado" class="gasolina-comprobante-file" hidden>
-                        <div>
-                            <span id="gasolinaComprobanteTipo">Archivo</span>
-                            <strong id="gasolinaComprobanteNombre">Comprobante seleccionado</strong>
+                    <div class="vehiculo-file-preview" id="gasolinaFilePreview" hidden>
+                        <div class="vehiculo-file-meta">
+                            <strong id="gasolinaFileName">Comprobante seleccionado</strong>
+                            <small>Vista previa local; aún no se genera strUrlFoto</small>
                         </div>
-                        <button id="btnQuitarComprobanteGasolina" type="button" class="btn btn-outline-cavex btn-sm">Quitar</button>
+                        <div class="vehiculo-file-actions gasolina-file-actions">
+                            <button id="btnQuitarComprobanteGasolina" type="button" class="btn btn-outline-cavex btn-sm">Quitar</button>
+                        </div>
                     </div>
                 </div>
                 <div id="gasolinaComprobanteArchivoError" class="invalid-feedback gasolina-upload-error"></div>
@@ -135,31 +141,9 @@
     <!-- Acciones; Guardar solo valida mientras no exista POST /api/vehiculos/gasolina. -->
     <div class="form-action-bar vehiculo-action-bar">
         <a class="btn btn-outline-cavex" asp-controller="Vehiculos" asp-action="Index">Cancelar / Volver</a>
-        <button id="btnLimpiarGasolina" type="button" class="btn btn-outline-cavex">Limpiar</button>
         <button type="submit" class="btn btn-cavex">Guardar carga</button>
     </div>
 </form>
-
-<!-- Tabla inferior de cargas simuladas para consulta visual.
-     El menú contextual conserva sus acciones preparadas sin ejecutar persistencia. -->
-<section class="cavex-card table-module gasolina-recientes-card vehiculo-module-table">
-    <div class="servicio-table-heading">
-        <div><span class="dashboard-kicker">Consumo</span><h3>Cargas recientes</h3><p>Registros simulados para validar el control de combustible.</p></div>
-        <span class="records-pill">4 cargas</span>
-    </div>
-    <div class="table-responsive">
-        <table class="table table-hover align-middle executive-table table-cavex-compact">
-            <thead>
-                <tr>
-                    <th>Vehículo</th><th>Placa</th><th>Fecha de carga</th><th>Kilometraje</th>
-                    <th>Gasolinera</th><th>Monto pagado</th><th>Precio litro</th><th>Litros estimados</th>
-                    <th>Forma de pago</th><th>Empleado</th><th>Comprobante</th><th class="text-end">Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="gasolinaRecientesBody"></tbody>
-        </table>
-    </div>
-</section>
 
 @section Scripts {
     <script src="~/js/vista-gasolina.js" asp-append-version="true"></script>

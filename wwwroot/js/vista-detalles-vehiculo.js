@@ -1,362 +1,80 @@
+"use strict";
+
 $(document).ready(function() {
 
     // --- BASE DE DATOS SIMULADA PARA DETALLES DE VEHÍCULOS ---
-    const vehiculosDetalles = {
-        1: {
-            id: 1,
-            nombre: "Toyota RAV4 2021",
-            placa: "ABC-123-D",
-            estatus: "Activo",
-            foto: "/img/toyota_rav4.png",
-            vin: "JTMWFREV5JJ123456",
-            tipo: "SUV",
-            combustible: "Gasolina",
-            capacidad: "5 pasajeros",
-            anio: 2021,
-            color: "Blanco Perlado",
-            motor: "2.5L 4 Cilindros",
-            transmision: "Automática",
-            kilometraje: "45,230 km",
-            fechacompra: "10/03/2021",
-            garantia: "Vigente hasta 10/03/2026",
-            resumen: {
-                proximoFecha: "15/06/2024",
-                proximoKm: "en 2,350 km",
-                ultimoTipo: "Servicio Mayor",
-                ultimoFecha: "10/03/2024",
-                ultimoKm: "hace 1,200 km",
-                saludPct: 92,
-                saludLabel: "Excelente",
-                saludDesc: "Todo en óptimas condiciones",
-                seguroProvider: "Qualitas",
-                seguroPoliza: "1234567890",
-                seguroCobertura: "Amplia",
-                seguroVigencia: "15/07/23 - 15/07/24",
-                seguroRestante: "Vigente (45 días restantes)",
-                infraccionesCount: 2,
-                infraccionesMonto: "$1,450.00",
-                alertas: [
-                    { tipo: "warning", msg: "Cambio de aceite", meta: "en 2,350 km" },
-                    { tipo: "warning", msg: "Verificación", meta: "30/06/24" },
-                    { tipo: "danger", msg: "Seguro vence", meta: "15/07/24" }
-                ]
-            },
-            mantenimientoStats: {
-                totalCost: "$5,900.00 MXN",
-                totalCount: "3 Servicios",
-                totalKm: "45,230 km"
-            },
-            mantenimientos: [
-                {
-                    fecha: "10/03/2024",
-                    folio: "SRV-2024-0042",
-                    concepto: "Servicio Mayor (45,000 km)",
-                    detalles: "• Cambio de aceite sintético de motor (5W30)<br>• Reemplazo de filtros de aceite y aire de motor<br>• Cambio de bujías de platino y revisión general de niveles<br>• Lavado y ajuste de sistema de frenos",
-                    km: "45,230 km",
-                    taller: "Taller Centro Cavex",
-                    tecnico: "Ing. Carlos Mendoza",
-                    costo: "$3,450.00",
-                    estado: "Completado"
-                },
-                {
-                    fecha: "12/11/2023",
-                    folio: "SRV-2023-0988",
-                    concepto: "Cambio de Balatas Delanteras",
-                    detalles: "• Reemplazo de pastillas de freno delanteras (cerámicas)<br>• Rectificado de discos delanteros por computadora<br>• Purga de aire e inspección de tuberías hidráulicas de freno",
-                    km: "38,900 km",
-                    taller: "Frenos Express",
-                    tecnico: "Téc. Roberto Gómez",
-                    costo: "$1,850.00",
-                    estado: "Completado"
-                },
-                {
-                    fecha: "15/06/2023",
-                    folio: "SRV-2023-0412",
-                    concepto: "Rotación y Balanceo",
-                    detalles: "• Rotación de las 4 llantas Michelin en cruz<br>• Balanceo dinámico y calibración de contrapesos de plomo<br>• Alineación del eje delantero (convergencia/divergencia)",
-                    km: "32,100 km",
-                    taller: "Llantas del Norte",
-                    tecnico: "Téc. Mario Estrada",
-                    costo: "$600.00",
-                    estado: "Completado"
-                }
-            ],
-            revision: {
-                aprobados: 24,
-                total: 24,
-                status: "Excelente",
-                pct: 100,
-                categorias: [
-                    {
-                        name: "Motor y Transmisión",
-                        icon: "wrench",
-                        items: [
-                            { name: "Nivel y estado de aceite", approved: true },
-                            { name: "Líquido refrigerante", approved: true },
-                            { name: "Bandas y mangueras", approved: true },
-                            { name: "Batería y sistema eléctrico", approved: true },
-                            { name: "Filtro de aire", approved: true }
-                        ]
-                    },
-                    {
-                        name: "Sistema de Frenos",
-                        icon: "check",
-                        items: [
-                            { name: "Pastillas de freno delanteras", approved: true },
-                            { name: "Pastillas de freno traseras", approved: true },
-                            { name: "Nivel de líquido de frenos", approved: true },
-                            { name: "Discos y tambores de freno", approved: true },
-                            { name: "Freno de mano", approved: true }
-                        ]
-                    },
-                    {
-                        name: "Dirección y Suspensión",
-                        icon: "car",
-                        items: [
-                            { name: "Amortiguadores", approved: true },
-                            { name: "Terminales de dirección", approved: true },
-                            { name: "Horquillas y bujes", approved: true },
-                            { name: "Ejes y juntas", approved: true }
-                        ]
-                    },
-                    {
-                        name: "Llantas y Rines",
-                        icon: "wheel",
-                        items: [
-                            { name: "Presión de aire", approved: true },
-                            { name: "Desgaste de la llanta", approved: true },
-                            { name: "Estado de los rines", approved: true },
-                            { name: "Llanta de refacción", approved: true }
-                        ]
-                    },
-                    {
-                        name: "Luces y Eléctrico",
-                        icon: "warning",
-                        items: [
-                            { name: "Faros principales y direccionales", approved: true },
-                            { name: "Luces traseras y de reversa", approved: true },
-                            { name: "Luces del tablero", approved: true },
-                            { name: "Alternador", approved: true }
-                        ]
-                    },
-                    {
-                        name: "Seguridad y Cristales",
-                        icon: "shield",
-                        items: [
-                            { name: "Cinturones de seguridad", approved: true },
-                            { name: "Cristales y parabrisas", approved: true },
-                            { name: "Limpiaparabrisas", approved: true },
-                            { name: "Espejos retrovisores", approved: true }
-                        ]
-                    }
-                ]
-            },
-            llantas: [
-                { pos: "DI", name: "Delantera Izquierda", modelo: "Michelin 225/65 R17", presion: "32 PSI (Correcta)", vida: "85% (Excelente)", statusClass: "success" },
-                { pos: "DD", name: "Delantera Derecha", modelo: "Michelin 225/65 R17", presion: "32 PSI (Correcta)", vida: "85% (Excelente)", statusClass: "success" },
-                { pos: "TI", name: "Trasera Izquierda", modelo: "Michelin 225/65 R17", presion: "31 PSI (Correcta)", vida: "75% (Bueno)", statusClass: "success" },
-                { pos: "TD", name: "Trasera Derecha", modelo: "Michelin 225/65 R17", presion: "31 PSI (Correcta)", vida: "75% (Bueno)", statusClass: "success" },
-                { pos: "REF", name: "Repuesto (Refacción)", modelo: "Goodyear T165/80 D17", presion: "60 PSI (Correcta)", vida: "100% (Nueva)", statusClass: "inactive" }
-            ],
-            seguro: {
-                proveedor: "Qualitas Compañía de Seguros",
-                statusBadge: "VIGENTE",
-                statusDays: "Quedan 45 días",
-                detalles: [
-                    { label: "Número de Póliza", val: "POL-1234567890" },
-                    { label: "Cobertura", val: "Amplia Plus" },
-                    { label: "Vigencia", val: "15/07/2023 - 15/07/2024" },
-                    { label: "Inciso/Endoso", val: "00000" }
-                ],
-                coberturasHelp: [
-                    { label: "Teléfono Reportes", val: '<a href="tel:8008008000" class="link-azul-cavex">800 800 8000</a> o <strong class="text-azul-bold">*911</strong>' },
-                    { label: "Deducible Daños Materiales", val: "5%" },
-                    { label: "Deducible Robo Total", val: "10%" },
-                    { label: "Responsabilidad Civil", val: "Hasta $3,000,000.00" }
-                ],
-                siniestros: [
-                    { fecha: "14/10/2022", folio: "REP-2022-9981", tipo: "Choque menor (Alcance trasero)", ajustador: "Ing. Ricardo Domínguez", deducible: "$1,500.00 (Aplicó deducible)", estado: "CERRADO" },
-                    { fecha: "03/05/2021", folio: "REP-2021-0421", tipo: "Rotura de parabrisas (Piedra en carretera)", ajustador: "Trámite Directo Express", deducible: "$0.00 (Exento por cobertura cristales)", estado: "CERRADO" }
-                ]
-            },
-            infraccionesTotal: "Pendiente: $1,450.00",
-            infracciones: [
-                { fecha: "20/05/2024", folio: "INF-2024-8837", motivo: "<strong>Exceso de Velocidad</strong><br><span class=\"desc-text-small\">Detectado a 95 km/h en zona de 80 km/h (Fotocívica/Radar).</span>", lugar: "Av. Insurgentes Sur Km 15", monto: "$950.00", estatus: "Pendiente", isPending: true },
-                { fecha: "12/04/2024", folio: "INF-2024-3312", motivo: "<strong>Estacionarse en Lugar Prohibido</strong><br><span class=\"desc-text-small\">Zonas de parquímetros sin comprobante vigente.</span>", lugar: "Colonia Roma Norte, Calle Colima", monto: "$500.00", estatus: "Pendiente", isPending: true },
-                { fecha: "15/11/2023", folio: "INF-2023-0912", motivo: "<strong>Vuelta en U Prohibida</strong><br><span class=\"desc-text-small\">Giro prohibido en intersección señalizada.</span>", lugar: "Av. Paseo de la Reforma y Niza", monto: "$850.00", estatus: "Pagado", isPending: false, info: "Pago del 16/11/2023" }
-            ],
-            documentos: [
-                { name: "Tarjeta de Circulación", type: "PDF", info: "Expira el: 12/03/2026", status: "Vigente" },
-                { name: "Factura de Origen", type: "PDF", info: "Subido el: 10/03/2021", status: "Vigente" },
-                { name: "Póliza de Seguro 2023-2024", type: "PDF", info: "Vence el: 15/07/2024", status: "Vigente" },
-                { name: "Verificación Holograma 0", type: "PDF", info: "Primer Semestre 2024", status: "Vigente" },
-                { name: "Constancia de Situación Fiscal", type: "PDF", info: "Faltante", status: "Faltante" },
-                { name: "Dictamen de Emisiones", type: "PDF", info: "Por Actualizar", status: "Por Actualizar" }
-            ],
-            historial: [
-                { title: "Infracción Registrada (Exceso de Velocidad)", fecha: "20/05/2024", desc: "Folio: INF-2024-8837. Capturada por radar en Av. Insurgentes Sur Km 15. Estatus: Pendiente de pago.", dotClass: "timeline-dot-warning" },
-                { title: "Servicio Mayor Realizado (45,000 km)", fecha: "10/03/2024", desc: "Servicio completo en Taller Centro Cavex. Cambio de fluidos, filtros, bujías y reporte de inspección de 24 puntos limpio (100% aprobado).", dotClass: "timeline-dot-success" },
-                { title: "Renovación de Póliza de Seguro", fecha: "15/07/2023", desc: "Contratación de póliza anual Qualitas Cobertura Amplia Plus (No. Póliza POL-1234567890).", dotClass: "" },
-                { title: "Cambio de Neumáticos y Rotación", fecha: "15/06/2023", desc: "Instalación de 4 llantas Michelin Primacy 4 nuevas en eje delantero y trasero a los 32,100 km.", dotClass: "timeline-dot-success" },
-                { title: "Siniestro Reportado (Choque por alcance)", fecha: "14/10/2022", desc: "Incidente menor reportado a Qualitas (Folio de siniestro ajustador: REP-2022-9981). Reparado en taller certificado con cambio de fascia trasera.", dotClass: "timeline-dot-warning" },
-                { title: "Alta del Vehículo en la Plataforma", fecha: "10/03/2021", desc: "Registro inicial del vehículo Toyota RAV4 2021 con placas ABC-123-D bajo el propietario Juan Pérez López.", dotClass: "" }
-            ],
-            chartData: {
-                real: [200000, 200060, 200115, 200195, 200250, 200325, 200410],
-                estimado: [200000, 200045, 200090, 200155, 200200, 200260, 200330]
-            }
+    const vehiculosDetalles = {};
+
+    const vehiculoId = window.vehiculoId || 1;
+    
+    let vehiculo = {
+        id: vehiculoId,
+        nombre: "",
+        placa: "",
+        estatus: "",
+        foto: null,
+        vin: "",
+        tipo: "",
+        combustible: "",
+        capacidad: "",
+        anio: "",
+        color: "",
+        motor: "",
+        transmision: "",
+        kilometraje: "",
+        fechacompra: "",
+        garantia: "",
+        resumen: {
+            proximoFecha: "",
+            proximoKm: "",
+            ultimoTipo: "",
+            ultimoFecha: "",
+            ultimoKm: "",
+            saludPct: 100,
+            saludLabel: "",
+            saludDesc: "",
+            seguroProvider: "",
+            seguroPoliza: "",
+            seguroCobertura: "",
+            seguroVigencia: "",
+            seguroRestante: "",
+            infraccionesCount: 0,
+            infraccionesMonto: "$0.00",
+            alertas: []
         },
-        2: {
-            id: 2,
-            nombre: "Nissan Versa 2020",
-            placa: "XYZ-987-A",
-            estatus: "Activo",
-            foto: null,
-            vin: "3N1CN7AD0LL123456",
-            tipo: "Sedán",
-            combustible: "Gasolina",
-            capacidad: "5 pasajeros",
-            anio: 2020,
-            color: "Gris Oxford",
-            motor: "1.6L 4 Cilindros",
-            transmision: "Manual",
-            kilometraje: "38,600 km",
-            fechacompra: "12/08/2020",
-            garantia: "Vencida",
-            resumen: {
-                proximoFecha: "12/10/2024",
-                proximoKm: "en 5,400 km",
-                ultimoTipo: "Alineación y Balanceo",
-                ultimoFecha: "15/04/2024",
-                ultimoKm: "hace 2,000 km",
-                saludPct: 85,
-                saludLabel: "Bueno",
-                saludDesc: "Detalles menores por atender",
-                seguroProvider: "GNP",
-                seguroPoliza: "GNP-987654321",
-                seguroCobertura: "Limitada",
-                seguroVigencia: "20/08/23 - 20/08/24",
-                seguroRestante: "Vigente",
-                infraccionesCount: 0,
-                infraccionesMonto: "$0.00",
-                alertas: []
-            },
-            mantenimientoStats: {
-                totalCost: "$2,100.00 MXN",
-                totalCount: "1 Servicios",
-                totalKm: "38,600 km"
-            },
-            mantenimientos: [
-                {
-                    fecha: "15/04/2024",
-                    folio: "SRV-2024-0015",
-                    concepto: "Alineación y Balanceo",
-                    detalles: "• Alineación y balanceo de ruedas delanteras",
-                    km: "36,600 km",
-                    taller: "Taller Rápido",
-                    tecnico: "Juan N.",
-                    costo: "$500.00",
-                    estado: "Completado"
-                }
-            ],
-            revision: {
-                aprobados: 20,
-                total: 24,
-                status: "Bueno",
-                pct: 83,
-                categorias: []
-            },
-            llantas: [],
-            seguro: {
-                proveedor: "GNP Seguros",
-                statusBadge: "VIGENTE",
-                statusDays: "Vence pronto",
-                detalles: [
-                    { label: "Número de Póliza", val: "GNP-987654321" },
-                    { label: "Cobertura", val: "Limitada" }
-                ],
-                coberturasHelp: [],
-                siniestros: []
-            },
-            infraccionesTotal: "Pendiente: $0.00",
-            infracciones: [],
-            documentos: [],
-            historial: [],
-            chartData: {
-                real: [15000, 20000, 25000, 30000, 35000, 38600],
-                estimado: [15000, 19000, 24000, 29000, 34000, 39000]
-            }
+        mantenimientoStats: {
+            totalCost: "$0.00 MXN",
+            totalCount: "0 Servicios",
+            totalKm: "0 km"
         },
-        3: {
-            id: 3,
-            nombre: "Ford Transit 2025",
-            placa: "CAV-519-C",
-            estatus: "Activo",
-            foto: null,
-            vin: "1FTEW1EP7MFA00045",
-            tipo: "Camioneta",
-            combustible: "Gasolina",
-            capacidad: "7 pasajeros",
-            anio: 2025,
-            color: "Azul",
-            motor: "3.5L V6",
-            transmision: "Manual",
-            kilometraje: "7,900 km",
-            fechacompra: "06/03/2026",
-            garantia: "Vigente",
-            resumen: {
-                proximoFecha: "06/09/2026",
-                proximoKm: "en 2,100 km",
-                ultimoTipo: "Ninguno",
-                ultimoFecha: "—",
-                ultimoKm: "—",
-                saludPct: 100,
-                saludLabel: "Excelente",
-                saludDesc: "Unidad nueva",
-                seguroProvider: "Axa",
-                seguroPoliza: "AXA-Transit-2025",
-                seguroCobertura: "Amplia",
-                seguroVigencia: "06/03/26 - 06/03/27",
-                seguroRestante: "Vigente",
-                infraccionesCount: 0,
-                infraccionesMonto: "$0.00",
-                alertas: []
-            },
-            mantenimientoStats: {
-                totalCost: "$0.00 MXN",
-                totalCount: "0 Servicios",
-                totalKm: "7,900 km"
-            },
-            mantenimientos: [],
-            revision: {
-                aprobados: 24,
-                total: 24,
-                status: "Excelente",
-                pct: 100,
-                categorias: []
-            },
-            llantas: [],
-            seguro: {
-                proveedor: "Axa Seguros",
-                statusBadge: "VIGENTE",
-                statusDays: "Nueva",
-                detalles: [],
-                coberturasHelp: [],
-                siniestros: []
-            },
-            infraccionesTotal: "Pendiente: $0.00",
-            infracciones: [],
-            documentos: [],
-            historial: [],
-            chartData: {
-                real: [0, 2000, 4000, 6000, 7900],
-                estimado: [0, 2000, 4000, 6000, 8000]
-            }
+        mantenimientos: [],
+        revision: {
+            aprobados: 0,
+            total: 0,
+            status: "",
+            pct: 0,
+            categorias: []
+        },
+        llantas: [],
+        seguro: {
+            proveedor: "",
+            statusBadge: "",
+            statusDays: "",
+            detalles: [],
+            coberturasHelp: [],
+            siniestros: []
+        },
+        infraccionesTotal: "$0.00",
+        infracciones: [],
+        documentos: [],
+        historial: [],
+        chartData: {
+            real: [0, 0, 0, 0, 0],
+            estimado: [0, 0, 0, 0, 0]
         }
     };
 
-    const vehiculoId = window.vehiculoId || 1;
-    let vehiculo = vehiculosDetalles[vehiculoId] || vehiculosDetalles[1];
+    vehiculosDetalles[vehiculoId] = vehiculo;
 
     // --- 1. FUNCIONES DE RENDERIZADO GENERAL Y LLENADO DE DATOS ---
     function poblarCabeceraYDatosGenerales() {

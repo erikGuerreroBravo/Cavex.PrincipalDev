@@ -1,15 +1,15 @@
 @model Cavex.Principal.Models.VehCatTaller.VehCatTallerSaveDto;
 @{
-    ViewData["Title"] = "Nuevo Taller";
-    ViewData["HeaderEyebrow"] = "Configuración";
-    ViewData["HeaderTitle"] = "Nuevo Taller";
-    ViewData["HeaderSubtitle"] = "Administra el catálogo de talleres autorizados de la plataforma.";
+    ViewBag.Title = "Nuevo Taller";
+    ViewBag.HeaderEyebrow = "Configuración";
+    ViewBag.HeaderTitle = "Nuevo Taller";
+    ViewBag.HeaderSubtitle = "Administra el catálogo de talleres autorizados de la plataforma.";
 
-    ViewData["TableTitle"] = "Listado de talleres";
-    ViewData["TableSubtitle"] = "Catálogo de talleres de mantenimiento y sus descripciones.";
-    ViewData["TableCount"] = 0;
-    ViewData["TableCountLabel"] = "talleres";
-    ViewData["TableExtraPill"] = "Catálogo General";
+    ViewBag.TableTitle = "Listado de talleres";
+    ViewBag.TableSubtitle = "Catálogo de talleres de mantenimiento y sus descripciones.";
+    ViewBag.TableCount = 0;
+    ViewBag.TableCountLabel = "talleres";
+    ViewBag.TableExtraPill = "Catálogo General";
 }
 
 @section Head {
@@ -27,7 +27,7 @@
         </div>
     </div>
 
-    <form id="formTaller" class="filter-form-compact" novalidate onsubmit="handleFormSubmit(event)">
+    <form id="formTaller" class="filter-form-compact" onsubmit="handleFormSubmit(event)">
         <div class="row g-3">
             <div class="col-md-12">
                 <label class="form-label" for="strNombre">Nombre del taller</label>

@@ -56,7 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function loadAreasFromServer() {
-    fetch('/EmpCatAreaLaboral/GetAreas')
+    const url = `/EmpCatAreaLaboral/GetAreas?pagina=${currentPage}&search=${encodeURIComponent(searchQuery)}`;
+    fetch(url)
         .then(response => {
             if (!response.ok) {
                 throw new Error("HTTP error " + response.status);
@@ -75,7 +76,8 @@ function loadAreasFromServer() {
                 } else {
                     areas = [];
                 }
-                renderAreas();
+                const totalCount = result.totalCount ?? 0;
+                renderAreas(totalCount);
             } else {
                 console.error("Error al cargar areas desde base de datos:", result.message);
                 Swal.fire({
@@ -85,7 +87,7 @@ function loadAreasFromServer() {
                     confirmButtonColor: 'var(--teal-cavex)'
                 });
                 areas = [];
-                renderAreas();
+                renderAreas(0);
             }
         })
         .catch(err => {
@@ -97,31 +99,17 @@ function loadAreasFromServer() {
                 confirmButtonColor: 'var(--teal-cavex)'
             });
             areas = [];
-            renderAreas();
+            renderAreas(0);
         });
 }
 
 // Función para renderizar las áreas
-function renderAreas() {
+function renderAreas(totalCount) {
     const tbody = document.getElementById('areasTableBody');
     if (!tbody) return;
     tbody.innerHTML = '';
 
-    // Filtrar áreas
-    let filtered = areas.filter(a => {
-        // Filtro por Búsqueda (Nombre o Descripción)
-        if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-            const nombreMatch = a.nombre.toLowerCase().includes(query);
-            const descMatch = (a.descripcion || '').toLowerCase().includes(query);
-            return nombreMatch || descMatch;
-        }
-        return true;
-    });
-
-    // Paginación
-    const totalRecords = filtered.length;
-    const totalPages = Math.ceil(totalRecords / pageSize) || 1;
+    const totalPages = Math.ceil(totalCount / pageSize) || 1;
     
     // Ajustar página actual si queda fuera del rango
     if (currentPage > totalPages) {
@@ -131,12 +119,8 @@ function renderAreas() {
         currentPage = 1;
     }
 
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = Math.min(startIndex + pageSize, totalRecords);
-    const pagedList = filtered.slice(startIndex, endIndex);
-
     // Mostrar vacío si no hay registros en tabla de area laboral
-    if (pagedList.length === 0) {
+    if (areas.length === 0) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="3" class="text-center py-5">
@@ -149,7 +133,7 @@ function renderAreas() {
             </tr>
         `;
     } else {
-        pagedList.forEach(a => {
+        areas.forEach(a => {
             const tr = document.createElement('tr');
             
             const descText = a.descripcion || 'Sin descripción';
@@ -193,8 +177,10 @@ function renderAreas() {
     }
 
     // Actualizar contadores e información en barra inferior
-    const infoText = totalRecords > 0 
-        ? `Mostrando ${startIndex + 1}-${endIndex} de ${totalRecords} registros`
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = Math.min(startIndex + areas.length, totalCount);
+    const infoText = totalCount > 0 
+        ? `Mostrando ${startIndex + 1}-${endIndex} de ${totalCount} registros`
         : `Mostrando 0-0 de 0 registros`;
     const infoEl = document.getElementById('paginationInfo');
     if (infoEl) infoEl.textContent = infoText;
@@ -205,7 +191,7 @@ function renderAreas() {
     // Actualizar contadores en la cabecera de la tabla
     const countPill = document.querySelector('.table-module .records-pill');
     if (countPill) {
-        countPill.textContent = `${totalRecords} áreas`;
+        countPill.textContent = `${totalCount} áreas`;
     }
 
     const extraPill = document.querySelector('.table-module .records-pill-soft');
@@ -234,49 +220,85 @@ function renderPagination(totalPages) {
 
     if (totalPages <= 1) return; // No mostrar paginación si solo hay una página
 
-    // Botón de Anterior
-    const prevLi = document.createElement('li');
-    prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-    prevLi.innerHTML = `
-        <a class="page-link" href="#" onclick="changePage(event, ${currentPage - 1})" aria-label="Anterior">
-            <span aria-hidden="true">&laquo;</span>
-        </a>
-    `;
-    paginationList.appendChild(prevLi);
+    paginationList.appendChild(createPageItem("Anterior", currentPage - 1, currentPage === 1));
 
-    // Números de páginas
-    for (let i = 1; i <= totalPages; i++) {
-        const li = document.createElement('li');
-        li.className = `page-item ${currentPage === i ? 'active' : ''}`;
-        li.innerHTML = `
-            <a class="page-link" href="#" onclick="changePage(event, ${i})">${i}</a>
-        `;
-        paginationList.appendChild(li);
+    if (totalPages <= 10) {
+        for (let i = 1; i <= totalPages; i++) {
+            paginationList.appendChild(createPageItem(String(i), i, false, currentPage === i));
+        }
+    } else {
+        // dynamic sliding window for pages 11 to N
+        let startPage = 1;
+        let endPage = 10;
+
+        if (currentPage > 10) {
+            startPage = currentPage - 5;
+            endPage = currentPage + 4;
+            if (endPage > totalPages) {
+                endPage = totalPages;
+                startPage = totalPages - 9;
+            }
+        }
+
+        if (startPage > 1) {
+            paginationList.appendChild(createPageItem("1", 1, false, currentPage === 1));
+            if (startPage > 2) {
+                const li = document.createElement("li");
+                li.className = "page-item disabled";
+                li.innerHTML = '<span class="page-link">...</span>';
+                paginationList.appendChild(li);
+            }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            paginationList.appendChild(createPageItem(String(i), i, false, currentPage === i));
+        }
+
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                const li = document.createElement("li");
+                li.className = "page-item disabled";
+                li.innerHTML = '<span class="page-link">...</span>';
+                paginationList.appendChild(li);
+            }
+            paginationList.appendChild(createPageItem(String(totalPages), totalPages, false, currentPage === totalPages));
+        }
     }
 
-    // Botón de Siguiente
-    const nextLi = document.createElement('li');
-    nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
-    nextLi.innerHTML = `
-        <a class="page-link" href="#" onclick="changePage(event, ${currentPage + 1})" aria-label="Siguiente">
-            <span aria-hidden="true">&raquo;</span>
-        </a>
-    `;
-    paginationList.appendChild(nextLi);
+    paginationList.appendChild(createPageItem("Siguiente", currentPage + 1, currentPage === totalPages));
+}
+
+function createPageItem(text, page, disabled, active) {
+    const li = document.createElement("li");
+    li.className = `page-item ${disabled ? "disabled" : ""} ${active ? "active" : ""}`;
+    
+    let innerContent = text;
+    let ariaLabel = "";
+    if (text === "Anterior") {
+        innerContent = `<span aria-hidden="true">&laquo;</span>`;
+        ariaLabel = `aria-label="Anterior"`;
+    } else if (text === "Siguiente") {
+        innerContent = `<span aria-hidden="true">&raquo;</span>`;
+        ariaLabel = `aria-label="Siguiente"`;
+    }
+    
+    li.innerHTML = `<a class="page-link" href="#" onclick="changePage(event, ${page})" ${ariaLabel}>${innerContent}</a>`;
+    return li;
 }
 
 // Cambiar página
 function changePage(event, page) {
     if (event) event.preventDefault();
+    if (page < 1) return;
     currentPage = page;
-    renderAreas();
+    loadAreasFromServer();
 }
 
 // Manejar búsqueda de texto
 function handleSearch(query) {
     searchQuery = query;
     currentPage = 1; // Reiniciar a primera página al buscar
-    renderAreas();
+    loadAreasFromServer();
 }
 
 // Limpiar errores de validación

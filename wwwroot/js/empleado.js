@@ -1099,7 +1099,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.error('[Género] data no es un array:', result.data);
                     return;
                 }
-                console.log('[Género] Items recibidos:', result.data.length);
 
                 var select = document.getElementById('idGenero');
                 if (!select) {

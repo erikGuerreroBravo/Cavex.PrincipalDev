@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function loadEmpleadosFromServer() {
-    fetch('/Empleado/GetEmpleados')
+    const url = `/Empleado/GetEmpleados?pagina=${currentPage}&search=${encodeURIComponent(searchQuery)}&status=${encodeURIComponent(statusFilter)}`;
+    fetch(url)
         .then(response => {
             if (!response.ok) {
                 throw new Error("HTTP error " + response.status);
@@ -23,78 +24,55 @@ function loadEmpleadosFromServer() {
             console.log("Respuesta de GetEmpleados:", result);
             if (result.success) {
                 if (result.data && Array.isArray(result.data)) {
-                    empleados = result.data.map(item => ({
-                        id: item.id,
-                        nombre: item.strNombre + ' ' + item.strApellidoPaterno + (item.strApellidoMaterno ? ' ' + item.strApellidoMaterno : ''),
-                        curp: item.strCurp,
-                        rfc: item.strRfc,
-                        area: item.strEmpCondicionesLaborales || 'Operativo',
-                        puesto: item.strEmpCatTipoContratacion || 'Asesor',
-                        correo: item.strCorreoElectronico,
-                        telefono: item.intNss ? item.intNss.toString() : '—',
-                        activo: item.idCatStatus === 1 || item.strCatStatus === "Activo" || item.strCatStatus === "1"
-                    }));
+                    empleados = result.data.map(item => {
+                        const rawFullName = item.strNombre + ' ' + item.strApellidoPaterno + (item.strApellidoMaterno ? ' ' + item.strApellidoMaterno : '');
+                        return {
+                            id: item.id,
+                            nombre: toTitleCase(rawFullName),
+                            curp: item.strCurp,
+                            rfc: item.strRfc,
+                            area: toTitleCase(item.strEmpCondicionesLaborales || 'Operativo'),
+                            puesto: toTitleCase(item.strEmpCatTipoContratacion || 'Asesor'),
+                            correo: item.strCorreoElectronico,
+                            telefono: (item.empTelefonos && item.empTelefonos.length > 0) ? (item.empTelefonos[0].strNumeroCelular || '—') : '—',
+                            activo: item.idCatStatus === 1 || item.strCatStatus === "Activo" || item.strCatStatus === "1"
+                        };
+                    });
                 } else {
                     empleados = [];
                 }
-                renderEmpleados();
+                
+                // Update Counts in Tabs from result
+                const elTodos = document.getElementById('countTodos');
+                const elActivos = document.getElementById('countActivos');
+                const elBaja = document.getElementById('countBaja');
+                
+                if (elTodos) elTodos.textContent = result.totalAllCount ?? 0;
+                if (elActivos) elActivos.textContent = result.activeCount ?? 0;
+                if (elBaja) elBaja.textContent = result.inactiveCount ?? 0;
+
+                const totalCount = result.totalCount ?? 0;
+                renderEmpleados(totalCount);
             } else {
                 console.error("Error al cargar empleados:", result.message);
                 empleados = [];
-                renderEmpleados();
+                renderEmpleados(0);
             }
         })
         .catch(err => {
             console.error("Error al cargar empleados:", err);
             empleados = [];
-            renderEmpleados();
+            renderEmpleados(0);
         });
 }
 
 // Renderizar la tabla de empleados
-function renderEmpleados() {
+function renderEmpleados(totalCount) {
     const tbody = document.getElementById('employeesTableBody');
     if (!tbody) return;
     tbody.innerHTML = '';
 
-    // Filtrar empleados
-    let filtered = empleados.filter(e => {
-        // Filtro por Estado
-        if (statusFilter === 'activos' && !e.activo) return false;
-        if (statusFilter === 'baja' && e.activo) return false;
-
-        // Filtro por Búsqueda (Nombre, Área, Puesto, Correo, RFC, CURP)
-        if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-            const nombreMatch = e.nombre.toLowerCase().includes(query);
-            const areaMatch = e.area.toLowerCase().includes(query);
-            const puestoMatch = e.puesto.toLowerCase().includes(query);
-            const correoMatch = e.correo.toLowerCase().includes(query);
-            const rfcMatch = e.rfc.toLowerCase().includes(query);
-            const curpMatch = e.curp.toLowerCase().includes(query);
-            
-            return nombreMatch || areaMatch || puestoMatch || correoMatch || rfcMatch || curpMatch;
-        }
-
-        return true;
-    });
-
-    // Actualizar Conteos en Pestañas
-    const countTodos = empleados.length;
-    const countActivos = empleados.filter(e => e.activo).length;
-    const countBaja = empleados.filter(e => !e.activo).length;
-
-    const elTodos = document.getElementById('countTodos');
-    const elActivos = document.getElementById('countActivos');
-    const elBaja = document.getElementById('countBaja');
-
-    if (elTodos) elTodos.textContent = countTodos;
-    if (elActivos) elActivos.textContent = countActivos;
-    if (elBaja) elBaja.textContent = countBaja;
-
-    // Paginación
-    const totalRecords = filtered.length;
-    const totalPages = Math.ceil(totalRecords / pageSize) || 1;
+    const totalPages = Math.ceil(totalCount / pageSize) || 1;
     
     if (currentPage > totalPages) {
         currentPage = totalPages;
@@ -103,12 +81,8 @@ function renderEmpleados() {
         currentPage = 1;
     }
 
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = Math.min(startIndex + pageSize, totalRecords);
-    const pagedList = filtered.slice(startIndex, endIndex);
-
     // Renderizar vacío si no hay registros
-    if (pagedList.length === 0) {
+    if (empleados.length === 0) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="5" class="text-center py-5">
@@ -121,7 +95,7 @@ function renderEmpleados() {
             </tr>
         `;
     } else {
-        pagedList.forEach(e => {
+        empleados.forEach(e => {
             const tr = document.createElement('tr');
             
             // Badge de Estado
@@ -138,11 +112,10 @@ function renderEmpleados() {
             tr.innerHTML = `
                 <td>
                     <div class="cotizacion-main-text">${escapeHtml(e.nombre)}</div>
-                    <div class="small text-muted font-weight-500">${escapeHtml(e.curp)} | ${escapeHtml(e.rfc)}</div>
+                    <div class="small text-muted font-weight-500">${escapeHtml(e.curp)}</div>
                 </td>
                 <td>
                     <div class="description-text font-weight-700">${escapeHtml(e.area)}</div>
-                    <div class="small text-muted font-weight-500">${escapeHtml(e.puesto)}</div>
                 </td>
                 <td>
                     <div class="description-text">${escapeHtml(e.correo)}</div>
@@ -158,6 +131,12 @@ function renderEmpleados() {
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <button class="dropdown-item d-flex align-items-center" type="button" onclick="window.location.href='/Empleado/Details/${e.id}'">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 text-info"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    Ver detalle
+                                </button>
+                            </li>
                             <li>
                                 <button class="dropdown-item d-flex align-items-center" type="button" onclick="editEmpleado(${e.id})">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 text-primary"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -179,8 +158,10 @@ function renderEmpleados() {
     }
 
     // Actualizar contadores en barra inferior
-    const infoText = totalRecords > 0 
-        ? `Mostrando ${startIndex + 1}-${endIndex} de ${totalRecords} registros`
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = Math.min(startIndex + empleados.length, totalCount);
+    const infoText = totalCount > 0 
+        ? `Mostrando ${startIndex + 1}-${endIndex} de ${totalCount} registros`
         : `Mostrando 0-0 de 0 registros`;
     const elInfo = document.getElementById('paginationInfo');
     if (elInfo) elInfo.textContent = infoText;
@@ -191,7 +172,7 @@ function renderEmpleados() {
     // Actualizar contadores en la cabecera de la tabla
     const countPill = document.querySelector('.table-module .records-pill');
     if (countPill) {
-        countPill.textContent = `${totalRecords} empleados`;
+        countPill.textContent = `${totalCount} empleados`;
     }
 
     const extraPill = document.querySelector('.table-module .records-pill-soft');
@@ -208,42 +189,78 @@ function renderPagination(totalPages) {
 
     if (totalPages <= 1) return;
 
-    // Botón de Anterior
-    const prevLi = document.createElement('li');
-    prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-    prevLi.innerHTML = `
-        <a class="page-link" href="#" onclick="changePage(event, ${currentPage - 1})" aria-label="Anterior">
-            <span aria-hidden="true">&laquo;</span>
-        </a>
-    `;
-    paginationList.appendChild(prevLi);
+    paginationList.appendChild(createPageItem("Anterior", currentPage - 1, currentPage === 1));
 
-    // Números de páginas
-    for (let i = 1; i <= totalPages; i++) {
-        const li = document.createElement('li');
-        li.className = `page-item ${currentPage === i ? 'active' : ''}`;
-        li.innerHTML = `
-            <a class="page-link" href="#" onclick="changePage(event, ${i})">${i}</a>
-        `;
-        paginationList.appendChild(li);
+    if (totalPages <= 10) {
+        for (let i = 1; i <= totalPages; i++) {
+            paginationList.appendChild(createPageItem(String(i), i, false, currentPage === i));
+        }
+    } else {
+        // dynamic sliding window for pages 11 to N
+        let startPage = 1;
+        let endPage = 10;
+
+        if (currentPage > 10) {
+            startPage = currentPage - 5;
+            endPage = currentPage + 4;
+            if (endPage > totalPages) {
+                endPage = totalPages;
+                startPage = totalPages - 9;
+            }
+        }
+
+        if (startPage > 1) {
+            paginationList.appendChild(createPageItem("1", 1, false, currentPage === 1));
+            if (startPage > 2) {
+                const li = document.createElement("li");
+                li.className = "page-item disabled";
+                li.innerHTML = '<span class="page-link">...</span>';
+                paginationList.appendChild(li);
+            }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            paginationList.appendChild(createPageItem(String(i), i, false, currentPage === i));
+        }
+
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                const li = document.createElement("li");
+                li.className = "page-item disabled";
+                li.innerHTML = '<span class="page-link">...</span>';
+                paginationList.appendChild(li);
+            }
+            paginationList.appendChild(createPageItem(String(totalPages), totalPages, false, currentPage === totalPages));
+        }
     }
 
-    // Botón de Siguiente
-    const nextLi = document.createElement('li');
-    nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
-    nextLi.innerHTML = `
-        <a class="page-link" href="#" onclick="changePage(event, ${currentPage + 1})" aria-label="Siguiente">
-            <span aria-hidden="true">&raquo;</span>
-        </a>
-    `;
-    paginationList.appendChild(nextLi);
+    paginationList.appendChild(createPageItem("Siguiente", currentPage + 1, currentPage === totalPages));
+}
+
+function createPageItem(text, page, disabled, active) {
+    const li = document.createElement("li");
+    li.className = `page-item ${disabled ? "disabled" : ""} ${active ? "active" : ""}`;
+    
+    let innerContent = text;
+    let ariaLabel = "";
+    if (text === "Anterior") {
+        innerContent = `<span aria-hidden="true">&laquo;</span>`;
+        ariaLabel = `aria-label="Anterior"`;
+    } else if (text === "Siguiente") {
+        innerContent = `<span aria-hidden="true">&raquo;</span>`;
+        ariaLabel = `aria-label="Siguiente"`;
+    }
+    
+    li.innerHTML = `<a class="page-link" href="#" onclick="changePage(event, ${page})" ${ariaLabel}>${innerContent}</a>`;
+    return li;
 }
 
 // Cambiar página
 function changePage(event, page) {
     if (event) event.preventDefault();
+    if (page < 1) return;
     currentPage = page;
-    renderEmpleados();
+    loadEmpleadosFromServer();
 }
 
 // Filtro de estado
@@ -263,14 +280,14 @@ function setStatusFilter(status) {
     if (status === 'baja' && elBaja) elBaja.classList.add('active');
 
     currentPage = 1;
-    renderEmpleados();
+    loadEmpleadosFromServer();
 }
 
 // Búsqueda en tiempo real
 function handleSearch(query) {
     searchQuery = query;
     currentPage = 1;
-    renderEmpleados();
+    loadEmpleadosFromServer();
 }
 
 // Acción: Editar empleado
@@ -360,4 +377,32 @@ function escapeHtml(text) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+}
+
+function decodeUtf8Mojibake(str) {
+    if (!str) return '';
+    try {
+        return decodeURIComponent(escape(str));
+    } catch (e) {
+        return str;
+    }
+}
+
+function toTitleCase(str) {
+    if (!str || str === '—') return '—';
+    const decoded = decodeUtf8Mojibake(str).trim();
+    if (!decoded) return '—';
+    
+    if (/^[A-Z]{4}\d{6}[A-Z\d]{8}$/i.test(decoded)) return decoded.toUpperCase();
+    if (/^[A-Z]{3,4}\d{6}[A-Z\d]{3}$/i.test(decoded)) return decoded.toUpperCase();
+    if (/^\d+$/.test(decoded)) return decoded;
+    
+    return decoded
+        .toLowerCase()
+        .split(/\s+/)
+        .map(word => {
+            if (!word) return '';
+            return word.charAt(0).toUpperCase() + word.slice(1);
+        })
+        .join(' ');
 }

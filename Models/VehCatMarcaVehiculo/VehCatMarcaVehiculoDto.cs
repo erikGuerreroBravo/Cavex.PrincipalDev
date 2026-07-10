@@ -7,9 +7,9 @@ namespace Cavex.Principal.Models.VehCatMarcaVehiculo
         public int Id { get; set; }
 
         [Display(Name = "Marca")]
-        public string StrValor { get; set; }
+        public required string StrValor { get; set; }
 
         [Display(Name = "Descripcion")]
-        public string StrDescripcion { get; set; }
+        public string? StrDescripcion { get; set; }
     }
 }

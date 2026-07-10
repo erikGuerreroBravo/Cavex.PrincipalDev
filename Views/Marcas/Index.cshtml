@@ -1,15 +1,15 @@
 @model Cavex.Principal.Models.VehCatMarcaVehiculo.VehCatMarcaVehiculoSaveDto;
 @{
-    ViewData["Title"] = "Nueva Marca";
-    ViewData["HeaderEyebrow"] = "Configuración";
-    ViewData["HeaderTitle"] = "Nueva Marca";
-    ViewData["HeaderSubtitle"] = "Administra el catálogo de marcas de vehículos de la plataforma.";
+    ViewBag.Title = "Nueva Marca";
+    ViewBag.HeaderEyebrow = "Configuración";
+    ViewBag.HeaderTitle = "Nueva Marca";
+    ViewBag.HeaderSubtitle = "Administra el catálogo de marcas de vehículos de la plataforma.";
 
-    ViewData["TableTitle"] = "Listado de marcas";
-    ViewData["TableSubtitle"] = "Catálogo de marcas de vehículos y sus descripciones.";
-    ViewData["TableCount"] = 0;
-    ViewData["TableCountLabel"] = "marcas";
-    ViewData["TableExtraPill"] = "Catálogo General";
+    ViewBag.TableTitle = "Listado de marcas";
+    ViewBag.TableSubtitle = "Catálogo de marcas de vehículos y sus descripciones.";
+    ViewBag.TableCount = 0;
+    ViewBag.TableCountLabel = "marcas";
+    ViewBag.TableExtraPill = "Catálogo General";
 }
 
 @section Head {
@@ -27,7 +27,7 @@
         </div>
     </div>
 
-    <form id="formMarca" class="filter-form-compact" novalidate onsubmit="handleFormSubmit(event)">
+    <form id="formMarca" class="filter-form-compact" onsubmit="handleFormSubmit(event)">
         <div class="row g-3">
             <div class="col-md-12">
                 <label class="form-label" for="strNombre">Nombre de la marca</label>

@@ -1,15 +1,15 @@
 @model Cavex.Principal.Models.ServicioAClientes.CatServicioSaveDto;
 @{
-    ViewData["Title"] = "Nuevo Servicio";
-    ViewData["HeaderEyebrow"] = "Configuracion";
-    ViewData["HeaderTitle"] = "Nuevo Servicio";
-    ViewData["HeaderSubtitle"] = "Administra el catalogo de servicios de la plataforma.";
+    ViewBag.Title = "Nuevo Servicio";
+    ViewBag.HeaderEyebrow = "Configuracion";
+    ViewBag.HeaderTitle = "Nuevo Servicio";
+    ViewBag.HeaderSubtitle = "Administra el catalogo de servicios de la plataforma.";
 
-    ViewData["TableTitle"] = "Listado de servicios";
-    ViewData["TableSubtitle"] = "Catalogo de tipos de servicios de traslado y sus descripciones.";
-    ViewData["TableCount"] = 0;
-    ViewData["TableCountLabel"] = "servicios";
-    ViewData["TableExtraPill"] = "Catalogo Activo";
+    ViewBag.TableTitle = "Listado de servicios";
+    ViewBag.TableSubtitle = "Catalogo de tipos de servicios de traslado y sus descripciones.";
+    ViewBag.TableCount = 0;
+    ViewBag.TableCountLabel = "servicios";
+    ViewBag.TableExtraPill = "Catalogo Activo";
 }
 
 @section Head {
@@ -27,7 +27,7 @@
         </div>
     </div>
 
-    <form id="formServicio" class="filter-form-compact" novalidate onsubmit="handleFormSubmit(event)">
+    <form id="formServicio" class="filter-form-compact" onsubmit="handleFormSubmit(event)">
         <div class="row g-3">
             <div class="col-md-12">
                 <label class="form-label" for="strNombre">Nombre del servicio</label>

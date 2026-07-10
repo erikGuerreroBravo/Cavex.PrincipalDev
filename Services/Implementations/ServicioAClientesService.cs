@@ -23,11 +23,26 @@ namespace Cavex.Principal.Services.Implementations
         public async Task<ResponseWrapper<PagedResponse<CatServicioSaveDto>>> ObtenerTodosAsync(
             int pageIndex = 1,
             int pageSize = 10,
+            string? search = null,
+            int? status = null,
             CancellationToken cancellationToken = default)
         {
             return await ExecuteAsync(
-                () => _servicioAClientesApi.GetAllAsync(pageIndex, pageSize, cancellationToken),
+                () => _servicioAClientesApi.GetAllAsync(pageIndex, pageSize, search, status, cancellationToken),
                 "No fue posible obtener los servicios a clientes.");
+        }
+
+        public async Task<bool> ExistePorNombreAsync(string nombre, int? excludeId = null, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(nombre)) return false;
+            var response = await ObtenerTodosAsync(1, 10, nombre, null, cancellationToken);
+            if (response.Success && response.Data?.Items != null)
+            {
+                return response.Data.Items.Any(x => 
+                    x.StrValor.Trim().Equals(nombre.Trim(), StringComparison.OrdinalIgnoreCase) 
+                    && (!excludeId.HasValue || x.Id != excludeId.Value));
+            }
+            return false;
         }
 
         public async Task<ResponseWrapper<CatServicioSaveDto>> ObtenerPorIdAsync(int id, CancellationToken cancellationToken = default)

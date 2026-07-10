@@ -1,4 +1,4 @@
-﻿using Cavex.Principal.Common;
+using Cavex.Principal.Common;
 using Cavex.Principal.Models.EmpCatAreaLaboral;
 
 namespace Cavex.Principal.Services.Interfaces
@@ -8,7 +8,10 @@ namespace Cavex.Principal.Services.Interfaces
         Task<ResponseWrapper<PagedResponse<EmpCatAreaLaboralDto>>> ObtenerTodosAsync(
             int pageIndex = 1,
             int pageSize = 10,
+            string? search = null,
             CancellationToken cancellationToken = default);
+
+        Task<bool> ExistePorNombreAsync(string nombre, int? excludeId = null, CancellationToken cancellationToken = default);
 
         Task<ResponseWrapper<EmpCatAreaLaboralDto>> ObtenerPorIdAsync(
             int id,

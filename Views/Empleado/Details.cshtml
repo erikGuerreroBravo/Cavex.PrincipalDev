@@ -1,0 +1,435 @@
+@model dynamic
+@{
+    ViewData["Title"] = "Detalle del Empleado";
+    Layout = "~/Views/Shared/UI/_Layout.cshtml";
+    var empleadoId = ViewBag.EmpleadoId;
+}
+
+@section Head {
+    <link rel="stylesheet" href="~/css/vista-empleado.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/vista-detalle-empleado.css" asp-append-version="true" />
+}
+
+<div class="empleado-main p-2" id="empleadoDetailsContainer" data-id="@empleadoId">
+    
+    <!-- Cabecera con regresar al listado explícito y icono SVG externo -->
+    <div class="details-header-row">
+        <h1 class="details-header-title" id="lblDetalleTitle">Detalle del Empleado</h1>
+        <a href="/Empleado/Index" class="btn btn-outline-cavex d-flex align-items-center gap-2">
+            <img src="/svg/vista-empleados/arrow-left.svg" alt="" width="14" height="14" />
+            Regresar al listado
+        </a>
+    </div>
+
+    <!-- Tarjeta de Presentación Principal -->
+    <div class="employee-profile-card">
+        <div class="d-flex align-items-center gap-3 flex-wrap flex-grow-1">
+            <div class="employee-profile-avatar" id="avatarContainer">
+                <img src="/svg/vista-empleados/avatar.svg" alt="Avatar predeterminado" style="opacity: 0.5; width: 48px; height: 48px;" />
+            </div>
+            <div class="employee-profile-info">
+                <h2 class="employee-profile-name" id="lblFullName">Cargando...</h2>
+                
+                <div class="employee-profile-meta">
+                    <!-- Puesto -->
+                    <div class="employee-meta-badge">
+                        <div class="meta-icon">
+                            <img src="/svg/vista-empleados/briefcase.svg" alt="" />
+                        </div>
+                        <div class="meta-texts">
+                            <span class="meta-label">Puesto actual</span>
+                            <span class="meta-value" id="lblPuesto">Cargando...</span>
+                        </div>
+                    </div>
+                    <!-- Área -->
+                    <div class="employee-meta-badge">
+                        <div class="meta-icon">
+                            <img src="/svg/vista-empleados/area.svg" alt="" />
+                        </div>
+                        <div class="meta-texts">
+                            <span class="meta-label">Área laboral</span>
+                            <span class="meta-value" id="lblArea">Cargando...</span>
+                        </div>
+                    </div>
+                    <!-- Estado -->
+                    <div class="employee-meta-badge">
+                        <div class="meta-icon">
+                            <img src="/svg/vista-empleados/status.svg" alt="" />
+                        </div>
+                        <div class="meta-texts">
+                            <span class="meta-label">Estado</span>
+                            <span class="meta-value" id="lblStatus">Cargando...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="employee-profile-actions">
+            <button type="button" class="btn-edit-details d-flex align-items-center gap-2" id="btnEditEmpleado">
+                <img src="/svg/vista-empleados/edit.svg" alt="" />
+                Editar Empleado
+            </button>
+            <button type="button" class="btn-print-details d-flex align-items-center gap-2" id="btnPrint">
+                <img src="/svg/vista-empleados/print.svg" alt="" />
+                Imprimir
+            </button>
+        </div>
+    </div>
+
+    <!-- Detalle Completo en Grid -->
+    <div class="detail-grid">
+        
+        <!-- Columna Izquierda: Información Personal, Contacto y Dirección -->
+        <div class="d-flex flex-column gap-3">
+            
+            <!-- Card 1: Información Personal y de Ubicación -->
+            <div class="empleado-card">
+                <div class="card-title">
+                    <span class="card-num">1</span>
+                    <h2>Información y Ubicación</h2>
+                </div>
+
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label>CURP</label>
+                        <div class="detail-box-value" id="valCurp">—</div>
+                    </div>
+                    <div class="form-group">
+                        <label>RFC</label>
+                        <div class="detail-box-value" id="valRfc">—</div>
+                    </div>
+                </div>
+
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label>NSS</label>
+                        <div class="detail-box-value" id="valNss">—</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de Nacimiento</label>
+                        <div class="detail-box-value" id="valFechaNacimiento">—</div>
+                    </div>
+                </div>
+
+                <div class="form-row cols-3">
+                    <div class="form-group">
+                        <label>Edad</label>
+                        <div class="detail-box-value" id="valEdad">—</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Género</label>
+                        <div class="detail-box-value" id="valGenero">—</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Estado Civil</label>
+                        <div class="detail-box-value" id="valEstadoCivil">—</div>
+                    </div>
+                </div>
+
+                <div class="form-row cols-1">
+                    <div class="form-group">
+                        <label>Nacionalidad</label>
+                        <div class="detail-box-value" id="valNacionalidad">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Dirección y Contacto -->
+            <div class="empleado-card">
+                <div class="card-title">
+                    <span class="card-num">2</span>
+                    <h2>Dirección y Contacto</h2>
+                </div>
+
+                <div class="section-label">Dirección</div>
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label>Código Postal</label>
+                        <div class="detail-box-value" id="valCodigoPostal">—</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Colonia</label>
+                        <div class="detail-box-value" id="valColonia">—</div>
+                    </div>
+                </div>
+
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label>Estado</label>
+                        <div class="detail-box-value" id="valEstado">—</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Municipio / Alcaldía</label>
+                        <div class="detail-box-value" id="valMunicipio">—</div>
+                    </div>
+                </div>
+
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label>Número Exterior</label>
+                        <div class="detail-box-value" id="valNumExterior">—</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Número Interior</label>
+                        <div class="detail-box-value" id="valNumInterior">—</div>
+                    </div>
+                </div>
+
+                <div class="section-label">Contacto</div>
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label>Teléfono Celular</label>
+                        <div class="detail-box-value" id="valTelCelular">—</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono Fijo</label>
+                        <div class="detail-box-value" id="valTelFijo">—</div>
+                    </div>
+                </div>
+
+                <div class="form-row cols-1">
+                    <div class="form-group">
+                        <label>Correo Electrónico</label>
+                        <div class="detail-box-value" id="valCorreo">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Académicos -->
+            <div class="empleado-card">
+                <div class="card-title">
+                    <span class="card-num">3</span>
+                    <h2>Datos Académicos</h2>
+                </div>
+
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label>Nivel de Estudios</label>
+                        <div class="detail-box-value" id="valNivelEstudios">—</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Estatus</label>
+                        <div class="detail-box-value" id="valEstatusEstudios">—</div>
+                    </div>
+                </div>
+
+                <div class="form-row cols-1">
+                    <div class="form-group">
+                        <label>Carrera / Especialidad</label>
+                        <div class="detail-box-value" id="valCarrera">—</div>
+                    </div>
+                </div>
+
+                <div class="form-row cols-1">
+                    <div class="form-group">
+                        <label>Institución Educativa</label>
+                        <div class="detail-box-value" id="valInstitucion">—</div>
+                    </div>
+                </div>
+
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label>Fecha de Inicio</label>
+                        <div class="detail-box-value" id="valFechaInicioEstudios">—</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de Fin</label>
+                        <div class="detail-box-value" id="valFechaFinEstudios">—</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Experiencia, Condiciones, Referencias y Documentos -->
+        <div class="d-flex flex-column gap-3">
+            
+            <!-- Card 4: Experiencia Laboral -->
+            <div class="empleado-card">
+                <div class="card-title">
+                    <span class="card-num">4</span>
+                    <h2>Experiencia Laboral</h2>
+                </div>
+                
+                <div id="experienciasPreviewContainer">
+                    <div class="text-muted small text-center py-2">Cargando experiencias...</div>
+                </div>
+                
+                <button type="button" class="btn-show-more" id="btnShowMoreExp" style="display: none;">
+                    <img src="/svg/vista-empleados/plus.svg" alt="" />
+                    + Mostrar más experiencias
+                </button>
+            </div>
+
+            <!-- Card 5: Condiciones Laborales -->
+            <div class="empleado-card">
+                <div class="card-title">
+                    <span class="card-num">5</span>
+                    <h2>Condiciones Laborales</h2>
+                </div>
+
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label>Sueldo Mensual</label>
+                        <div class="detail-box-value" id="valSueldoMensual">—</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de Ingreso</label>
+                        <div class="detail-box-value" id="valFechaIngreso">—</div>
+                    </div>
+                </div>
+
+                <div class="section-label">Condiciones de Contratación</div>
+                
+                <div class="form-row cols-1">
+                    <div class="d-flex align-items-center justify-content-between border-bottom py-2">
+                        <span class="small font-weight-700">¿El empleado tiene cercanía a su vivienda?</span>
+                        <span id="badgeVivienda" class="badge-no">No</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between border-bottom py-2">
+                        <span class="small font-weight-700">¿Tiene disponibilidad para viajar?</span>
+                        <span id="badgeViaje" class="badge-no">No</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between border-bottom py-2">
+                        <span class="small font-weight-700">¿Tiene experiencia en el área?</span>
+                        <span id="badgeExpArea" class="badge-no">No</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between py-2">
+                        <span class="small font-weight-700">¿Tiene disponibilidad para cambiar de residencia?</span>
+                        <span id="badgeCambioResidencia" class="badge-no">No</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 6: Referencias Personales (Rediseño Estilo Contact Cards) -->
+            <div class="empleado-card">
+                <div class="card-title">
+                    <span class="card-num">6</span>
+                    <h2>Referencias Personales</h2>
+                </div>
+                
+                <div id="referenciasPreviewContainer" class="d-flex flex-column gap-2">
+                    <div class="text-muted small text-center py-2">Cargando referencias...</div>
+                </div>
+                
+                <button type="button" class="btn-show-more" id="btnShowMoreRef" style="display: none;">
+                    <img src="/svg/vista-empleados/plus.svg" alt="" />
+                    + Mostrar más referencias
+                </button>
+            </div>
+
+            <!-- Card 7: Documentos Laborales -->
+            <div class="empleado-card">
+                <div class="card-title">
+                    <span class="card-num">7</span>
+                    <h2>Documentos Laborales</h2>
+                </div>
+
+                <div class="document-grid">
+                    <!-- Identificación -->
+                    <div class="document-item">
+                        <div class="document-info">
+                            <span class="document-icon">
+                                <img src="/svg/vista-empleados/document.svg" alt="" />
+                            </span>
+                            <div class="min-width-0">
+                                <div class="document-name-text">Identificación</div>
+                                <div class="document-file-name" id="docNameIdentificacion">No disponible</div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-ver-doc" id="btnVerIdentificacion" disabled>Ver</button>
+                    </div>
+
+                    <!-- Comprobante -->
+                    <div class="document-item">
+                        <div class="document-info">
+                            <span class="document-icon">
+                                <img src="/svg/vista-empleados/home.svg" alt="" />
+                            </span>
+                            <div class="min-width-0">
+                                <div class="document-name-text">Domicilio</div>
+                                <div class="document-file-name" id="docNameDomicilio">No disponible</div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-ver-doc" id="btnVerDomicilio" disabled>Ver</button>
+                    </div>
+
+                    <!-- CV -->
+                    <div class="document-item">
+                        <div class="document-info">
+                            <span class="document-icon">
+                                <img src="/svg/vista-empleados/document.svg" alt="" />
+                            </span>
+                            <div class="min-width-0">
+                                <div class="document-name-text">C. Vitae (CV)</div>
+                                <div class="document-file-name" id="docNameCv">No disponible</div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-ver-doc" id="btnVerCv" disabled>Ver</button>
+                    </div>
+
+                    <!-- Contrato -->
+                    <div class="document-item">
+                        <div class="document-info">
+                            <span class="document-icon">
+                                <img src="/svg/vista-empleados/document.svg" alt="" />
+                            </span>
+                            <div class="min-width-0">
+                                <div class="document-name-text">Contrato</div>
+                                <div class="document-file-name" id="docNameContrato">No disponible</div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-ver-doc" id="btnVerContrato" disabled>Ver</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Mostrar Más Experiencias -->
+<div class="modal fade modal-cavex" id="modalExperiencias" tabindex="-1" aria-labelledby="modalExperienciasLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalExperienciasLabel">Historial de Experiencia Laboral</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modalExperienciasBody">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Mostrar Más Referencias -->
+<div class="modal fade modal-cavex" id="modalReferencias" tabindex="-1" aria-labelledby="modalReferenciasLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalReferenciasLabel">Referencias Personales</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modalReferenciasBody" class="d-flex flex-column gap-2">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Visualizar Documentos en un Pop-up / Iframe -->
+<div class="modal fade modal-cavex" id="modalDocumentoViewer" tabindex="-1" aria-labelledby="modalDocumentoViewerLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content" style="height: 85vh; display: flex; flex-direction: column;">
+            <div class="modal-header" style="flex-shrink: 0;">
+                <h5 class="modal-title" id="modalDocumentoViewerLabel">Visor de Documento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0 d-flex flex-column flex-grow-1" style="overflow: hidden; height: 100%;">
+                <iframe id="iframeDocumentoViewer" src="" style="width: 100%; height: 100%; flex-grow: 1; border: none; border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; display: block;"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/vista-detalle-empleado.js" asp-append-version="true"></script>
+}

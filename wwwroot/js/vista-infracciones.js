@@ -1,3 +1,5 @@
+"use strict";
+
 document.addEventListener("DOMContentLoaded", () => {
     inicializarVistaInfracciones();
 });
@@ -189,6 +191,10 @@ function inicializarCargaComprobante() {
     area.addEventListener("click", event => {
         if (input.disabled) return;
         if (!event.target.closest(".infraccion-file-actions button")) input.click();
+    });
+    document.getElementById("btnQuitarComprobanteInfraccion")?.addEventListener("click", event => {
+        event.stopPropagation();
+        limpiarComprobante();
     });
     area.addEventListener("keydown", event => {
         if (input.disabled) return;

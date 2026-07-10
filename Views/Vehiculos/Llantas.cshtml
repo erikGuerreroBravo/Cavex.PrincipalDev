@@ -14,7 +14,7 @@
 
 <!-- Formulario de VehControlLlanta.
      Fechas, estatus y evidencia respetan nulabilidad y límites del esquema previsto. -->
-<form id="llantaVehiculoForm" class="vehiculo-create-form llanta-vehiculo-form vehiculo-module-form" novalidate>
+<form id="llantaVehiculoForm" class="vehiculo-create-form llanta-vehiculo-form vehiculo-module-form">
     <div class="llanta-form-grid">
         <div class="llanta-main-column">
             <!-- Datos del vehículo: representa idVehDatosGenerales, FK obligatoria de dbo.VehControlLlanta. -->
@@ -125,19 +125,25 @@
             <section class="cavex-card form-section-card vehiculo-section-card">
                 <h3 class="form-section-title"><span class="form-section-number">4</span>Evidencia</h3>
                 <label class="form-label" for="llantaEvidenciaArchivo">Archivo</label>
-                <div id="llantaEvidenciaArea" class="llanta-evidencia-area" role="button" tabindex="0">
+                <div id="llantaEvidenciaArea" class="vehiculo-upload-area llanta-evidencia-area" role="button" tabindex="0">
                     <input id="llantaEvidenciaArchivo" type="file" class="vehiculo-file-input" accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp" />
                     <input id="llanta-strUrlEvidencia" name="strUrlEvidencia" type="hidden" value="" />
-                    <div id="llantaEvidenciaPrompt" class="llanta-evidencia-prompt">
+                    <div id="llantaEvidenciaPrompt" class="vehiculo-upload-prompt llanta-evidencia-prompt">
+                        <span class="vehiculo-upload-icon" aria-hidden="true">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
+                        </span>
                         <strong>Arrastra la evidencia aquí</strong>
-                        <span>PDF, JPG, JPEG, PNG o WEBP · máximo 5 MB</span>
+                        <span>o haz clic para seleccionar</span>
+                        <small>PDF, JPG, JPEG, PNG o WEBP · máximo 5 MB</small>
                     </div>
-                    <div id="llantaEvidenciaSeleccionada" class="llanta-evidencia-file" hidden>
-                        <div>
-                            <span id="llantaEvidenciaTipo">Archivo</span>
-                            <strong id="llantaEvidenciaNombre">Evidencia seleccionada</strong>
+                    <div class="vehiculo-file-preview" id="llantaFilePreview" hidden>
+                        <div class="vehiculo-file-meta">
+                            <strong id="llantaFileName">Evidencia seleccionada</strong>
+                            <small>Vista previa local; aún no se genera strUrlEvidencia</small>
                         </div>
-                        <button id="btnQuitarEvidenciaLlanta" type="button" class="btn btn-outline-cavex btn-sm">Quitar</button>
+                        <div class="vehiculo-file-actions llanta-file-actions">
+                            <button id="btnQuitarEvidenciaLlanta" type="button" class="btn btn-outline-cavex btn-sm">Quitar</button>
+                        </div>
                     </div>
                 </div>
                 <div id="llantaEvidenciaArchivoError" class="invalid-feedback llanta-upload-error"></div>
