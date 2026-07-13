@@ -7,7 +7,7 @@ namespace Cavex.Principal.Models.VehCatColor
         public int Id { get; set; }
 
         [Display(Name = "Color")]
-        public string StrValor { get; set; }
+        public string? StrValor { get; set; }
 
         [Display(Name = "Descripcion")]
         public string? StrDescripcion { get; set; }

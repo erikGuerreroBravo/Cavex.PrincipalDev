@@ -18,7 +18,8 @@ namespace Cavex.Principal.Services.Implementations
             _logger = logger;
         }
 
-        public Task<ResponseWrapper<PagedResponse<VehCatTipoCombustibleDto>>> ObtenerTodosAsync(CancellationToken cancellationToken = default) =>
+        public Task<ResponseWrapper<PagedResponse<VehCatTipoCombustibleDto>>> ObtenerTodosAsync(int pageIndex = 1, int pageSize = 10, string? search = null,
+            CancellationToken cancellationToken = default) =>
             ExecuteAsync(() => _vehCatTipoCombustibleApi.GetAllAsync(cancellationToken), "No fue posible obtener los registros de VehCatTipoCombustible.");
 
         public Task<ResponseWrapper<VehCatTipoCombustibleDto>> ObtenerPorIdAsync(int id, CancellationToken cancellationToken = default) =>
