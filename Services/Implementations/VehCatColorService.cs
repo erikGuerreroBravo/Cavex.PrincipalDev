@@ -1,6 +1,8 @@
 ﻿using Cavex.Principal.ApiClients.VehCatColor;
+using Cavex.Principal.ApiClients.VehCatMarcaVehiculo;
 using Cavex.Principal.Common;
 using Cavex.Principal.Models.VehCatColor;
+using Cavex.Principal.Models.VehCatMarcaVehiculo;
 using Cavex.Principal.Services.Interfaces;
 using Refit;
 using System.Net;
@@ -18,8 +20,13 @@ namespace Cavex.Principal.Services.Implementations
             _logger = logger;
         }
 
-        public Task<ResponseWrapper<PagedResponse<VehCatColorDto>>> ObtenerTodosAsync(CancellationToken cancellationToken = default) =>
-            ExecuteAsync(() => _vehCatColorApi.GetAllAsync(cancellationToken), "No fue posible obtener los registros de VehCatColor.");
+        public Task<ResponseWrapper<PagedResponse<VehCatColorDto>>> ObtenerTodosAsync(
+           int pageIndex = 1,
+           int pageSize = 10,
+           string? search = null,
+           CancellationToken cancellationToken = default) =>
+           ExecuteAsync(() => _vehCatColorApi.GetAllAsync(pageIndex, pageSize, search, cancellationToken), "No fue posible obtener los registros de VehCatColor.");
+
 
         public Task<ResponseWrapper<VehCatColorDto>> ObtenerPorIdAsync(int id, CancellationToken cancellationToken = default) =>
             ExecuteAsync(() => _vehCatColorApi.GetByIdAsync(id, cancellationToken), "No fue posible obtener el registro de VehCatColor.");
@@ -51,5 +58,14 @@ namespace Cavex.Principal.Services.Implementations
                 return ResponseWrapper<T>.Fail(fallbackMessage, HttpStatusCode.InternalServerError);
             }
         }
+
+       
+
+
+
+      
+
+
+
     }
 }

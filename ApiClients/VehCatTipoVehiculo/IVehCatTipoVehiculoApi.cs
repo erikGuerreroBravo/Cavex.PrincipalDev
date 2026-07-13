@@ -7,8 +7,9 @@ namespace Cavex.Principal.ApiClients.VehCatTipoVehiculo
     public interface IVehCatTipoVehiculoApi
     {
         [Get("/api/v1/VehCatTipoVehiculo")]
-        Task<ResponseWrapper<PagedResponse<VehCatTipoVehiculoDto>>> GetAllAsync(CancellationToken cancellationToken = default);
-
+        Task<ResponseWrapper<PagedResponse<VehCatTipoVehiculoDto>>> GetAllAsync([Query] int? pageIndex = null,[Query] int? pageSize = null,
+            [Query] string? search = null,CancellationToken cancellationToken = default);
+        
         [Get("/api/v1/VehCatTipoVehiculo/{id}")]
         Task<ResponseWrapper<VehCatTipoVehiculoDto>> GetByIdAsync(int id, CancellationToken cancellationToken = default);
 

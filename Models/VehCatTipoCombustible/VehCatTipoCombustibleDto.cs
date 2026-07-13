@@ -5,8 +5,8 @@ namespace Cavex.Principal.Models.VehCatTipoCombustible
     {
         public int Id { get; set; }
         [Display(Name = "Tipo de Combustible")]
-        public string StrValor { get; set; }
+        public string? StrValor { get; set; }
         [Display(Name = "Descripcion")]
-        public string StrDescripcion { get; set; }
+        public string? StrDescripcion { get; set; }
     }
 }
